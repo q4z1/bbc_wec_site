@@ -80,8 +80,9 @@ function refreshShoutbox(start=0, end=50){
         + '<span class="sbpid">#' + el.shoutbox_id + "</span>&nbsp;|&nbsp;"
         + '<span class="sbpdate">' + el.created + "</span>&nbsp;|&nbsp;"
         + '<span class="sbpnick' + nickclass + '">' + el.playername + "</span>:"
-        + '<p class="sbpmsg' + msgclass + '">' + el.msg.replace(/(?:\r\n|\r|\n)/g, '<br />'); + "</p>";
-        //+ '<p class="sbpmsg' + msgclass + '">' + el.msg.replace("\n", "<br />") + "</p>";
+        + '<div class="sbpmsg' + msgclass + '">'
+        + "<p>" + el.msg.replace(/(?:\r\n|\r|\n)/g, '<br />') + "</p>"
+        + "</div>";
     });
     posts += "</ul>";
     $('#sbposts').html(posts);
