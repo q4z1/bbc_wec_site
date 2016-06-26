@@ -1,0 +1,10 @@
+EnableSendfile Off
+DirectoryIndex index.php
+AddDefaultCharset utf-8
+
+RewriteEngine On
+
+## $web_root from etc/config.php must fit RewriteBase
+RewriteBase /
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule .* index.php [L]

@@ -1,0 +1,25 @@
+<VirtualHost *:80>
+	ServerAdmin ernstlich.heiter@gmail.com
+	ServerName inquies.de
+	ServerAlias www.inquies.de
+	DocumentRoot /var/www/inquies/www
+	<Directory />
+		Options FollowSymLinks
+		AllowOverride None
+	</Directory>
+	<Directory /var/www/inquies/www/>
+		Options Indexes FollowSymLinks MultiViews
+		AllowOverride All
+		Order allow,deny
+		allow from all
+	</Directory>
+
+	ErrorLog /var/log/apache2/inquies_error.log
+
+	# Possible values include: debug, info, notice, warn, error, crit,
+	# alert, emerg.
+	LogLevel warn
+
+	CustomLog /var/log/apache2/inquies_access.log combined
+
+</VirtualHost>
