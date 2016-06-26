@@ -23,18 +23,30 @@
 </div>
 <div class="row">
   <div class="col-md-10 col-md-offset-1">
-    Pagination
+    <div class="row">
+      <div class="col-md-9 sbpagination sbpaginationtop"></div>
+      <div class="col-md-3 form-inline">
+        <div class="form-group text-right">
+          <div class="input-group">
+            <div class="input-group-addon"><strong>MSG ID:</strong></div>
+            <input class="form-control" placeholder="12345" value="" name="mgsid" id="msgid" />
+            <div class="input-group-btn">
+              <button class="btn btn-success" id="sbgetmsg"><i class="glyphicon glyphicon-search"></i></button>
+            </div>
+          </div>
+        </div>
+        <br /><br />
+      </div>
+    </div>
   </div>
 </div>
 <div class="row">
   <div class="col-md-10 col-md-offset-1">
-    <div class="form-control" id="sbposts"></div>
+    <div id="sbposts"></div>
   </div>
 </div>
 <div class="row">
-  <div class="col-md-10 col-md-offset-1">
-    Pagination
-  </div>
+  <div class="col-md-10 col-md-offset-1 sbpagination sbpaginationbottom"></div>
 </div>
 
 <!-- modal for posts -->

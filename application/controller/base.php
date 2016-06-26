@@ -20,16 +20,6 @@ class controller_base extends base
 	public function generate_html_output()
 	{
 		// debug::add_info("(".__FILE__.")<b>".__CLASS__."</b>::".__FUNCTION__."() betreten.");
-		/*
-		 * @FIXME: tidy vs font-awesome issues :(
-		 * disabled tidy
-		 */
-		//ob_start();
-		//require_once(view::get_special("core"));
-		//app::$tidy->parseString(ob_get_contents(), app::$tidy_opts);
-		//ob_end_clean();
-		//app::$tidy->cleanRepair();
-		//app::$output = app::$tidy;
 		ob_start();
 		require_once(view::get_special("core"));
 		app::$output = ob_get_contents();

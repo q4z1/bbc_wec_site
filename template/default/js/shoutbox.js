@@ -1,3 +1,5 @@
+var sbpaginationActive = false;
+
 $(window).load
 (
 	function()
@@ -39,6 +41,17 @@ $(window).load
           });
       });
     }
+    
+		$('input#msgid').keyup(function(e) {
+			if (e.which == 13)
+			{
+				getMsg();
+			}
+    });
+
+		$('#sbgetmsg').click(function(){
+      getMsg();
+		});
   }
 );
 
@@ -47,15 +60,17 @@ function refreshShoutbox(start=0, end=50){
     "/ajax/shoutbox/posts/",
     {
       start: start,
-      end: end
+      end: end,
+      t: $.now()
     }
   ).done(function(data){
     var obj = $.parseJSON(data);
+    var numPosts = obj.num;
     var posts = '<ul class="list-group">';
-    $(obj).each(function(i,el){
-      nickclass = ' sbpnicknormal';
-      if(el.status == 2){
-        nickclass = ' sbpnickadmin';
+    $(obj.posts).each(function(i,el){
+      nickclass = ' sbpnicknormal text-primary';
+      if(el.status > 1){
+        nickclass = ' sbpnickadmin text-danger';
       }
       msgclass = ' sbpmsgnormal';
       if(el.status == 3){
@@ -65,9 +80,39 @@ function refreshShoutbox(start=0, end=50){
         + '<span class="sbpid">#' + el.shoutbox_id + "</span>&nbsp;|&nbsp;"
         + '<span class="sbpdate">' + el.created + "</span>&nbsp;|&nbsp;"
         + '<span class="sbpnick' + nickclass + '">' + el.playername + "</span>:"
-        + '<p class="sbpmsg' + msgclass + '">' + el.msg.replace("\n", "</p><p>") + "</p>";
+        + '<p class="sbpmsg' + msgclass + '">' + el.msg.replace(/(?:\r\n|\r|\n)/g, '<br />'); + "</p>";
+        //+ '<p class="sbpmsg' + msgclass + '">' + el.msg.replace("\n", "<br />") + "</p>";
     });
     posts += "</ul>";
     $('#sbposts').html(posts);
+    if(!sbpaginationActive){
+      $('.sbpagination').bootpag({
+          total: Math.ceil(numPosts / 50),
+          maxVisible: 10,
+          firstLastUse: true,
+      }).on("page", function(event, num){
+           refreshShoutbox(((num-1)*50), 50);
+      });
+      sbpaginationActive = true;
+    }
+
+  });
+}
+
+function getMsg(){
+  if ($('input#msgid').val() == "" || isNaN($('input#msgid').val())) {
+    $('input#msgid').val('');
+    return;
+  }
+  if ($('#amodal').length > 0) {
+      $('#amodal').remove();
+  }
+  $.post(
+    "/ajax/shoutbox/getmsg/",
+    { msgid: $('input#msgid').val(),
+      t: $.now()
+  }).done(function(data){
+      $('body').append(data);
+      $('#amodal').modal('show');
   });
 }

@@ -63,3 +63,27 @@ body{
   height: 500px;
   overflow-y: scroll;
 }
+
+.midlbl{
+  vertical-align: bottom;
+}
+
+.sbpagination{
+  
+}
+
+.sbpaginationtop ul.pagination{
+  margin: 0px 0px!important;
+}
+.sbpaginationbottom{
+
+}
+
+.sbpid{font-weight: bold;}
+.sbpdate{}
+.sbpnick{font-weight: bold;}
+.sbpmsg{}
+.sbpnicknormal{}
+.sbpnickadmin{}
+.sbpmsgnormal{}
+.sbpmsgadmin{background-color: #e0f3c6;}

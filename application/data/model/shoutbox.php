@@ -66,10 +66,52 @@ class model_shoutbox extends model_base
 		$sql = "
 			SELECT shoutbox_id, playername, msg, created, status FROM `shoutbox`
       WHERE $where
-      ORDER BY `created` DESC
+      ORDER BY `shoutbox_id` DESC
       LIMIT $start,$end;
 		";
 		return $db->get_all_assoc($sql);
+	}
+  
+	/*
+	 * get_three_posts_by_msgid($shoutbox_id)
+	 *
+	 * @param String $shoutbox_id
+	 *
+	 * @return Array of Arrays
+	 */
+	public static function get_three_posts_by_msgid($shoutbox_id)
+	{
+		$db = database::get_instance();
+    $shoutbox_id = $db->escape($shoutbox_id);
+    if($shoutbox_id > 1){
+      $shoutbox_id--;
+    }
+		$sql = "
+			SELECT shoutbox_id, playername, msg, created, status FROM `shoutbox`
+      WHERE `shoutbox_id` >= $shoutbox_id
+      ORDER BY `shoutbox_id` ASC
+      LIMIT 0,3;
+		";
+		return $db->get_all_assoc($sql);
+	}
+  
+	/*
+	 * get_num_posts()
+	 *
+	 * @return Array of Arrays
+	 */
+	public static function get_num_posts()
+	{
+		$db = database::get_instance();
+    $where = "TRUE";
+    if(app::$session != "admin"){
+      $where = "`status` < 3";
+    }
+		$sql = "
+			SELECT count(shoutbox_id) as num FROM `shoutbox`
+      WHERE $where;
+		";
+		return $db->get_assoc($sql);
 	}
 
 	/*

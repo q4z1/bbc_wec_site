@@ -22,7 +22,7 @@ class controller_ajax_shoutbox extends controller_ajax_base
 		$this->generate_special_output($this->output_type);
 	}
   
-  public function post()
+  private function post()
   {
     view::set_special("ajax", "browser/ajax/modal.html");
     
@@ -80,8 +80,45 @@ class controller_ajax_shoutbox extends controller_ajax_base
       $start = app::$request['start'];
       $end = app::$request['end'];
     }
-    app::$content['ajax'] = json_encode(model_shoutbox::get_posts_with_limit($start, $end));
+    $posts = model_shoutbox::get_posts_with_limit($start, $end);
+    $num = model_shoutbox::get_num_posts();
+    
+    app::$content['ajax'] = json_encode(array("num" => $num['num'], "posts" => $posts));
 
   }
 	
+  private function getmsg(){
+    view::set_special("ajax", "browser/ajax/modal.html");
+    
+    if(!array_key_exists("msgid", app::$request) || is_null(model_shoutbox::get_entry_by_id(app::$request['msgid']))){
+      app::$content['modal']["heading"] = "<div class='text-danger'>Fail!</div>";
+      app::$content['modal']["content"] = "Message with ID #" . app::$request['msgid'] . " not found!";
+      return;
+    }
+    
+    $posts = array_reverse(model_shoutbox::get_three_posts_by_msgid(app::$request['msgid']));
+    if(app::$session != "admin"){
+      for($i=0;$i<count($posts);$i++){
+        if($posts[$i]['status'] == 3){
+          $posts[$i]['msg'] = "[Hidden Admin Message]";
+        }
+      }
+    }
+    
+    $list = '<ul class="list-group">';
+    foreach($posts as $post){
+      $list .= '<li class="list-group-item"><span class="sbpid">#' . $post['shoutbox_id'] . '</span>'
+        . '&nbsp;|&nbsp;<span class="sbpdate">' . $post['created'] . '</span>'
+        . '&nbsp;|&nbsp;<span class="sbpnick '
+        . (($post['status'] > 1) ? 'sbpnickadmin text-danger' : 'sbpnicknormal') . '">' . $post['playername'] . '</span>:'
+        . '<p class="sbpmsg '
+        . (($post['status'] == 3) ? 'sbpmsgadmin' : 'sbpmsgnormal') . '">' . str_replace("\n", "<br />", $post['msg']) . '</p>'
+        . '</li>';
+    }
+    $list .= "</ul>";
+    
+    app::$content['modal']["heading"] = "<div class='text-primary'>MSG ID #" . app::$request['msgid'] . ":</div>";
+    app::$content['modal']["content"] = $list;
+  }
+  
 }

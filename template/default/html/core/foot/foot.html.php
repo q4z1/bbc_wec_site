@@ -40,7 +40,8 @@
         <a href="http://getbootstrap.com/" target="_blank">Bootstrap</a>,
         <a href="http://malsup.com/jquery/form/" target="_blank">jQuery Form Plugin</a>,
         <a href="http://plugins.krajee.com/file-input" target="_blank">bootstrap-fileinput</a>,
-        <a href="http://bootboxjs.com/" target="_blank">bootboxjs</a>
+        <a href="http://bootboxjs.com/" target="_blank">bootboxjs</a>,
+        <a href="http://botmonster.com/jquery-bootpag/#.V2_1ariLS9J" target="_blank">bootpag</a>
       </p>
     </div>
   </div>
