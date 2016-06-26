@@ -59,9 +59,9 @@ class model_shoutbox extends model_base
 		$db = database::get_instance();
     $start = $db->escape($start);
     $end = $db->escape($end);
-    $where = "TRUE";
+    $where = "`status` > 0";
     if(app::$session != "admin"){
-      $where = "`status` < 3";
+      $where .= " AND `status` < 3";
     }
 		$sql = "
 			SELECT shoutbox_id, playername, msg, created, status FROM `shoutbox`
@@ -89,6 +89,7 @@ class model_shoutbox extends model_base
 		$sql = "
 			SELECT shoutbox_id, playername, msg, created, status FROM `shoutbox`
       WHERE `shoutbox_id` >= $shoutbox_id
+      AND `status` > 0 
       ORDER BY `shoutbox_id` ASC
       LIMIT 0,3;
 		";

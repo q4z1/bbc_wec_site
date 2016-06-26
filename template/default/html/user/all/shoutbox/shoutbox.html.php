@@ -76,6 +76,8 @@
                 </div>
             </div>
             <br />
+            <?php else: ?>
+            <input type="hidden" name="charlimit" id="charlimit" value="2048" />
             <?php endif; ?>
             <label for="nickname">Name:</label>
             <input name="nickname" id="nickname" type="text" class="form-control input-sm" value="<?=(app::$session == "admin")?$_SESSION['admin'].'" readonly="readonly':''?>" placeholder="Your pokerth nickname" />

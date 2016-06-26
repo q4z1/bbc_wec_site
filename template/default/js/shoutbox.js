@@ -27,6 +27,9 @@ $(window).load
           }
           nickname = $('#nickname').val();
           var msg = $('#message').val();
+          if($('#charlimit').length > 0 && msg.length > $('#charlimit').val()){
+            msg = msg.substring(0, $('#charlimit').val());
+          }
           $.post(
             "/ajax/shoutbox/post/",
             {
@@ -52,6 +55,16 @@ $(window).load
 		$('#sbgetmsg').click(function(){
       getMsg();
 		});
+    
+    if($('#charlimit').length > 0){
+      $("#message").keyup(function(){
+        if($(this).val().length > $('#charlimit').val()){
+          $(this).val($(this).val().substring(0, $('#charlimit').val()));
+          bootbox.alert("Maximal number of characters reached!");
+        }
+      });
+    }
+    
   }
 );
 
