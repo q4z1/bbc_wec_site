@@ -58,6 +58,10 @@ class controller_ajax_shoutbox extends controller_ajax_base
       app::$content['modal']["content"] = "No name entered!";
       return;
     }
+    
+    if(app::$session != "admin" && strlen(app::$request['msg']) > 2048){
+      app::$request['msg'] = substr(app::$request['msg'], 0, 2048) . "...\n\n(Message truncated)";
+    }
 
     $sb = new model_shoutbox();
     $sb->created = date("Y-m-d H:i:s");
