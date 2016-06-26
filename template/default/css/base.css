@@ -64,7 +64,7 @@ body{
   overflow-y: scroll;
 }
 
-#sbposts ul li div.sbpmsgadmin p{padding: 5px;}
+div.sbpmsgadmin p{padding: 5px;}
 
 .midlbl{
   vertical-align: bottom;

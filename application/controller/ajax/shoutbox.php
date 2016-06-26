@@ -110,9 +110,9 @@ class controller_ajax_shoutbox extends controller_ajax_base
       $list .= '<li class="list-group-item"><span class="sbpid">#' . $post['shoutbox_id'] . '</span>'
         . '&nbsp;|&nbsp;<span class="sbpdate">' . $post['created'] . '</span>'
         . '&nbsp;|&nbsp;<span class="sbpnick '
-        . (($post['status'] > 1) ? 'sbpnickadmin text-danger' : 'sbpnicknormal') . '">' . $post['playername'] . '</span>:'
-        . '<p class="sbpmsg '
-        . (($post['status'] == 3) ? 'sbpmsgadmin' : 'sbpmsgnormal') . '">' . str_replace("\n", "<br />", $post['msg']) . '</p>'
+        . (($post['status'] > 1) ? 'sbpnickadmin text-danger' : 'sbpnicknormal  text-primary') . '">' . $post['playername'] . '</span>:'
+        . '<div class="sbpmsg '
+        . (($post['status'] == 3) ? 'sbpmsgadmin' : 'sbpmsgnormal') . '"><p>' . str_replace("\n", "<br />", $post['msg']) . '</p></div>'
         . '</li>';
     }
     $list .= "</ul>";
