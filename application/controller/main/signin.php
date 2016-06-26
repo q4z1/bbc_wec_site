@@ -15,7 +15,7 @@ class controller_main_signin extends controller_main_base
 		//debug::add_info("(".__FILE__.")<b>".__CLASS__."</b>::".__FUNCTION__."() betreten.");
 		if(count(app::$request) == 0 || !array_key_exists('username', app::$request) || !array_key_exists('passhash', app::$request))
 		{
-			$_SESSION['notice'] = "<span class=\"red\"><i class=\"icon-exclamation-sign icon-2x\"></i></span>  Bitte Benutzername und Passwort eingeben!";
+			$_SESSION['notice'] = "<span class=\"red\"><i class=\"icon-exclamation-sign icon-2x\"></i></span>  Please enter username & password!";
 			Header("Location: " . cfg::$web_root);
 			exit();
 		}
@@ -26,19 +26,19 @@ class controller_main_signin extends controller_main_base
 			$admin = model_admin::get_admin_by_username($username);
 			if(is_null($admin))
 			{
-				$_SESSION['notice'] = "<span class=\"red\"><i class=\"icon-exclamation-sign icon-2x\"></i></span>  Der Benutzername ist unbekannt!";
+				$_SESSION['notice'] = "<span class=\"red\"><i class=\"icon-exclamation-sign icon-2x\"></i></span>  Username unknown!";
 				Header("Location: " . cfg::$web_root);
 				exit();
 			}
 			elseif($password != $admin->password )
 			{
-				$_SESSION['notice'] = "<span class=\"red\"><i class=\"icon-exclamation-sign icon-2x\"></i></span>  Benutzername und Passwort stimmen nicht überein!";
+				$_SESSION['notice'] = "<span class=\"red\"><i class=\"icon-exclamation-sign icon-2x\"></i></span>  Username & password do not match!";
 				Header("Location: " . cfg::$web_root);
 				exit();
 			}
 			elseif($admin->active == 0)
 			{
-				$_SESSION['notice'] = "<span class=\"red\"><i class=\"icon-exclamation-sign icon-2x\"></i></span>  Login nicht gestattet!";
+				$_SESSION['notice'] = "<span class=\"red\"><i class=\"icon-exclamation-sign icon-2x\"></i></span>  Login not allowed!";
 				Header("Location: " . cfg::$web_root);
 				exit();
 			}
@@ -53,6 +53,7 @@ class controller_main_signin extends controller_main_base
 				$admin->last_login = date("Y-m-d H:i:s");
 				$admin->save();
 				$_SESSION['type'] = "admin";
+        $_SESSION['notice'] = "<span class=\"red\"> Welcome $username!";
 				Header("Location: " . cfg::$web_root . $_SESSION['type'] . "/");
 				exit();
 			}
