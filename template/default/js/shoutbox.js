@@ -102,7 +102,7 @@ function refreshShoutbox(start=0, end=50){
     if(!sbpaginationActive){
       $('.sbpagination').bootpag({
           total: Math.ceil(numPosts / 50),
-          maxVisible: 10,
+          maxVisible: 3,
           firstLastUse: true,
       }).on("page", function(event, num){
            refreshShoutbox(((num-1)*50), 50);

@@ -12,21 +12,14 @@
   </div>
 </div>
 <div class="row">
-  <div class="col-md-2 col-md-offset-5 text-center">
-    <button class="btn btn-primary" id="newpost" name="newpost">Post a message</button>
-  </div>
-</div>
-<div class="row">
-  <div class="col-md-12">
-    <hr />
-  </div>
-</div>
-<div class="row">
   <div class="col-md-10 col-md-offset-1">
     <div class="row">
-      <div class="col-md-9 sbpagination sbpaginationtop"></div>
-      <div class="col-md-3 form-inline">
-        <div class="form-group text-right">
+      <div class="col-md-4 sbpagination sbpaginationtop"></div>
+      <div class="col-md-4 text-center">
+        <button class="btn btn-success" id="newpost" name="newpost">Post a message</button>
+      </div>
+      <div class="col-md-4 form-inline">
+        <div class="form-group pull-right">
           <div class="input-group">
             <div class="input-group-addon"><strong>MSG ID:</strong></div>
             <input class="form-control" placeholder="12345" value="" name="mgsid" id="msgid" />
@@ -35,14 +28,23 @@
             </div>
           </div>
         </div>
-        <br /><br />
       </div>
     </div>
   </div>
 </div>
 <div class="row">
   <div class="col-md-10 col-md-offset-1">
+    <hr />
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-10 col-md-offset-1">
     <div id="sbposts"></div>
+  </div>
+</div>
+<div class="row">
+  <div class="col-md-10 col-md-offset-1">
+    <hr />
   </div>
 </div>
 <div class="row">

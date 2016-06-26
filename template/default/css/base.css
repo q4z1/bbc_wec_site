@@ -60,7 +60,7 @@ body{
 /* shoutbox */
 #sbposts{
   width: 100%;
-  height: 500px;
+  height: 450px;
   overflow-y: scroll;
 }
 
@@ -77,8 +77,8 @@ div.sbpmsgadmin p{padding: 5px;}
 .sbpaginationtop ul.pagination{
   margin: 0px 0px!important;
 }
-.sbpaginationbottom{
-
+.sbpaginationbottom ul.pagination{
+  margin: 0px 0px!important;
 }
 
 .sbpid{font-weight: bold;}
