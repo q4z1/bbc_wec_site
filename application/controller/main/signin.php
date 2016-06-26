@@ -16,7 +16,7 @@ class controller_main_signin extends controller_main_base
 		if(count(app::$request) == 0 || !array_key_exists('username', app::$request) || !array_key_exists('passhash', app::$request))
 		{
 			$_SESSION['notice'] = "<span class=\"red\"><i class=\"icon-exclamation-sign icon-2x\"></i></span>  Please enter username & password!";
-			Header("Location: " . cfg::$web_root);
+			Header("Location: " . cfg::$web_root . "main/login/");
 			exit();
 		}
 		else
@@ -27,19 +27,19 @@ class controller_main_signin extends controller_main_base
 			if(is_null($admin))
 			{
 				$_SESSION['notice'] = "<span class=\"red\"><i class=\"icon-exclamation-sign icon-2x\"></i></span>  Username unknown!";
-				Header("Location: " . cfg::$web_root);
+				Header("Location: " . cfg::$web_root . "main/login/");
 				exit();
 			}
 			elseif($password != $admin->password )
 			{
 				$_SESSION['notice'] = "<span class=\"red\"><i class=\"icon-exclamation-sign icon-2x\"></i></span>  Username & password do not match!";
-				Header("Location: " . cfg::$web_root);
+				Header("Location: " . cfg::$web_root . "main/login/");
 				exit();
 			}
 			elseif($admin->active == 0)
 			{
 				$_SESSION['notice'] = "<span class=\"red\"><i class=\"icon-exclamation-sign icon-2x\"></i></span>  Login not allowed!";
-				Header("Location: " . cfg::$web_root);
+				Header("Location: " . cfg::$web_root . "main/login/");
 				exit();
 			}
 			else
