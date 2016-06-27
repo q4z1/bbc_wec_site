@@ -5,12 +5,16 @@ body{
 }
 
 .logo{
-	padding-bottom: 15px;
+	padding-bottom: 5px;
 	padding-top: 5px;
 }
 
 .img-responsive {
 	margin: 0 auto;
+}
+
+div.navigation .navbar{
+  margin-bottom: 0px!important;
 }
 
 .navbar-bordered{

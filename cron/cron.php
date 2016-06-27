@@ -34,14 +34,15 @@ cfg::init();
 /****************************/
 /**** @XXX: Cron-Ablauf ****/
 
-$log = "*** gamesperweek task:\n";
-// @TODO: create official scheduled bbc dates per week
+$log = "";
+
+// @XXX: create officially scheduled bbc game dates per week
+$log .= "*** gamesperweek task:\n";
 $games = json_decode(model_settings::get_entry_by_type("gamesperweek")->value);
 $days = array();
 for($i=0;$i<7;$i++){
   $days[date("D", strtotime("+$i day"))] = "+$i day";
 }
-
 foreach($games as $game){
   $date = date("Y-m-d {$game->time}", strtotime($days[$game->day]));
   $step = $game->step;
@@ -58,7 +59,7 @@ foreach($games as $game){
 
 // @TODO: update avatars
 
-file_put_contents("/tmp/bbcpoker_cron.log", date("Y-m-d H:i:s") . ": cron executed.\n$log", FILE_APPEND);
+file_put_contents("/tmp/bbcpoker_cron.log", date("Y-m-d H:i:s") . " - cron executed:\n$log", FILE_APPEND);
 
 /****************************/
 
