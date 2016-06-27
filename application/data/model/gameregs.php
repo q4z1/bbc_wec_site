@@ -2,7 +2,7 @@
 /**
  * application_data_model_gameregs
  *
- * Stellt alle Daten der Tabelle Moderator zur Verfügung
+ * Stellt alle Daten der Tabelle gameregs zur Verfügung
  *
  */
 class model_gameregs extends model_base

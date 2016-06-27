@@ -2,7 +2,7 @@
 /**
  * application_data_model_settings
  *
- * Stellt alle Daten der Tabelle Moderator zur Verfügung
+ * Stellt alle Daten der Tabelle settings zur Verfügung
  *
  */
 class model_settings extends model_base

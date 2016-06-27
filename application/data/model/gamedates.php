@@ -2,7 +2,7 @@
 /**
  * application_data_model_gamedates
  *
- * Stellt alle Daten der Tabelle Moderator zur Verfügung
+ * Stellt alle Daten der Tabelle gamedates zur Verfügung
  *
  */
 class model_gamedates extends model_base

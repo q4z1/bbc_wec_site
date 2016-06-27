@@ -2,7 +2,7 @@
 /**
  * application_data_model_results
  *
- * Stellt alle Daten der Tabelle Moderator zur Verfügung
+ * Stellt alle Daten der Tabelle results zur Verfügung
  *
  */
 class model_results extends model_base

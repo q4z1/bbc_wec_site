@@ -24,7 +24,7 @@ class controller_main_games extends controller_main_base
 	}
   
   public function def(){
-    
+    // @TODO: get upcoming step 1 game & and maybe define links for the game navigation
     app::$content['stepgame'] = "Step 1 - Mon, 27th June 2016 - 19:30 CEST";
     view::set_col("maincol", "html/user/all/games/games.html");
   }
