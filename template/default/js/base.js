@@ -40,12 +40,12 @@ $(window).load
 );
 
 function fetchNotice(){
-  window.clearTimeout(noticeToPtr);
+  clearTimeout(noticeToPtr);
   $.post(
     "/ajax/notice/"
   ).done(function(data){
     showModal(data);
-    noticeToPtr = window.setTimeout(function(){fetchNotice()}, noticeTimeout);
+    noticeToPtr = setTimeout(function(){fetchNotice()}, noticeTimeout);
   });
   
 }

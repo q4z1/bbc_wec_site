@@ -79,15 +79,15 @@ class controller_ajax_shoutbox extends controller_ajax_base
   public function posts(){
     view::set_special("ajax", "browser/ajax/default.html");
     $start = 0;
-    $end = 50;
-    if(array_key_exists("start", app::$request) && is_numeric(app::$request['start']) && array_key_exists("end", app::$request) && is_numeric(app::$request['end'])){
+    $num = 50;
+    if(array_key_exists("start", app::$request) && is_numeric(app::$request['start']) && array_key_exists("num", app::$request) && is_numeric(app::$request['num'])){
       $start = app::$request['start'];
-      $end = app::$request['end'];
+      $num = app::$request['num'];
     }
-    $posts = model_shoutbox::get_posts_with_limit($start, $end);
-    $num = model_shoutbox::get_num_posts();
+    $posts = model_shoutbox::get_posts_with_limit($start, $num);
+    $numPosts = model_shoutbox::get_num_posts();
     
-    app::$content['ajax'] = json_encode(array("num" => $num['num'], "posts" => $posts));
+    app::$content['ajax'] = json_encode(array("num" => $numPosts['num'], "posts" => $posts));
 
   }
 	

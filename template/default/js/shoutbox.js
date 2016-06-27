@@ -1,4 +1,6 @@
 var sbpaginationActive = false;
+var sbRefreshTimeout = null;
+var page = 1;
 
 $(window).load
 (
@@ -68,12 +70,13 @@ $(window).load
   }
 );
 
-function refreshShoutbox(start=0, end=50){
+function refreshShoutbox(start=0, num=50){
+  clearTimeout(sbRefreshTimeout);
   $.post(
     "/ajax/shoutbox/posts/",
     {
       start: start,
-      end: end,
+      num: num,
       t: $.now()
     }
   ).done(function(data){
@@ -101,15 +104,21 @@ function refreshShoutbox(start=0, end=50){
     $('#sbposts').html(posts);
     if(!sbpaginationActive){
       $('.sbpagination').bootpag({
-          total: Math.ceil(numPosts / 50),
-          maxVisible: 3,
-          firstLastUse: true,
-      }).on("page", function(event, num){
-           refreshShoutbox(((num-1)*50), 50);
+        total: Math.ceil(numPosts / 50),
+        maxVisible: 3,
+        firstLastUse: true,
+      }).on("page", function(event, p){
+        // @XXX: bug in bootpag? - small workaround in order to avoid double requests & refresh-timeouts
+        if(page == p){
+          return;
+        }
+        page = p;
+        
+        refreshShoutbox(((p-1)*50), 50);
       });
       sbpaginationActive = true;
     }
-
+    sbRefreshTimeout = setTimeout(function(){refreshShoutbox(((page-1)*50), 50)}, 15000);
   });
 }
 
