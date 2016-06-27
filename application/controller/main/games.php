@@ -1,8 +1,8 @@
 <?php
 /**
- * controller_main_shoutbox Klasse
+ * controller_main_games Klasse
  */
-class controller_main_shoutbox extends controller_main_base
+class controller_main_games extends controller_main_base
 {
 	public function __construct()
 	{
@@ -24,6 +24,8 @@ class controller_main_shoutbox extends controller_main_base
 	}
   
   public function def(){
-    view::set_col("maincol", "html/user/all/shoutbox/shoutbox.html");
+    
+    app::$content['stepgame'] = "Step 1 - Mon, 27th June 2016 - 19:30 CEST";
+    view::set_col("maincol", "html/user/all/games/games.html");
   }
 }

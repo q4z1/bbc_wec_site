@@ -3,8 +3,6 @@
  * template_default_html_user_all_shoutbox_shoutbox:
  *
  */
-
- // @TODO: input form inside modal!
 ?>
 <div class="row">
   <div class="col-md-12 text-center">

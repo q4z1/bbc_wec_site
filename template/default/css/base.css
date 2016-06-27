@@ -13,6 +13,10 @@ body{
 	margin: 0 auto;
 }
 
+.navbar-bordered{
+  border: 1px solid #dfd7ca!important;
+}
+
 #maincol{
 	padding-top: 15px;
 	padding-bottom: 15px;
@@ -89,3 +93,7 @@ div.sbpmsgadmin p{padding: 5px;}
 .sbpnickadmin{}
 .sbpmsgnormal{}
 .sbpmsgadmin{background-color: #e0f3c6;}
+
+/* games */
+#gamestep{ font-weight: bold; }
+.games button.navbar-toggle span{ background-color: #3e3f3a!important; }

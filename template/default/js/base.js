@@ -22,14 +22,16 @@ $(window).load
 			$('html,body').animate({scrollTop:0},'slow');
 		});
 		$("ul.nav li a[href^='#']").on('click', function(e) {
-			 e.preventDefault();
-			 var hash = this.hash;
-			 $('html, body').animate({
-					 scrollTop: $(hash).offset().top
-				 }, 300, function(){
-  				 window.location.hash = hash;
-				 });
-		
+      e.preventDefault();
+      var hash = this.hash;
+      if(typeof $(hash).offset() === "undefined" || typeof $(hash).offset().top === "undefined"){
+       return;
+      }
+      $('html, body').animate({
+        scrollTop: $(hash).offset().top
+      }, 300, function(){
+        window.location.hash = hash;
+      });
 		});
 		if ( ($(window).height() + 100) < $(document).height() ) {
 				$('#top-link-block').removeClass('hidden').affix({
