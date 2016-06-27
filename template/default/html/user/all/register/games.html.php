@@ -39,7 +39,7 @@
       <tbody>
           <?php foreach(app::$content['games'] as $gd): ?>
           <tr>
-            <td><input type="checkbox" name="gamedate[]" value="<?=$gd->gamedate_id?>" /></td>
+            <td><input type="checkbox" name="gamedate[]" value="<?=$gd->gamedates_id?>" /></td>
             <td class="text-step<?=$gd->step?>"><?=$gd->step?></td>
             <td class="text-step<?=$gd->step?>"><?=date("D, jS \of F Y H:i", strtotime($gd->date)) . " CEST"?></td>
           </tr>
