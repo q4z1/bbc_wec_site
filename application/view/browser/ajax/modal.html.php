@@ -12,6 +12,11 @@
       <div class="modal-body">
         <?=app::$content['modal']["content"]?>
       </div>
+      <?php if(array_key_exists("footer", app::$content['modal'])): ?>
+      <div class="modal-footer">
+        <?=app::$content['modal']["footer"]?>
+      </div>
+      <?php endif; ?>
     </div>
   </div>
 </div>

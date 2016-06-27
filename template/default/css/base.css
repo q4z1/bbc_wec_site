@@ -21,6 +21,8 @@ div.navigation .navbar{
   border: 1px solid #dfd7ca!important;
 }
 
+th.w20px, td.w20px{ width: 20px;}
+
 #maincol{
 	padding-top: 15px;
 	padding-bottom: 15px;

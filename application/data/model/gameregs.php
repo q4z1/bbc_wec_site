@@ -34,6 +34,31 @@ class model_gameregs extends model_base
 		);
 	}
   
+	/*
+	 * get_entry_by_player_date_step()
+	 *
+	 * @param String $playername
+	 * @param String $date
+	 * @param String $step
+	 *
+	 * @return Object
+	 */
+	public static function get_entry_by_player_date_step($playername, $date, $step)
+	{
+		// debug::add_info("(".__FILE__.")<b>".__CLASS__."</b>::".__FUNCTION__."($gameregs_id) betreten.");
+		return data_entry::get_by_filter
+		(
+			$table = 'gameregs',
+			$filter = array
+			(
+				'playername' => $playername,
+        'date' => $date,
+        'step' => $step,
+			),
+			$single = true
+		);
+	}
+  
   public static function get_gameregs_from_this_week(){
     $nextSunday = date("Y-m-d 23:59:00", strtotime('next sunday'));
     $now = date("Y-m-d H:i:s");
