@@ -67,6 +67,27 @@ class model_gamedates extends model_base
 		// debug::add_info("(".__FILE__.")<b>".__CLASS__."</b>::".__FUNCTION__."() betreten.");
 		return data_entry::get_all('gamedates', __CLASS__);
 	}
+  
+	/*
+	 * get_upcoming_dates()
+	 *
+	 * @param String $step
+	 *
+	 * @return Object
+	 */
+	public static function get_upcoming_dates($step)
+	{
+		// debug::add_info("(".__FILE__.")<b>".__CLASS__."</b>::".__FUNCTION__."($gamedates_id) betreten.");
+		$db = database::get_instance();
+    $step = $db->escape($step);
+    $date_start = date("Y-m-d H:i:s", strtotime("+10 minute")); // registration possible max 10 minutes before game starts
+		$sql = "
+			SELECT * FROM `gamedates` WHERE `date` > '$date_start' AND `step` = $step
+      ORDER BY `date` ASC
+      LIMIT 0, 4;
+		";
+		return $db->get_objects($sql, __CLASS__);
+	}
 
 	/*
 	 * delete_entry_by_id()

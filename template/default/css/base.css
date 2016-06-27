@@ -101,3 +101,9 @@ div.sbpmsgadmin p{padding: 5px;}
 /* games */
 #gamestep{ font-weight: bold; }
 .games button.navbar-toggle span{ background-color: #3e3f3a!important; }
+
+/* register */
+td.text-step1{ font-weight: bold; color: #325d88;}
+td.text-step2{ font-weight: bold; color: #f47c3c;}
+td.text-step3{ font-weight: bold; color: #29abe0;}
+td.text-step3{ font-weight: bold; color: #d9534f;}

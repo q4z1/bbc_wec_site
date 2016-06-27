@@ -26,6 +26,8 @@
           <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Registration <span class="caret"></span></a>
           <ul class="dropdown-menu">
             <li><a href="/main/register/">Register for BBC</a></li>
+            <li><a href="/main/register/dereg/">Unregister from a registered BBC game</a></li>
+            <li role="separator" class="divider"></li>
             <li><a href="/main/games/">Scheduled BBC games</a></li>
           </ul>
         </li>

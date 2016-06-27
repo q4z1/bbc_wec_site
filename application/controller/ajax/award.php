@@ -1,6 +1,6 @@
 <?php
 /**
- * application_controller_ajax_default
+ * application_controller_ajax_award
  */
 class controller_ajax_award extends controller_ajax_base
 {

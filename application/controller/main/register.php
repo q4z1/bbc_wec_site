@@ -24,8 +24,20 @@ class controller_main_register extends controller_main_base
 	}
 	
 	public function def(){
-		$dates = model_dates::get_dates_from_this_week();
-    app::$content['dates'] = $dates;
+    $step1 = model_gamedates::get_upcoming_dates(1);
+    $step2 = model_gamedates::get_upcoming_dates(2);
+    $step3 = model_gamedates::get_upcoming_dates(3);
+    $step4 = model_gamedates::get_upcoming_dates(4);
+    $games = array();
+    if(!is_null($step1)) $games = array_merge($games, $step1);
+    if(!is_null($step2)) $games = array_merge($games, $step2);
+    if(!is_null($step3)) $games = array_merge($games, $step4);
+    if(!is_null($step4)) $games = array_merge($games, $step4);
+    app::$content['games'] = $games;
     view::set_col("maincol", "html/user/all/register/games.html");
 	}
+  
+  function dereg(){
+    die("@TODO: implement dereg");
+  }
 }
