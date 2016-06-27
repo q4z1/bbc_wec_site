@@ -34,6 +34,31 @@ cfg::init();
 /****************************/
 /**** @XXX: Cron-Ablauf ****/
 
+$log = "*** gamesperweek task:\n";
+// @TODO: create official scheduled bbc dates per week
+$games = json_decode(model_settings::get_entry_by_type("gamesperweek")->value);
+$days = array();
+for($i=0;$i<7;$i++){
+  $days[date("D", strtotime("+$i day"))] = "+$i day";
+}
+
+foreach($games as $game){
+  $date = date("Y-m-d {$game->time}", strtotime($days[$game->day]));
+  $step = $game->step;
+  $gd = model_gamedates::get_entry_by_step_date($step, $date);
+  if(is_null($gd)){
+    $gd = new model_gamedates();
+    $gd->step = $step;
+    $gd->date = $date;
+    $gd->played = 0;
+    $gd->save();
+    $log .= "* gamedate for Step $step $date created.\n";
+  }
+}
+
+// @TODO: update avatars
+
+file_put_contents("/tmp/bbcpoker_cron.log", date("Y-m-d H:i:s") . ": cron executed.\n$log", FILE_APPEND);
 
 /****************************/
 

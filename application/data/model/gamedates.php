@@ -33,17 +33,26 @@ class model_gamedates extends model_base
 			$single = true
 		);
 	}
-  
-  public static function get_gamedates_from_this_week(){
-    $nextSunday = date("Y-m-d 23:59:00", strtotime('next sunday'));
-    $now = date("Y-m-d H:i:s");
-    $sql = "
-      SELECT * FROM gamedates
-      WHERE date > '$now' AND date < '$nextSunday'
-      ORDER BY date ASC;
-    ";
-    $db = database::get_instance();
-    return $db->get_objects($sql, __CLASS__);
+ 
+ 	/*
+	 * get_entry_by_step_date()
+	 *
+	 * @param Integer $step
+	 * @param String $date
+	 *
+	 * @return Object
+	 */
+  public static function get_entry_by_step_date($step, $date){
+		return data_entry::get_by_filter
+		(
+			$table = 'gamedates',
+			$filter = array
+			(
+				'step' => $step,
+        'date' => $date
+			),
+			$single = true
+		);
   }
 
 

@@ -33,6 +33,27 @@ class model_settings extends model_base
 			$single = true
 		);
 	}
+  
+	/*
+	 * get_entry_by_type()
+	 *
+	 * @param String $type
+	 *
+	 * @return Object
+	 */
+	public static function get_entry_by_type($type)
+	{
+		// debug::add_info("(".__FILE__.")<b>".__CLASS__."</b>::".__FUNCTION__."($settings_id) betreten.");
+		return data_entry::get_by_filter
+		(
+			$table = 'settings',
+			$filter = array
+			(
+				'type' => $type
+			),
+			$single = true
+		);
+	}
 
 	/*
 	 * get_all_entries()
