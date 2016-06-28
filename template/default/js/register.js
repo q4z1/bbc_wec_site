@@ -2,10 +2,8 @@ $(window).load
 (
 	function()
 	{
-    // @TODO: implement ajax reg process
     if($('#sbmtgamereg').length > 0){
       $('#sbmtgamereg').click(function(){
-        // @TODO: perform ajax reg process
         dates = "";
         $('input[name="gamedate"]:checked').each(function() {
           dates += $(this).val() + ",";
@@ -23,7 +21,6 @@ $(window).load
               fp: $('#fp').val()
             }
           ).done(function(data){
-            
             if($('#amodal').length > 0){
               $('#amodal').remove();
               $('.modal-backdrop').remove();
@@ -35,7 +32,6 @@ $(window).load
             if($('#playername').prop("readonly") !== true){
               $('#playername').val('');
             }
-            
             $('#amodal').modal();
           });
         }

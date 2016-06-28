@@ -49,9 +49,9 @@ class controller_ajax_register extends controller_ajax_base
       $playername = app::$request['playername'];
       $status = 1;
 
-      // @TODO: 1st check if playername exists - if not: mail to admins - manual accept reg and create player-table entry
+      // @XXX: 1st check if playername exists - if not: mail to admins - manual accept reg and create player-table entry
       if(is_null(model_player::get_entry_by_playername($playername))){
-        // @TODO: send email for manual accept reg
+        // @TODO: send email for manual accept reg (e.g. create entry in player table and set status for reg = 1)
         $status = 0;
       }
       
@@ -80,12 +80,32 @@ class controller_ajax_register extends controller_ajax_base
         }
       }
       
-      // @TODO: format output = show already registered games - show dereg codes for each newly registered game
-
+      // @XXX: format output = show already registered games - show dereg codes for each newly registered game
+      $out = "";
+      if(count($deregs) > 0){
+        $out .= '<h4 class="text-primary">You registered to the following games:</h4>';
+        if($staus == 0) $out .= '<p><i class="text-warning">As you are an unknown player - please wait until an admin confirms your registration(s).</i></p>';
+        $out .= '<ul class="list-group deregs">';
+        foreach($deregs as $code => $game){
+          $out .= '<li class="list-group-item"><p class="text-primary">' . $game . '</p>'
+            . '<p>Code for deregistration: <strong class="text-warning">' . $code . '</strong></p></li>';
+        }
+        $out .= "</ul>";
+      }
+      if(count($alrdy_reg) > 0){
+        if($out != "") $out .= "<hr />";
+          $out .= '<h4 class="text-danger">You already registeed to the following games:</h4>';
+        $out .= '<ul class="list-group alrdyregs">';
+        foreach($alrdy_reg as $game){
+          $out .= '<li class="list-group-item"><p>' . $game . '</p></li>';
+        }
+        $out .= "</ul>";
+      }
+      
       
 			app::$content['modal']["heading"] = "<div class='text-success'>Success!</div>";
 			app::$content['modal']["content"] = "register fo game(s) called!";
-      app::$content['modal']["content"] = var_export($alrdy_reg, true)."<hr/>".var_export($deregs, true);
+      app::$content['modal']["content"] = $out;
       app::$content['modal']['footer'] = "button to close"; // @TODO: button to close!
   }
 }
