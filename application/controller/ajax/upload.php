@@ -11,7 +11,7 @@ class controller_ajax_upload extends controller_ajax_base
 	public function __construct()
 	{
 		$this->output_type = "ajax";
-		$this->points = json_decode(app::$settings['points']);
+		//$this->points = json_decode(app::$settings['points']);
 	}
 
 	public function run()
@@ -29,9 +29,9 @@ class controller_ajax_upload extends controller_ajax_base
 		}
 		$this->generate_special_output($this->output_type);
 	}
-  
-  public function def()
-  {
+
+	public function def()
+	{
 			view::set_special("ajax", "browser/ajax/modal.html");
 
 			if(!array_key_exists("logurl", app::$request) || !array_key_exists("step", app::$request) || app::$request['logurl'] == ""){
@@ -56,7 +56,7 @@ class controller_ajax_upload extends controller_ajax_base
 			app::$content['modal']["heading"] = "<div class='text-success'>Success!</div>";
 			app::$content['modal']["content"] = $input . "Game <strong>#" . $res->results_id . "</strong> uploaded!";
 
-  }
+	}
 	
 	
 	public function award()

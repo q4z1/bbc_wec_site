@@ -19,7 +19,7 @@ class controller_main_results extends controller_main_base
 		"10" => "September",
 		"11" => "November",
 		"12" => "December",
-	 );
+	);
 	
 	public function __construct()
 	{
@@ -35,7 +35,7 @@ class controller_main_results extends controller_main_base
 			$this->{app::$param[0]}();
 		}
     else{
-      $this->def();
+    	$this->def();
     }
 		$this->generate_html_output();
 	}

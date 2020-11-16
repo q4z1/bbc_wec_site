@@ -17,12 +17,12 @@ $(window).load
 						logurl: $('#logurl').val()
 					},
 					function(data) {
-            showModal(data);
-						window.setTimeout(function(){
-							window.location.href="/main/results/game/"+$('#game_id').val()+"/";},
-							2000
-						);
-          }
+						showModal(data);
+						// window.setTimeout(function(){
+						// 	window.location.href="/main/results/game/"+$('#game_id').val()+"/";},
+						// 	2000
+						// );
+					}
 				);
 			});
 		}

@@ -30,7 +30,7 @@ class controller_main_signin extends controller_main_base
 				Header("Location: " . cfg::$web_root . "main/login/");
 				exit();
 			}
-			elseif($password != $admin->password )
+			elseif(strtolower($password) != strtolower($admin->password ))
 			{
 				$_SESSION['notice'] = "<span class=\"red\"><i class=\"icon-exclamation-sign icon-2x\"></i></span>  Username & password do not match!";
 				Header("Location: " . cfg::$web_root . "main/login/");

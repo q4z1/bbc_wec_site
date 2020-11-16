@@ -9,11 +9,13 @@ class pthlog
 	private static $_instance = null;
 
 	private static $log_url = null;
-  private static $log_html = null;
+	private static $log_html = null;
+	private static $game_id = null;
 	
 	private static $dom = null;
-	
-	private static $base_url = "http://pokerth.net/";
+	private static $pdb = null;
+
+	private static $base_url = "https://www.pokerth.net/";
 	
 	private static $hand_cash = null;
 	private static $pot_size = null;
@@ -30,9 +32,14 @@ class pthlog
 	private static $game = null;
 
 	public static function process_log($url){
-		require_once("simple_html_dom.php"); // 3rd party html parser
-    self::$log_url = $url;
-		self::fetch_html();
+		// require_once("simple_html_dom.php"); // 3rd party html parser
+    	self::$log_url = $url;
+		// self::fetch_html();
+
+		self::fetch_database();
+
+		die("\n".cfg::$web_root);
+
 		self::$dom = str_get_html(self::$log_html);
 		self::fetch_hand_cash();
 		self::fetch_pot_size();
@@ -190,20 +197,29 @@ class pthlog
 		}
 	}
 	
-  private static function fetch_html(){
-    self::$log_html = file_get_contents(self::$log_url);
-  }
+	private static function fetch_html(){
+		self::$log_html = file_get_contents(self::$log_url);
+	}
+
+	private static function fetch_database(){
+		$parts = parse_url(self::$log_url);
+		parse_str($parts['query'], $query);
+		self::$pdb = $query['ID'] . '.pdb';
+		self::$game_id = $query['UniqueGameID'];
+	}
 	
 	private static function fetch_hand_cash(){
 		$html = self::$log_html;
 		preg_match_all("/.+hand_cash\.src=.([^+]+)\'\+i/", $html, $m);
-		self::$hand_cash = self::$base_url . $m[1][0] . "0&width=736";
+		// @FIXME: Umstellung auf direkt sqlite?
+		//self::$hand_cash = self::$base_url . $m[1][0] . "0&width=736";
 	}
 	
 	private static function fetch_pot_size(){
 		$html = self::$log_html;
 		preg_match_all("/.+pot_size\.src=.([^+]+)\'\+get_width/", $html, $m);
-		self::$pot_size = self::$base_url . $m[1][0] . "736";
+		// @FIXME: Umstellung auf direkt sqlite?
+		//self::$pot_size = self::$base_url . $m[1][0] . "736";
 	}
 	
 	private static function fetch_css_pics($css){
