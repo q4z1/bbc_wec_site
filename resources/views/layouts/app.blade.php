@@ -21,8 +21,8 @@
 </head>
 <body>
     <div id="app">
-        <b-navbar toggleable="lg" type="dark" variant="info">
-            <b-navbar-brand href="{{ url('/') }}">{{ config('app.name', 'Laravel') }}</b-navbar-brand>
+        <b-navbar toggleable="lg" variant="secondary">
+            <b-navbar-brand href="{{ url('/') }}"><img src="{{ url('/logo.jpg') }}" alt="{{ config('app.name', 'Laravel') }}" /></b-navbar-brand>
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
             <b-collapse id="nav-collapse" is-nav>
                 <b-navbar-nav>
@@ -38,9 +38,9 @@
                     <!-- Using 'button-content' slot -->
                     <template #button-content>
                         @guest
-                        <h4>User</h4>
+                        <strong>User</strong>
                         @else
-                        <h4>{{ Auth::user()->name }}</h4>
+                        <strong>{{ Auth::user()->name }}</strong>
                         @endguest
                     </template>
                         @guest

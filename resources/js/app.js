@@ -14,6 +14,7 @@ Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
+import '../css/theme.css'
 
 /**
  * The following block of code may be used to automatically register your
