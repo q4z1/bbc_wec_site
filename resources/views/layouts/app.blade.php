@@ -35,14 +35,14 @@
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">
                     <b-nav-item-dropdown right>
-                    <!-- Using 'button-content' slot -->
-                    <template #button-content>
-                        @guest
-                        <strong>User</strong>
-                        @else
-                        <strong>{{ Auth::user()->name }}</strong>
-                        @endguest
-                    </template>
+                        <!-- Using 'button-content' slot -->
+                        <template #button-content>
+                            @guest
+                            <strong>User</strong>
+                            @else
+                            <strong>{{ Auth::user()->name }}</strong>
+                            @endguest
+                        </template>
                         @guest
                             @if (Route::has('login'))
                                 <b-dropdown-item href="{{ route('login') }}">{{ __('Login') }}</b-dropdown-item>

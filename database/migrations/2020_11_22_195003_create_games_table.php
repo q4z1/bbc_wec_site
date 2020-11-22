@@ -15,6 +15,7 @@ class CreateGamesTable extends Migration
     {
         Schema::create('games', function (Blueprint $table) {
             $table->id();
+            $table->tinyInteger('type')->default('1'); // 1 = regular wec/s1 game , >5 for special games (finals, etc)
             $table->bigInteger('pos1');
             $table->bigInteger('pos2');
             $table->bigInteger('pos3');
