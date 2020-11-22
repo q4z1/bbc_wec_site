@@ -4,6 +4,10 @@
  *
  */
 ?>
+<div id="v-navbar">
+  <nav-bar :stype="admin"></nav-bar>
+</div>
+
 <nav class="navbar navbar-default">
   <div class="container-fluid">
     <div class="navbar-header">

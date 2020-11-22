@@ -41,6 +41,15 @@ class controller_ajax_upload extends controller_ajax_base
 			}
 			
 			$pth = pthlog::process_log(app::$request['logurl']);
+			if(!$pth){
+				app::$content['modal']["heading"] = "<div class='text-danger'>Fail!</div>";
+				app::$content['modal']["content"] = "Invalid Log-URL!";
+				return;
+			}
+
+			// die("<pre>".var_export($pth, true)."</pre>");
+
+
 			$res = new model_results();
 			$res->date = date("Y-m-d H:i:s"); // @FIXME: datetime has to be set in upload form!!!
 			$res->type = app::$request['step'];
@@ -48,7 +57,8 @@ class controller_ajax_upload extends controller_ajax_base
 			$res->{"2nd"} = $pth['result'][2]['player'];
 			$res->{"3rd"} = $pth['result'][3]['player'];
 			for($i=4;$i<=10;$i++){
-				$res->{$i."th"} = $pth['result'][$i]['player'];
+				if(array_key_exists($i, $pth['result']))
+					$res->{$i."th"} = $pth['result'][$i]['player'];
 			}
 			$res->log = serialize($pth);
 			$res->save();

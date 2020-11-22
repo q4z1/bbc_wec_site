@@ -38,12 +38,10 @@
 		</div>
 		<span id="top-link-block" class="hidden">
 				<a href="#top" class="well well-sm" id="backtop">
-						<i class="glyphicon glyphicon-chevron-up"></i> Back to Top
+					<i class="glyphicon glyphicon-chevron-up"></i> Back to Top
 				</a>
 		</span>
-		<?php $ts = '?ts=20160219'; ?>
-		<?php foreach(app::$inc->js as $filename): ?>
-		<script type="text/javascript" src="<?=cfg::$web_root?>res/js/<?=cfg::$template."/".$filename.'.js'.$ts?>"></script>
-		<?php endforeach ?>
+		<?php $ts = '?ts=' . time(); ?>
+		<script type="text/javascript" src="<?=cfg::$web_root?>app.js<?=$ts?>"></script>
 	</body>
 </html>

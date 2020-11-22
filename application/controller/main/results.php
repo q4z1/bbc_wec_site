@@ -24,7 +24,7 @@ class controller_main_results extends controller_main_base
 	public function __construct()
 	{
 		parent::__construct(__CLASS__);
-		$this->points = json_decode(app::$settings['points']);
+		// $this->points = json_decode(app::$settings['points']);
 	}
 
 	public function run()
@@ -34,11 +34,11 @@ class controller_main_results extends controller_main_base
 		{
 			$this->{app::$param[0]}();
 		}
-    else{
-    	$this->def();
-    }
-		$this->generate_html_output();
-	}
+		else{
+			$this->def();
+		}
+			$this->generate_html_output();
+		}
 	
 	public function def(){
 		
@@ -48,7 +48,7 @@ class controller_main_results extends controller_main_base
 		view::set_col("maincol", "html/user/all/results/game.html");
 		$error = null;
 		$game = null;
-		if(count(app::$param) < 3){
+		if(count(app::$param) < 2){
 
 			$error = "No game ID given!";
 		}
@@ -59,9 +59,9 @@ class controller_main_results extends controller_main_base
 		app::$content['error'] = $error;
 		app::$content['game'] = $game;
 	}
-  
-  public function series()
-  {
+
+	public function series()
+	{
 			view::set_col("maincol", "html/user/all/results/series.html");
 			$cls = "mixed_upload".date("Y");
 			

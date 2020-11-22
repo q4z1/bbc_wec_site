@@ -9,7 +9,6 @@
 ?>
 <base href="<?=$base?>">
 <meta http-equiv="content-type" content="text/html; charset=UTF-8">
-<?php $ts = '?ts=20150204'; ?>
-<?php foreach(app::$inc->css as $filename): ?>
-<link rel="stylesheet" type="text/css" href="<?=cfg::$web_root?>res/css/<?=cfg::$template."/".$filename.'.css'.$ts?>">
-<?php endforeach ?>
+<?php $ts = '?ts=' . time(); ?>
+<link rel="stylesheet" type="text/css" href="<?=cfg::$web_root?>app.css<?=$ts?>">
+<link rel="stylesheet" type="text/css" href="<?=cfg::$web_root?>theme.css<?=$ts?>">

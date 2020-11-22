@@ -1,0 +1,56 @@
+{
+  "name": "wec",
+  "version": "1.0.0",
+  "description": "re-design of bbcpoker.bplaced.net -  see: http://bbcpoker.inquies.de",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "dev": "npm run development",
+    "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "watch": "npm run development -- --watch",
+    "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --config=node_modules/laravel-mix/setup/webpack.config.js",
+    "prod": "npm run production",
+    "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --hide-modules --config=node_modules/laravel-mix/setup/webpack.config.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/q4z1/bbc_wec_site.git"
+  },
+  "author": "Kai Philipp",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/q4z1/bbc_wec_site/issues"
+  },
+  "homepage": "https://github.com/q4z1/bbc_wec_site#readme",
+  "devDependencies": {
+    "@babel/core": "^7.11.6",
+    "@babel/preset-env": "^7.11.5",
+    "babel-loader": "^8.1.0",
+    "cross-env": "^7.0.2",
+    "laravel-mix": "^5.0.5",
+    "resolve-url-loader": "^3.1.0",
+    "sass": "^1.26.10",
+    "sass-loader": "^8.0.2",
+    "vue-template-compiler": "^2.6.12",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
+  },
+  "dependencies": {
+    "axios": "^0.20.0",
+    "bootstrap": "^4.5.3",
+    "bootstrap-vue": "^2.19.0",
+    "chartjs": "^0.3.24",
+    "dotenv-webpack": "^2.0.0",
+    "fs": "0.0.1-security",
+    "glightbox": "^3.0.3",
+    "vue": "^2.6.12",
+    "vue-cookies": "^1.7.4",
+    "vue-data-tables": "^3.4.5",
+    "vue-infinite-loading": "^2.4.5",
+    "vue-router": "^3.4.3",
+    "vue-session": "^1.0.0",
+    "vue-toast-notification": "^0.5.4"
+  }
+}

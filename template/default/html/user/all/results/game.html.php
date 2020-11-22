@@ -16,7 +16,33 @@ if(!is_null($game)){
   $data = unserialize($game->log);  
 }
 
+// hand cash stuff
+$hand_cash = $data['hand_cash'];
+$player_list = $data['player_list'];
+$total_start_cash = 0;
+for($i=0;$i<count($hand_cash)-1;$i++) {
+  if(count($hand_cash[$i])>0) $total_start_cash+=max(0,$hand_cash[$i][0]);
+}
+//die("<pre>".var_export($hand_cash,true)."</pre>");
+$winner_found = false;
+for($i=0;$i<count($player_list[0]);$i++) {
+  for($j=0;$j<count($hand_cash[$i]);$j++) {
+    if($j==count($hand_cash[$i])-1 & $hand_cash[$i][$j] > 0) $winner_found = true;
+    // if($hand_cash[$i][$j] < 0) $hand_cash[$i][$j] = VOID;
+  }
+}
+if(!$winner_found) {
+  for($i=0;$i<count($player_list[0]);$i++) {
+    array_pop($hand_cash[$i]);
+  }
+}
+
 ?>
+
+<div id="v-result">
+  <result-game :gamedata='<?=strip_tags(json_encode($data))?>' :handcash='<?=json_encode($hand_cash)?>'></result-game>
+</div>
+
 <div class="row">
   <div class="col-md-10 col-md-offset-1 text-center">
     <h3 class="text-primary">Game result:</h3>
@@ -58,7 +84,7 @@ if(!is_null($game)){
     <table class="table table-hover table-bordered table-striped">
       <tbody>
         <tr>
-          <td colspan="2" class="col-md-12">
+          <td colspan="2">
             <h4 class="text-success">Ranking:</h4>
             <table class="table table-hover table-bordered table-striped">
               <thead>
@@ -66,15 +92,15 @@ if(!is_null($game)){
                   <th>Pos.</th>
                   <th>Player</th>
                   <th>Hand</th>
-                  <th>&nbsp;</th>
+                  <th>eliminated by / wins with</th>
                 </tr>
               </thead>
-              <?php for($i=1;$i<=10;$i++): ?>
+              <?php for($i=1;$i<=count($data['result']);$i++): ?>
               <tr>
                 <td><?=$i?>.</td>
                 <td><?=$data['result'][$i]['player']?></td>
                 <td><?=$data['result'][$i]['hand']?></td>
-                <td><?=$data['result'][$i]['eliminated']?></td>
+                <td><?=$data['player_list'][7][$i-1][0]?></td>
               </tr>
               <?php endfor; ?>
             </table>
@@ -102,6 +128,7 @@ if(!is_null($game)){
             </div>
           </td>
         </tr>
+        <!--
         <tr>
           <td class="col-md-6">
             <h4 class="text-success">Most hands played:</h4>
@@ -306,6 +333,7 @@ if(!is_null($game)){
             </table>
           </td>
         </tr>
+        -->
       </tbody>
     </table>
     <!--
