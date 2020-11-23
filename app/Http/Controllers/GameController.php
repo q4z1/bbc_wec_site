@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use App\Models\Player;
 use App\Http\Controllers\LogFileController;
 use Illuminate\Http\Request;
 
@@ -43,7 +44,29 @@ class GameController extends Controller
         if($payload['preview']){
             return $this->preview($payload["loglink"]);
         }
-        return ["status" => true, 'msg' => $payload];
+        $log = new LogFileController();
+        $game = $log->process_log($payload["loglink"]);
+        $g = new Game();
+        $g->pdb = $game['pdb'];
+        for($i=1;$i<=10;$i++){
+            $p = "pos" . $i;
+            if(array_key_exists($i-1, $game['player_list'][1])){
+                $player = Player::where('nickname', $game['player_list'][1][$i-1])->first();
+                if(!$player){
+                    $player = new Player();
+                    $player->nickname = $game['player_list'][1][$i-1];
+                    $player->save();
+                }
+                $g->{$p} = $player->id;
+            } else{
+                $g->{$p} = 0;
+            }
+        }
+        $g->started = $payload["date"] . " " . $payload["time"];
+        $g->type = $payload['gametype'];
+        $g->number = $payload['gameno'];
+        $g->save();
+        return ["status" => true, 'msg' => $g];
     }
 
     private function preview($url){

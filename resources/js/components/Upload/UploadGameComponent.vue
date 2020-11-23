@@ -52,7 +52,7 @@
                 </b-form>
             </b-card-text>
         </b-card>
-        <b-modal id="modal-preview" title="Data correct?">
+        <b-modal id="modal-preview" title="Data correct?" hide-footer>
             <h4 class="text-success">Game #{{ this.form.gameno }}</h4>
             <h5 class="text-info">{{ new Date(this.form.date + " "  + this.form.time).toLocaleString()}}</h5>
             <b-table striped hover :items="gameOverview" :fields="fields">
@@ -60,6 +60,14 @@
                     <span v-html="data.value"></span>
                 </template>
             </b-table>
+            <b-row class="mt-3">
+                <b-col><b-button variant="outline-success" block @click="onSubmit">
+                    Ok - Upload!&nbsp;<b-icon-hand-thumbs-up></b-icon-hand-thumbs-up>
+                </b-button></b-col>
+                <b-col><b-button variant="outline-secondary" block @click="hideModal">
+                    Cancel
+                </b-button></b-col>
+            </b-row>
         </b-modal>
     </div>
 </template>
@@ -100,6 +108,7 @@ export default {
     methods: {
         onSubmit(evt) {
             evt.preventDefault()
+            this.$bvModal.hide('modal-preview')
             // alert(JSON.stringify(this.form))
             axios({
                 method: 'post',
@@ -108,18 +117,40 @@ export default {
                 headers: {'Content-Type': 'multipart/form-data' }
                 })
                 .then(response => {
-                    //handle 
                     if(response.data.status){
-                        this.game = response.data.msg
-                        this.form.preview = !this.form.preview
-                        this.$bvModal.show('modal-preview')
+                        
+                        if(this.form.preview){
+                            this.$bvModal.show('modal-preview')
+                            this.game = response.data.msg
+                        }else{
+                            this.game = null;
+                            this.$bvModal.hide('modal-preview')
+                            this.$bvToast.toast(`Game succesfully uploaded!`, {
+                                title: 'Game uploaded!',
+                                autoHideDelay: 5000,
+                                appendToast: true,
+                                variant: 'success',
+                            })
+                        } 
+                        this.form.preview = !this.form.preview                      
+                    }else{
+                        this.$bvToast.toast(response.data.msg, {
+                            title: 'Game upload failed!',
+                            autoHideDelay: 5000,
+                            appendToast: true,
+                            variant: 'error',
+                        })
                     }
                 })
                 .catch(response => {
-                    //handle error
                     this.game = null
                     this.form.preview = true
-                    console.log(response)
+                    this.$bvToast.toast(response, {
+                        title: 'Game upload failed!',
+                        autoHideDelay: 5000,
+                        appendToast: true,
+                        variant: 'error',
+                    })
                 });
 
         },
@@ -135,7 +166,10 @@ export default {
             this.$nextTick(() => {
                 this.show = true
             })
-        }
+        },
+        hideModal() {
+            this.$bvModal.hide('modal-preview')
+        },
     }
 }
 </script>

@@ -43,7 +43,8 @@ class LogFileController extends Controller
 			"most bet/raise" => $most_raises,
 			"most all in" => $most_all_in,
 			"hand_cash" => $hand_cash,
-			"pot_size" => $pot_size
+			"pot_size" => $pot_size,
+			"pdb" => $pdb
 		);
 		return $game;
 	}
