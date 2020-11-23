@@ -18,12 +18,12 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link id="themecss" href="{{ asset('css/theme.dark.css') }}" rel="stylesheet">
+    <link id="theme-css" href="{{ asset('css/theme.'.((auth()->user()) ? auth()->user()->theme : 'light').'.css') }}" rel="stylesheet">
 </head>
 <body>
     <div id="app">
         <b-navbar toggleable="lg" variant="secondary">
-            <b-navbar-brand href="{{ url('/') }}"><img src="{{ url('/logo.jpg') }}" alt="{{ config('app.name', 'Laravel') }}" /></b-navbar-brand>
+            <b-navbar-brand href="{{ url('/') }}"><img height="75" src="{{ url('/logo.jpg') }}" alt="{{ config('app.name', 'Laravel') }}" /></b-navbar-brand>
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
             <b-collapse id="nav-collapse" is-nav>
                 <b-navbar-nav>
@@ -33,17 +33,18 @@
                     <b-nav-item href="{{ route('upload.game.view') }}">Upload Game</b-nav-item>
                     @endguest
                 </b-navbar-nav>
-                <b-navbar-nav class="ml-auto">
-                    Theme
-                </b-navbar-nav>
                 <!-- Right aligned nav items -->
-                <b-navbar-nav>
+                <b-navbar-nav class="ml-auto">
+                    @auth
+                    <b-nav-item id="theme-toggle" v-b-tooltip.hover title="Toggle Theme"><b-icon-front></b-icon-front></b-nav-item>
+                    @endauth
                     <b-nav-item-dropdown right>
                         <!-- Using 'button-content' slot -->
                         <template #button-content>
                             @guest
-                            <strong>User</strong>
+                            <b-icon-person-circle></b-icon-person-circle>
                             @else
+                            <b-icon-person-circle></b-icon-person-circle>
                             <strong>{{ Auth::user()->name }}</strong>
                             @endguest
                         </template>
@@ -67,8 +68,29 @@
             </b-collapse>
         </b-navbar>
         <main class="py-4" style="padding: 15px">
-            @yield('content')
+            <b-container>
+                @yield('content')
+            </b-container>
         </main>
     </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function(event) {
+            $('#theme-toggle').click(function(e){
+                e.preventDefault();
+                let href = $('#theme-css').attr('href');
+                let theme = 'dark';
+                if(href.indexOf('dark') !== -1){
+                    href = href.replace('dark', 'light');
+                    theme = 'light'
+                }else if(href.indexOf('light') !== -1){
+                    href = href.replace('light', 'dark');
+                }
+                // save theme into session
+                axios.get('{{ route('user.theme.set') }}' + '?v=' + theme);
+
+                $('#theme-css').attr('href', href);
+            });
+        });
+    </script>
 </body>
 </html>
