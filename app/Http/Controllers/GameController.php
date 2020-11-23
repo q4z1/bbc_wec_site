@@ -8,6 +8,16 @@ use Illuminate\Http\Request;
 class GameController extends Controller
 {
     /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
@@ -15,6 +25,31 @@ class GameController extends Controller
     public function index()
     {
         //
+    }
+
+    /**
+     * game upload ajax
+     */
+    public function upload(Request $request)
+    {
+        // json gedöns
+        $payload = json_decode($request->getContent(), true);
+
+        if(is_null($payload)){
+            return ["status" => false, 'msg' => "Parameter!"];
+        }
+        if($payload['preview']){
+            return ["status" => true, 'msg' => 'preview!'];
+        }
+        return ["status" => true, 'msg' => $payload];
+    }
+
+    /**
+     * game upload view
+     */
+    public function upload_view()
+    {
+        return view('upload.game');
     }
 
     /**

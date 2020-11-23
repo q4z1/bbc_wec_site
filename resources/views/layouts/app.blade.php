@@ -18,6 +18,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
+    <link id="themecss" href="{{ asset('css/theme.dark.css') }}" rel="stylesheet">
 </head>
 <body>
     <div id="app">
@@ -29,11 +30,14 @@
                     @guest
                     <b-nav-item href="#">Guest Link</b-nav-item>
                     @else
-                    <b-nav-item href="{{ route('upload.game') }}">Upload Game</b-nav-item>
+                    <b-nav-item href="{{ route('upload.game.view') }}">Upload Game</b-nav-item>
                     @endguest
                 </b-navbar-nav>
-                <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">
+                    Theme
+                </b-navbar-nav>
+                <!-- Right aligned nav items -->
+                <b-navbar-nav>
                     <b-nav-item-dropdown right>
                         <!-- Using 'button-content' slot -->
                         <template #button-content>
@@ -62,7 +66,7 @@
                 </b-navbar-nav>
             </b-collapse>
         </b-navbar>
-        <main class="py-4">
+        <main class="py-4" style="padding: 15px">
             @yield('content')
         </main>
     </div>
