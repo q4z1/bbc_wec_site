@@ -1,12 +1,12 @@
 <template>
     <div>
-        <h1>GuestComponent</h1>
+        <h1>Welcome to the Week-End Cup!</h1>
     </div>
 </template>
 <script>
     export default {
         mounted() {
-            console.log('GuestComponent mounted.')
+
         }
     }
 </script>

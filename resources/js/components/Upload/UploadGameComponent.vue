@@ -1,26 +1,23 @@
 <template>
     <div>
-        <b-card
-            title="Game Upload"
-            class="mb-2"
-        >
+        <b-card title="Game Upload" class="mb-2">
             <b-card-text>
                 <b-form @submit="onSubmit" @reset="onReset" v-if="show">
-
                     <b-form-group id="input-group-1" label="Game Type:" label-for="input-1">
                         <b-form-select
                         id="input-1"
                         v-model="form.gametype"
-                        :options="types"
-                        required
-                        ></b-form-select>
+                        required>
+                        <option v-for="type in types" 
+                            :key="type.value"
+                            :value="type.value"
+                        >{{ type.text }}</option>
+                        </b-form-select>
                     </b-form-group>
-
                     <b-form-group
                         id="input-group-2"
                         label="Log-URL:"
-                        label-for="input-2"
-                    >
+                        label-for="input-2">
                         <b-form-input
                         id="input-2"
                         v-model="form.loglink"
@@ -29,19 +26,41 @@
                         placeholder="https://www.pokerth.net/log-file-analysis/?ID=1234567890abcdef&UniqueGameID=1"
                         ></b-form-input>
                     </b-form-group>
-
+                    <b-form-group
+                        id="input-group-3"
+                        label="Game-Number:"
+                        label-for="input-3">
+                        <b-form-input
+                        id="input-3"
+                        v-model="form.gameno"
+                        type="text"
+                        required
+                        placeholder="123456"
+                        ></b-form-input>
+                    </b-form-group>
+                    <b-form-group
+                        id="input-group-4"
+                        label="Date/Time:"
+                        label-for="input-4">
+                        <b-form-row>
+                            <b-col><b-form-datepicker v-model="form.date" class="mb-2" required></b-form-datepicker></b-col>
+                            <b-col><b-form-timepicker v-model="form.time" class="mb-2" required></b-form-timepicker></b-col>
+                        </b-form-row>
+                    </b-form-group>
                     <b-button type="submit" variant="primary">Submit</b-button>
                     <b-button type="reset" variant="danger">Reset</b-button>
                 </b-form>
-                <b-card class="mt-3" header="Form Data">
-                    <pre class="m-0">{{ form }}</pre>
-                </b-card>
-                <b-card class="mt-3" header="Result">
-                    <pre class="m-0">{{ game }}</pre>
-                </b-card>
             </b-card-text>
         </b-card>
-
+        <b-modal id="modal-preview" title="Data correct?">
+            <h4 class="text-success">Game #{{ this.form.gameno }}</h4>
+            <h5 class="text-info">{{ new Date(this.form.date + " "  + this.form.time).toLocaleString()}}</h5>
+            <b-table striped hover :items="gameOverview" :fields="fields">
+                <template #cell(html)="data">
+                    <span v-html="data.value"></span>
+                </template>
+            </b-table>
+        </b-modal>
     </div>
 </template>
 <script>
@@ -50,12 +69,32 @@ export default {
         return {
             form: {
                 loglink: '',
-                gametype: null,
-                preview: true
+                gametype: 1,
+                preview: true,
+                date: new Date().toISOString().slice(0, 10),
+                time: "22:00",
             },
-            types: [{ text: 'Select One', value: null }, 'Regular', 'Monthly', 'Yearly'],
+            types: [{ text: 'Regular', value: 1 }, { text: 'Monthly', value: 5 }, { text: 'Yearly', value: 6 }],
             game: null,
-            show: true
+            show: true,
+            fields: ['Pos', 'Player', 'Hand', { key: 'html', label: 'Eliminated by/Wins with' }],
+        }
+    },
+    computed: {
+        gameOverview: function () {
+            if(this.game === null) return null
+            let overview = []
+            for(let i=0; i<this.game[0].length; i++){
+                overview.push(
+                    {
+                        "Pos": this.game[2][i],
+                        "Player": this.game[1][i],
+                        "Hand": this.game[3][i],
+                        html: this.game[7][i][0]
+                    }
+                )
+            }
+            return overview
         }
     },
     methods: {
@@ -73,6 +112,7 @@ export default {
                     if(response.data.status){
                         this.game = response.data.msg
                         this.form.preview = !this.form.preview
+                        this.$bvModal.show('modal-preview')
                     }
                 })
                 .catch(response => {
@@ -99,3 +139,6 @@ export default {
     }
 }
 </script>
+<style lang="scss" scoped>
+
+</style>

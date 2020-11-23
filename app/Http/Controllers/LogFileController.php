@@ -43,7 +43,7 @@ class LogFileController extends Controller
 			"most bet/raise" => $most_raises,
 			"most all in" => $most_all_in,
 			"hand_cash" => $hand_cash,
-			"pot_size" => $pot_size,
+			"pot_size" => $pot_size
 		);
 		return $game;
 	}
@@ -553,15 +553,12 @@ class LogFileController extends Controller
 		LEFT JOIN Player wp ON (w.Player = wp.Seat and wp.UniqueGameID = p.UniqueGameID)
 		WHERE a.Action IN('wins game' ,'sits out') AND a.UniqueGameID= ".$this->game_id."
 		ORDER BY a.ActionID DESC;";
-		// die("<pre>sql=\n".var_export($query, true)."</pre>");
 		$query = $this->pdo->prepare($query);
 		$query->execute();
 		$game = [];
 		while($row = $query->fetch(PDO::FETCH_ASSOC)) {
 			$game[] = $row;
 		}
-
-		// $table = $dom->find('table', 2);
 		$result_table = array();
 		foreach($game as $i => $p){
 			$result_table[$i+1] = array(

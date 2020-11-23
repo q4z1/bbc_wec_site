@@ -49,7 +49,7 @@ class GameController extends Controller
     private function preview($url){
         $log = new LogFileController();
         $game = $log->process_log($url);
-        return ["status" => true, "msg" => $game];
+        return ["status" => true, "msg" => $game['player_list']];
     }
 
     /**
