@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Game;
+use App\Http\Controllers\LogFileController;
 use Illuminate\Http\Request;
 
 class GameController extends Controller
@@ -38,10 +39,17 @@ class GameController extends Controller
         if(is_null($payload)){
             return ["status" => false, 'msg' => "Parameter!"];
         }
+
         if($payload['preview']){
-            return ["status" => true, 'msg' => 'preview!'];
+            return $this->preview($payload["loglink"]);
         }
         return ["status" => true, 'msg' => $payload];
+    }
+
+    private function preview($url){
+        $log = new LogFileController();
+        $game = $log->process_log($url);
+        return ["status" => true, "msg" => $game];
     }
 
     /**

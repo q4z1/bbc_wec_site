@@ -62,7 +62,6 @@ export default {
         onSubmit(evt) {
             evt.preventDefault()
             // alert(JSON.stringify(this.form))
-            if(this.game !== null && !this.form.preview) this.form.preview = false
             axios({
                 method: 'post',
                 url: '/upload/game',
@@ -71,12 +70,15 @@ export default {
                 })
                 .then(response => {
                     //handle 
-                    this.game = response.data
-                    console.log(response)
+                    if(response.data.status){
+                        this.game = response.data.msg
+                        this.form.preview = !this.form.preview
+                    }
                 })
                 .catch(response => {
                     //handle error
                     this.game = null
+                    this.form.preview = true
                     console.log(response)
                 });
 
