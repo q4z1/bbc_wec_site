@@ -12,10 +12,12 @@ class LogFileController extends Controller
 
 	public function process_log($url){
 		$pdb = $this->fetch_database($url);
-		if(!file_exists("/home/www/pokerth/log_file_analysis/upload/$pdb")){
+		if(!file_exists("/home/www/pokerth/log_file_analysis/upload/$pdb") && !file_exists("../storage/app/pdb/$pdb")){
 			return false;
-		}else{
+		}elseif(file_exists("/home/www/pokerth/log_file_analysis/upload/$pdb") && !file_exists("../storage/app/pdb/$pdb")){
 			copy("/home/www/pokerth/log_file_analysis/upload/$pdb", "../storage/app/pdb/$pdb");
+		}elseif(!file_exists("../storage/app/pdb/$pdb")){
+			return false;
 		}
 		$this->pdo = new PDO("sqlite:../storage/app/pdb/".$pdb);
 		// sqlite error handling necessary?
