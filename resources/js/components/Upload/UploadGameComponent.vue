@@ -140,6 +140,11 @@ export default {
                             appendToast: true,
                             variant: 'error',
                         })
+                        this.form.loglink = ''
+                        this.form.gametype = 1
+                        this.form.gameno = null
+                        this.form.preview = true
+                        this.game = null
                     }
                 })
                 .catch(response => {
@@ -158,7 +163,8 @@ export default {
             evt.preventDefault()
             // Reset our form values
             this.form.loglink = ''
-            this.form.gametype = null
+            this.form.gametype = 1
+            this.form.gameno = null
             this.form.preview = true
             this.game = null
             // Trick to reset/clear native browser form validation state

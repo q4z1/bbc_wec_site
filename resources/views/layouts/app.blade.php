@@ -27,11 +27,26 @@
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
             <b-collapse id="nav-collapse" is-nav>
                 <b-navbar-nav>
-                    @guest
-                    <b-nav-item href="#">Guest Link</b-nav-item>
-                    @else
-                    <b-nav-item href="{{ route('upload.game.view') }}">Upload Game</b-nav-item>
-                    @endguest
+                    @auth
+                    <b-nav-item-dropdown>
+                        <template #button-content>
+                            <b-icon-upload></b-icon-upload>
+                            <strong>Game-Report</strong>
+                        </template>
+                        <b-dropdown-item href="{{ route('upload.game.view') }}">Upload Game</b-dropdown-item>
+                    </b-nav-item-dropdown>
+                    <b-nav-item-dropdown>
+                        <template #button-content>
+                            <b-icon-award></b-icon-award>
+                            <strong>Awards</strong>
+                        </template>
+                        <b-dropdown-item href="#">Upload</b-dropdown-item>
+                        <b-dropdown-item href="#">Assign</b-dropdown-item>
+                    </b-nav-item-dropdown>
+                    @endauth
+                    <b-nav-item href="#">Results</b-nav-item>
+                    <b-nav-item href="#">Info</b-nav-item>
+                    <b-nav-item href="#">Whatever</b-nav-item>
                 </b-navbar-nav>
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">
@@ -42,12 +57,10 @@
                     <b-nav-item-dropdown right>
                         <!-- Using 'button-content' slot -->
                         <template #button-content>
-                            @guest
                             <b-icon-person-circle></b-icon-person-circle>
-                            @else
-                            <b-icon-person-circle></b-icon-person-circle>
+                            @auth
                             <strong>{{ Auth::user()->name }}</strong>
-                            @endguest
+                            @endauth
                         </template>
                         @guest
                             @if (Route::has('login'))
