@@ -27,3 +27,5 @@ Route::post('/upload/game', [App\Http\Controllers\GameController::class, 'upload
 Route::get('/user/theme', [App\Http\Controllers\UserController::class, 'set_theme'])->name('user.theme.set');
 
 Route::get('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 'index'])->name('shoutbox');
+
+Route::get('/results', [App\Http\Controllers\ResultController::class, 'index'])->name('results');

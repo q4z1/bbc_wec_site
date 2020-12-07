@@ -34,4 +34,28 @@ files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(
 
 const app = new Vue({
     el: '#app',
+    data() {
+        return {
+            name: 'BootstrapVue',
+            isDropdown2Visible: false
+        }
+    },
+    mounted: function () {
+        this.$root.$on('bv::dropdown::show', bvEvent => {
+            if(bvEvent.componentId === 'dropdown-2') {
+                this.isDropdown2Visible = true;
+            }
+        })
+        this.$root.$on('bv::dropdown::hide', bvEvent => {
+            if(bvEvent.componentId === 'dropdown-2') {
+                this.isDropdown2Visible = false;
+            }
+            if(bvEvent.componentId === 'dropdown-3') {
+                this.isDropdown2Visible = false;
+            }
+            if(this.isDropdown2Visible) {
+                bvEvent.preventDefault()
+            }
+        })
+    }
 });

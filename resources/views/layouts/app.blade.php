@@ -27,24 +27,26 @@
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
             <b-collapse id="nav-collapse" is-nav>
                 <b-navbar-nav>
+                    <b-nav-item href="/">Home</b-nav-item>
                     @auth
-                    <b-nav-item-dropdown>
+                    <b-nav-item-dropdown  id="dropdown-1">
                         <template #button-content>
-                            <b-icon-upload></b-icon-upload>
-                            <strong>Game-Report</strong>
+                            <strong>Game-Admin</strong>
                         </template>
-                        <b-dropdown-item href="{{ route('upload.game.view') }}">Upload Game</b-dropdown-item>
+                        <b-dropdown-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-dropdown-item>
+                        <b-dropdown-item href="#">Edit Game</b-dropdown-item>
                     </b-nav-item-dropdown>
+                    @endauth
+                    <b-nav-item href="{{ route('results') }}">Results</b-nav-item>
                     <b-nav-item-dropdown>
                         <template #button-content>
                             <b-icon-award></b-icon-award>
-                            <strong>Awards</strong>
+                            <strong>Awards / Hall of Fame</strong>
                         </template>
                         <b-dropdown-item href="#">Upload</b-dropdown-item>
                         <b-dropdown-item href="#">Assign</b-dropdown-item>
                     </b-nav-item-dropdown>
-                    @endauth
-                    <b-nav-item href="#">Results</b-nav-item>
+
                     <b-nav-item href="#">Info</b-nav-item>
                     <b-nav-item href="#">Whatever</b-nav-item>
                 </b-navbar-nav>
