@@ -12,6 +12,17 @@ class ResultController extends Controller
     }
 
     public function index(Request $request){
-        return view('results');
+        $results = [
+            [
+                "id" => 1,
+                "type" => "regular",
+                "number" => 12234,
+                "pos1" => "winner nickname",
+                "pos2" => "2nd winner nick",
+            ]
+        ];
+        return view('results', [
+            "results" => $results
+        ]);
     }
 }
