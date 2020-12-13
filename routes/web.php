@@ -29,5 +29,5 @@ Route::get('/user/theme', [App\Http\Controllers\UserController::class, 'set_them
 Route::get('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 'index'])->name('shoutbox');
 
 Route::get('/results', [App\Http\Controllers\ResultController::class, 'index'])->name('results');
-
 Route::post('/results', [App\Http\Controllers\ResultController::class, 'filter'])->name('results.filter');
+Route::get('/results/game/{game}', [App\Http\Controllers\ResultController::class, 'game'])->name('results.game');

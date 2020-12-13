@@ -28,6 +28,7 @@ class CreateGamesTable extends Migration
             $table->bigInteger('pos9');
             $table->bigInteger('pos10');
             $table->datetime('started');
+            $table->integer('unique_game_id');
             $table->string('pdb');
             $table->timestamps();
         });

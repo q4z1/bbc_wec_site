@@ -11,7 +11,10 @@ class LogFileController extends Controller
     private $game_id;
 
 	public function process_log($url){
-		$pdb = $this->fetch_database($url);
+		return $this->process_log_file($this->fetch_database($url));
+	}
+
+	public function process_log_file($pdb){
 		if(!file_exists("/home/www/pokerth/log_file_analysis/upload/$pdb") && !file_exists("../storage/app/pdb/$pdb")){
 			return false;
 		}elseif(file_exists("/home/www/pokerth/log_file_analysis/upload/$pdb") && !file_exists("../storage/app/pdb/$pdb")){
@@ -19,6 +22,7 @@ class LogFileController extends Controller
 		}elseif(!file_exists("../storage/app/pdb/$pdb")){
 			return false;
 		}
+		if(is_null($this->game_id)) $this->game_id = 1;
 		$this->pdo = new PDO("sqlite:../storage/app/pdb/".$pdb);
 		// sqlite error handling necessary?
 
@@ -34,7 +38,7 @@ class LogFileController extends Controller
 		$most_all_in = $this->get_most_all_in($played_hands[2]);
 		$pot_size = $this->get_pot_size();
         list($result_table, $hands) = $this->fetch_result_table_hands();
-        
+
 		$game = array(
 			"result" => $result_table,
 			"player_list" => $player_list,
@@ -48,8 +52,10 @@ class LogFileController extends Controller
 			"most all in" => $most_all_in,
 			"hand_cash" => $hand_cash,
 			"pot_size" => $pot_size,
-			"pdb" => $pdb
+			"pdb" => $pdb,
+			"game_id" => $this->game_id
 		);
+
 		return $game;
 	}
 	
