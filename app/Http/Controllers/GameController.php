@@ -65,7 +65,7 @@ class GameController extends Controller
         $g->started = $payload["date"] . " " . $payload["time"];
         $g->type = $payload['gametype'];
         $g->number = $payload['gameno'];
-        $g->unique_game_id = $game->game_id;
+        $g->unique_game_id = $game['game_id'];
         $g->save();
         return ["status" => true, 'msg' => $g];
     }
