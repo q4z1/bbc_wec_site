@@ -26,7 +26,7 @@ class LogFileController extends Controller
 		$this->pdo = new PDO("sqlite:../storage/app/pdb/".$pdb);
 		// sqlite error handling necessary?
 
-		$player_list = $this->get_player_list();
+		$player_list = $player_list2 = $this->get_player_list();
 		array_multisort($player_list[0],$player_list[1],$player_list[2],$player_list[3],$player_list[4],$player_list[5],$player_list[6],$player_list[7]);
 		$hand_cash = $this->get_hand_cash();
 		$played_hands = $this->get_played_hands($player_list[3]);
@@ -43,7 +43,7 @@ class LogFileController extends Controller
 
 		$game = array(
 			"result" => $result_table,
-			"player_list" => $player_list,
+			"player_list" => $player_list2,
 			"most hands played" => $played_hands,
 			"best hands" => $best_hands,
 			"most wins" => $most_wins,
