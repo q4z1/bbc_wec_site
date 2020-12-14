@@ -27,8 +27,10 @@ class LogFileController extends Controller
 		// sqlite error handling necessary?
 
 		$player_list = $this->get_player_list();
+		array_multisort($player_list[0],$player_list[1],$player_list[2],$player_list[3],$player_list[4],$player_list[5],$player_list[6],$player_list[7]);
 		$hand_cash = $this->get_hand_cash();
 		$played_hands = $this->get_played_hands($player_list[3]);
+		array_multisort($played_hands[0],$played_hands[1],$played_hands[2],$played_hands[3],$played_hands[4],$played_hands[5],$played_hands[6],$played_hands[7],$played_hands[8],$played_hands[9],$played_hands[10],$played_hands[11],$played_hands[12],$played_hands[13]);
 		$best_hands = $this->get_best_hands();
 		$most_wins = $this->get_most_wins($hand_cash, $played_hands[2]);
 		$highest_win = $this->get_highest_win($hand_cash);
@@ -681,8 +683,6 @@ class LogFileController extends Controller
 				$played_hands[1][] = $this->replace_spec_char($row_1['Player']);
 				$played_hands_all = $row_1['PlayedHands'];
 				if(!($played_hands_all>0)) $played_handes_all = 0;
-	
-				
 				$played_hands_6 = $row_1['PlayedHands_6'];
 				if(!($played_hands_6>0)) $played_handes_6 = 0;
 				$played_hands_3 = $row_1['PlayedHands_3'];

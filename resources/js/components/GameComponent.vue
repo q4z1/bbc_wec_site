@@ -1,9 +1,57 @@
 <template>
     <div>
-        <h3>Hand Cash</h3>
-        <line-chart-component :chart-data="datacollection1"></line-chart-component>
-        <h3>Pot Size</h3>
-        <bar-chart-component :chart-data="datacollection2" :options="options2"></bar-chart-component>
+        <b-container class="bv-example-row">
+            <b-row>
+                <b-col>
+                    <h3>Hand Cash</h3>
+                    <line-chart-component :chart-data="datacollection1" :options="options1"></line-chart-component>
+                </b-col>
+                <b-col>
+                    <h3>Pot Size</h3>
+                    <bar-chart-component :chart-data="datacollection2" :options="options2"></bar-chart-component>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <h3>Most hands played</h3>
+                    <b-table striped hover :items="most_hands"></b-table>
+                </b-col>
+                <b-col>
+                    <h3>Best hands</h3>
+                    <b-table striped hover :items="best_hands"></b-table>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <h3>Most wins</h3>
+                    <b-table striped hover :items="most_wins"></b-table>
+                </b-col>
+                <b-col>
+                    <h3>Highest wins</h3>
+                    <b-table striped hover :items="highest_wins"></b-table>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <h3>Longest wins</h3>
+                    <b-table striped hover :items="longest_wins"></b-table>
+                </b-col>
+                <b-col>
+                    <h3>Longest losses</h3>
+                    <b-table striped hover :items="longest_losses"></b-table>
+                </b-col>
+            </b-row>
+            <b-row>
+                <b-col>
+                    <h3>Most bets/raises</h3>
+                    <b-table striped hover :items="most_bets"></b-table>
+                </b-col>
+                <b-col>
+                    <h3>Most all in</h3>
+                    <b-table striped hover :items="most_bingo"></b-table>
+                </b-col>
+            </b-row>
+        </b-container>
     </div>
 </template>
 <script>
@@ -11,7 +59,18 @@ export default {
     props: ['game'],
     data () {
         return {
-            datacollection1: null
+            datacollection1: null,
+            datacollection2: null,
+            options1: null,
+            options2: null,
+            most_hands: null,
+            best_hands: null,
+            most_wins: null,
+            highest_wins: null,
+            longest_wins: null,
+            longest_losses: null,
+            most_bets: null,
+            most_bingo: null,
         }
     },
     methods:{
@@ -31,7 +90,7 @@ export default {
             // hand cash
             let labels1 = []
             for(let i=1;i<=this.game.stats.hand_cash[0].length;i++){
-                labels1.push(i);
+                labels1.push("Hand: " + i);
             }
             let datasets1 = []
             for(let i=0;i<this.game.stats.player_list[0].length;i++){
@@ -46,93 +105,158 @@ export default {
                 }
                 datasets1.push(set);
             }
-            console.log(datasets1)
+            // console.log(datasets1)
             this.datacollection1 = {
                 labels: labels1,
                 datasets: datasets1
             }
             // pot size
-            let datasets2 = []
+            let labels2 = []
+            let data2 = []
             for(let i=0;i<this.game.stats.pot_size[0].length;i++){
-                let data = []
-                data.push(100000 - Number(this.game.stats.pot_size[0][i]));
-                let set = {
-                    label: this.game.stats.pot_size[0][i],
-                    borderColor: colors[i],
-                    data: data
-                }
-                datasets2.push(set);
+                data2.push(100000 - Number(this.game.stats.pot_size[0][i]));
+                labels2.push(labels1[i])
             }
+            let set2 =[{
+                borderColor: colors[0],
+                data: data2,
+                label: 'Poz Size'
+            }]
             this.datacollection2 = {
-                // labels: labels1,
-                datasets: datasets2
-            }
+                labels: labels2,
+                datasets: set2
+            },
+            // options
+            this.options1 = {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            min: 0
+                        }
+                    }]
+                },
+                // legend: {
+                //     display: false
+                // },
+            },
             this.options2 = {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true,
+                            min: 0
+                        }
+                    }]
+                },
                 legend: {
                     display: false
                 },
             }
-/*
-		$total_start_cash = get_total_start_cash($db,$_GET['UniqueGameID']);
-    
-        //die("<pre>".var_export($total_start_cash,true)."</pre>");
-        
-            if($total_start_cash == 0) $total_start_cash = 100000;
-            
-            $blind_steps = get_blind_steps($db,$_GET['UniqueGameID']);
-            $blind_steps[0][2] = 0;
-            $blind_steps[] = array($blind_steps[count($blind_steps)-1][0],$blind_steps[count($blind_steps)-1][1],end($pot_size[1]));
-    
-            if(isset($_GET['width']) && is_numeric($_GET['width']) && $_GET['width'] > 0) {
-                $width = $_GET['width'];
-            } else {
-                $width = 500;
+            console.log(this.game.stats['most hands played'])
+            this.most_hands = []
+            for(let i=0;i<this.game.stats['most hands played'][0].length;i++){
+                this.most_hands.push(
+                    {
+                        pos: i+1,
+                        player: this.game.stats['most hands played'][1][i],
+                        count: Math.round(this.game.stats['most hands played'][4][i]) +
+                                '% (' + this.game.stats['most hands played'][2][i] + '/' + this.game.stats['most hands played'][3][i] + ' hands)',
+                        _10_to_7_player: Math.round(this.game.stats['most hands played'][7][i]) +
+                                '% (' + this.game.stats['most hands played'][5][i] + '/' + this.game.stats['most hands played'][6][i] + ')',
+                        _6_to_4_player: Math.round(this.game.stats['most hands played'][10][i]) +
+                                '% (' + this.game.stats['most hands played'][8][i] + '/' + this.game.stats['most hands played'][9][i] + ')',
+                        _3_to_1_player: Math.round(this.game.stats['most hands played'][13][i]) +
+                                '% (' + this.game.stats['most hands played'][11][i] + '/' + this.game.stats['most hands played'][12][i] + ')',
+                    }
+                )
             }
-        
-
-        $pot_size_new = array();
-        foreach($pot_size[0] as $i => $size ){
-        if($i > 0){
-            $pot_size_new[$i] = 100000 - $size;
-        }else{
-            $pot_size_new[$i] = $size;
-        }
-        }
-        //Some data
-
-        //Create the graph. These two calls are always required
-        $graph = new Graph($width,240);
-        $graph->SetScale('linlin');
-        $graph->SetMargin(70,25,15,40);
-        $graph->xaxis->title->Set('Hand');
-        $graph->xaxis->title->SetMargin(-5);
-        $graph->yaxis->title->Set('Pot Size $');
-        $graph->yaxis->title->SetMargin(25);
-        //$graph->xscale->SetGrace(100);
-        //$graph->xscale->ticks->Set(10,count($pot_size_new));
-        //Create the linear plot
-        $bar1 = new BarPlot($pot_size_new);
-        $bar1->SetColor('green');
-        
-        //$bar1->SetMargin(15);
-
-        //Add the plot to the graph
-        $graph->Add($bar1);
-
-        //Display the graph
-        $graph->Stroke();
-*/        
+            this.best_hands = []
+            for(let i=0;i<this.game.stats['best hands'][0].length;i++){
+                this.best_hands.push(
+                    {
+                        pos: i+1,
+                        cards: this.game.stats['best hands'][2][i],
+                        player: this.game.stats['best hands'][1][i],
+                        hand: this.game.stats['best hands'][3][i],
+                        result: this.game.stats['best hands'][4][i]
+                    }
+                )
+            }
+            this.most_wins = []
+            for(let i=0;i<this.game.stats['most wins'][0].length;i++){
+                this.most_wins.push(
+                    {
+                        pos: i+1,
+                        player: this.game.stats['most wins'][1][i],
+                        'count *': this.game.stats['most wins'][2][i] + ' (' + Math.round(this.game.stats['most wins'][3][i]) + '%)',
+                        highest: '$' + this.game.stats['most wins'][4][i]
+                    }
+                )
+            }
+            this.highest_wins = []
+            for(let i=0;i<this.game.stats['highest wins'][0].length;i++){
+                this.highest_wins.push(
+                    {
+                        pos: i+1,
+                        amount: '$' + this.game.stats['highest wins'][4][i],
+                        player: this.game.stats['highest wins'][1][i],
+                        hand: this.game.stats['highest wins'][2][i] + ((this.game.stats['highest wins'][3][i]) ? ' (side pot)' : ''),
+                    }
+                )
+            }
+            this.longest_wins = []
+            for(let i=0;i<10;i++){
+                this.longest_wins.push(
+                    {
+                        pos: i+1,
+                        duration: this.game.stats['longest series of wins'][2][i],
+                        player: this.game.stats['longest series of wins'][1][i],
+                        hands: this.game.stats['longest series of wins'][3][i] + '-' + this.game.stats['longest series of wins'][4][i],
+                        total_gain: this.game.stats['longest series of wins'][5][i],
+                    }
+                )
+            }
+            this.longest_losses = []
+            for(let i=0;i<10;i++){
+                this.longest_losses.push(
+                    {
+                        pos: i+1,
+                        duration: this.game.stats['longest series of losses'][2][i],
+                        player: this.game.stats['longest series of losses'][1][i],
+                        hands: this.game.stats['longest series of losses'][3][i] + '-' + this.game.stats['longest series of losses'][4][i],
+                        total_loss: '$' + this.game.stats['longest series of losses'][5][i],
+                    }
+                )
+            }
+            this.most_bets = []
+            for(let i=0;i<this.game.stats['most bet/raise'][0].length;i++){
+                this.most_bets.push(
+                    {
+                        pos: i+1,
+                        player: this.game.stats['most bet/raise'][1][i],
+                        'Count **': this.game.stats['most bet/raise'][2][i] + ' (' + Math.round(this.game.stats['most bet/raise'][4][i]) + '%)',
+                    }
+                )
+            }
+            this.most_bingo = []
+            for(let i=0;i<this.game.stats['most all in'][0].length;i++){
+                this.most_bingo.push(
+                    {
+                        pos: i+1,
+                        player: this.game.stats['most all in'][1][i],
+                        total_count: this.game.stats['most all in'][2][i] + ' (' + Math.round(this.game.stats['most all in'][3][i]) + '%)',
+                        in_preflop: this.game.stats['most all in'][4][i],
+                        first_5_hands: this.game.stats['most all in'][5][i],
+                        total_won: this.game.stats['most all in'][6][i],
+                    }
+                )
+            }
         }
     },
     mounted(){
         this.init()
     },
-    computed: {
-        // a computed getter
-        handCash: function () {
-            return ""
-        }
-    }
 }
 </script>
 <style lang="sass" scoped>
