@@ -1,6 +1,31 @@
 <template>
     <div>
-        <b-container class="bv-example-row">
+        <b-container>
+            <b-row>
+                <b-col>
+                    <h3>Basic data</h3>
+                    <b-row>
+                        <b-col><strong>Number of Players:</strong></b-col>
+                        <b-col>{{ game.stats['player_list'][0].length }}</b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col><strong>Winner:</strong></b-col>
+                        <b-col>{{ game.stats['player_list'][1][0] }}</b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col><strong>Hands:</strong></b-col>
+                        <b-col>{{ game.stats['player_list'][3][0] }}</b-col>
+                    </b-row>
+                </b-col>
+                <b-col>
+                    <h3>Ranking</h3>
+                    <b-table striped hover :items="ranking">
+                        <template #cell(_)="data">
+                            <span v-html="data.value"></span>
+                        </template>
+                    </b-table>
+                </b-col>
+            </b-row>
             <b-row>
                 <b-col>
                     <h3>Hand Cash</h3>
@@ -71,6 +96,8 @@ export default {
             longest_losses: null,
             most_bets: null,
             most_bingo: null,
+            basic_data: null,
+            ranking: null
         }
     },
     methods:{
@@ -153,7 +180,7 @@ export default {
                     display: false
                 },
             }
-            console.log(this.game.stats['most hands played'])
+            // console.log(this.game.stats['most hands played'])
             this.most_hands = []
             for(let i=0;i<this.game.stats['most hands played'][0].length;i++){
                 this.most_hands.push(
@@ -249,6 +276,24 @@ export default {
                         in_preflop: this.game.stats['most all in'][4][i],
                         first_5_hands: this.game.stats['most all in'][5][i],
                         total_won: this.game.stats['most all in'][6][i],
+                    }
+                )
+            }
+            this.ranking = []
+            for(let i=0;i<this.game.stats['player_list'][0].length;i++){
+                let eliminated = this.game.stats['player_list'][7][i][0]
+                console.log(eliminated)
+                if(eliminated.indexOf('[') == -1){
+                    eliminated = 'eliminated by ' + eliminated
+                }else{
+                    eliminated = 'wins with ' + eliminated
+                }
+                this.ranking.push(
+                    {
+                        pos: i+1,
+                        player: this.game.stats['player_list'][1][i],
+                        hand: this.game.stats['player_list'][3][i],
+                        _: eliminated
                     }
                 )
             }
