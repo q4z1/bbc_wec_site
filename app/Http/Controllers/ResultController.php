@@ -28,7 +28,7 @@ class ResultController extends Controller
             ->leftJoin('players as p9', 'games.pos9', '=', 'p9.id')
             ->leftJoin('players as p10', 'games.pos10', '=', 'p10.id')
             ->select(
-                'games.id', 'games.type', 'games.number', 'games.created_at as reported',
+                'games.id', 'games.type', 'games.number', 'games.started',
                 'p1.nickname as p1',
                 'p2.nickname as p2',
                 'p3.nickname as p3',
@@ -39,7 +39,7 @@ class ResultController extends Controller
                 'p8.nickname as p8',
                 'p9.nickname as p9',
                 'p10.nickname as p10'
-            )
+            )->orderBy('started', 'DESC')
             ->get();
 
         return view('results', [
