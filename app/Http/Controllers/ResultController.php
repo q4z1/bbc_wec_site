@@ -66,6 +66,9 @@ class ResultController extends Controller
                 'p10.nickname as p10'
             )->orderBy('started', 'DESC')
             ->limit(10)
+            ->whereYear('started','=', date("Y"))
+            ->whereMonth('started','=', date("m"))
+            ->where('type', 1)
             ->get();
         return view('results', [
             "results" => $results,
