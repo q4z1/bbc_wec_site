@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-dropdown id="dropdown-1" text="Year" class="m-md-2">
+        <b-dropdown id="year" text="Year" class="m-md-2">
             <b-dropdown-item>2020</b-dropdown-item>
             <b-dropdown-item>2019</b-dropdown-item>
             <b-dropdown-item>2018</b-dropdown-item>
@@ -13,7 +13,7 @@
             <b-dropdown-item>2011</b-dropdown-item>
             <b-dropdown-item>2010</b-dropdown-item>
         </b-dropdown>
-        <b-dropdown id="dropdown-1" text="Month" class="m-md-2">
+        <b-dropdown id="month" text="Month" class="m-md-2" v-model="month">
             <b-dropdown-item>January</b-dropdown-item>
             <b-dropdown-item>February</b-dropdown-item>
             <b-dropdown-item>March</b-dropdown-item>
@@ -27,6 +27,11 @@
             <b-dropdown-item>November</b-dropdown-item>
             <b-dropdown-item>December</b-dropdown-item>
         </b-dropdown>
+        <b-dropdown id="type" text="Type" class="m-md-2">
+            <b-dropdown-item>Type 1</b-dropdown-item>
+            <b-dropdown-item>Type 2</b-dropdown-item>
+            <b-dropdown-item>Type 3</b-dropdown-item>
+        </b-dropdown>
         <b-table striped hover 
             :items="result"
             @row-clicked="showGame"></b-table>
@@ -39,6 +44,8 @@
         data() {
             return {
                 result: null,
+                month: 1,
+                year: 2020,
             }
         },
         mounted() {
@@ -52,6 +59,19 @@
         methods:{
             showGame(item, index, event) {
                 window.location.href = '/results/game/' + item.id
+            },
+            filter(){
+                axios.post("/", {
+                    year: 2015,
+                    month: 11,
+                    page: 5
+                    }
+                )
+                .then(function(result){
+                    // process result
+                    // fill table(s)
+                })
+                
             }
         }
     }
