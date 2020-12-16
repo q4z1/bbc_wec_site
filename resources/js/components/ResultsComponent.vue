@@ -1,5 +1,12 @@
 <template>
     <div>
+        <b-pagination
+            v-model="page"
+            :total-rows="total"
+            :per-page="10"
+            aria-controls="results_table"
+            @page-click="paginate"
+        ></b-pagination>
         <b-row>
             <b-col>
                 <b-form-select v-model="year" @change="filter">                   
@@ -34,21 +41,27 @@
             </b-col>
             <b-col>
                 <b-form-select v-model="type" @change="filter">                   
-                    <option value="type-1">Type 1</option>
-                    <option value="type-2">Type 2</option>
-                    <option value="type-3">Type 3</option>
+                    <option value="1">Type 1</option>
+                    <option value="2">Type 2</option>
+                    <option value="3">Type 3</option>
+                    <option value="4">Type 4</option>
+                    <option value="5">Type 5</option>
                 </b-form-select>
             </b-col>
         </b-row>
         <b-table striped hover 
+            id="results_table"
             :items="result"
-            @row-clicked="showGame"></b-table>
+            @row-clicked="showGame"
+            :per-page="10"
+            :current-page="page"
+        ></b-table>
             
     </div>
 </template>
 <script>
     export default {
-        props: ['results'],
+        props: ['results', 'totals'],
         data() {
             return {
                 result: null,
@@ -56,6 +69,7 @@
                 month: null,
                 type: 1, // regular games
                 page: 1, // we always start with page 1
+                total: null,
             }
         },
         mounted() {
@@ -66,6 +80,7 @@
 
             // ajax call => result.data into this.results
             this.result = this.results
+            this.total = this.totals
         },
         methods:{
             showGame(item, index, event) {
@@ -82,11 +97,14 @@
                     console.log(response)
                     if(response.data.success)
                         this.result = response.data.result
+                        this.total = response.data.total
                 }, (error) => {
                     console.log(error)
                 });
             },
             paginate(bvEvt, page){
+                console.log("paginate page clicked")
+                bvEvt.preventDefault()
                 this.page = page
                 this.filter()
             }
