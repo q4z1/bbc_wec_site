@@ -5,18 +5,41 @@
                 <b-form-select v-model="year" @change="filter">                   
                     <option value="2020">2020</option>
                     <option value="2019">2019</option>
-
+                    <option value="2018">2018</option>
+                    <option value="2017">2017</option>
+                    <option value="2016">2016</option>
+                    <option value="2015">2015</option>
+                    <option value="2014">2014</option>
+                    <option value="2013">2013</option>
+                    <option value="2012">2012</option>
+                    <option value="2011">2011</option>
+                    <option value="2010">2010</option>
                 </b-form-select>
             </b-col>
             <b-col>
                 <b-form-select v-model="month" @change="filter">                   
                     <option value="1">January</option>
                     <option value="2">February</option>
+                    <option value="3">March</option>
+                    <option value="4">April</option>
+                    <option value="5">May</option>
+                    <option value="6">Jun</option>
+                    <option value="7">July</option>
+                    <option value="8">August</option>
+                    <option value="9">September</option>
+                    <option value="10">October</option>
                     <option value="11">November</option>
+                    <option value="12">December</option>
+                </b-form-select>
+            </b-col>
+            <b-col>
+                <b-form-select v-model="type" @change="filter">                   
+                    <option value="type-1">Type 1</option>
+                    <option value="type-2">Type 2</option>
+                    <option value="type-3">Type 3</option>
                 </b-form-select>
             </b-col>
         </b-row>
-
         <b-table striped hover 
             :items="result"
             @row-clicked="showGame"></b-table>
