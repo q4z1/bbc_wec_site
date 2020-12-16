@@ -64,9 +64,10 @@ class ResultController extends Controller
 
     public function filter(Request $request){
         $year = $request->input('year', date("Y"));
-        $month = $request->input('year', date("m"));
+        $month = $request->input('month', date("m"));
         $page = $request->input('page', 1);
         $type = $request->input('type', 1);
+//        dd($year, $month, $page, $type);
         $results = DB::table('games')
         ->leftJoin('players as p1', 'games.pos1', '=', 'p1.id')
         ->leftJoin('players as p2', 'games.pos2', '=', 'p2.id')
@@ -92,10 +93,10 @@ class ResultController extends Controller
             'p10.nickname as p10'
         )->orderBy('started', 'DESC')
         ->whereYear('started','=', $year)
-        ->whereYear('month','=', $month)
+        ->whereMonth('started','=', $month)
         ->where('type', $type)
         ->limit((10*($page-1)),10)
         ->get();
-        return $results;
+        return ['success' => true, 'result' => $results];
     }
 }
