@@ -68,7 +68,7 @@ class ResultController extends Controller
             ->limit(10)
             ->whereYear('started','=', date("Y"))
             ->whereMonth('started','=', date("m"))
-            ->where('type', 1)
+            ->where('type', 1) // default type
             ->get();
         return view('results', [
             "results" => $results,
