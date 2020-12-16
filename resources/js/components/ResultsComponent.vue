@@ -44,14 +44,17 @@
         data() {
             return {
                 result: null,
-                month: 1,
-                year: 2020,
+                year: null,
+                month: null,
+                type: 1, // regular games
+                page: 1, // we always start with page 1
             }
         },
         mounted() {
             console.log('Results mounted.')
-            console.log(this.results)
 
+            this.year = new Date().getFullYear() // initially current year
+            this.month = new Date().getMonth() + 1 // initially current month
 
             // ajax call => result.data into this.results
             this.result = this.results
@@ -61,17 +64,19 @@
                 window.location.href = '/results/game/' + item.id
             },
             filter(){
-                axios.post("/", {
-                    year: 2015,
-                    month: 11,
-                    page: 5
-                    }
-                )
-                .then(function(result){
-                    // process result
-                    // fill table(s)
+                axios.post('/results', {
+                    year: this.year,
+                    month: this.month,
+                    page: this.page,
+                    type: this.type
                 })
-                
+                .then((response) => {
+                    console.log(response)
+                    if(response.data.success)
+                        this.result = response.data.result
+                }, (error) => {
+                    console.log(error)
+                });
             }
         }
     }
