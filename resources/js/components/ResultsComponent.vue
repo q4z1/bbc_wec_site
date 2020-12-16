@@ -85,6 +85,10 @@
                 }, (error) => {
                     console.log(error)
                 });
+            },
+            paginate(bvEvt, page){
+                this.page = page
+                this.filter()
             }
         }
     }
