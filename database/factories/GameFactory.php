@@ -35,7 +35,7 @@ class GameFactory extends Factory
             'pos8' => $this->faker->numberBetween(1,100),
             'pos9' => $this->faker->numberBetween(1,100),
             'pos10' => $this->faker->numberBetween(1,100),
-            'started' => $this->faker->dateTimeBetween('-2 years', 'now'),
+            'started' => $this->faker->dateTimeBetween('-1 years', 'now'),
             'unique_game_id' => 1,
             'pdb' => '54f310b95ffc47f5a71c6286d78abb291149b9c3.pdb'
         ];

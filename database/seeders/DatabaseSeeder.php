@@ -14,6 +14,6 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         \App\Models\Player::factory(100)->create();
-        \App\Models\Game::factory(100)->create();
+        \App\Models\Game::factory(10000)->create();
     }
 }

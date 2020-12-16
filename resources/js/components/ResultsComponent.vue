@@ -53,8 +53,6 @@
             id="results_table"
             :items="result"
             @row-clicked="showGame"
-            :per-page="10"
-            :current-page="page"
         ></b-table>
             
     </div>
@@ -64,6 +62,7 @@
         props: ['results', 'totals'],
         data() {
             return {
+                renderTable: true,
                 result: null,
                 year: null,
                 month: null,
@@ -93,17 +92,16 @@
                     page: this.page,
                     type: this.type
                 })
-                .then((response) => {
-                    console.log(response)
-                    if(response.data.success)
+                .then(response => {
+                    if(response.data.success === true){
                         this.result = response.data.result
                         this.total = response.data.total
+                    }
                 }, (error) => {
                     console.log(error)
                 });
             },
             paginate(bvEvt, page){
-                console.log("paginate page clicked")
                 bvEvt.preventDefault()
                 this.page = page
                 this.filter()

@@ -116,9 +116,9 @@ class ResultController extends Controller
             'p9.nickname as p9',
             'p10.nickname as p10'
         )->orderBy('started', 'DESC')
-//        ->whereYear('started','=', $year)
-//        ->whereMonth('started','=', $month)
-//        ->where('type', $type)
+        ->whereYear('started','=', $year)
+        ->whereMonth('started','=', $month)
+        ->where('type', $type)
         ->count();
         $results = DB::table('games')
         ->leftJoin('players as p1', 'games.pos1', '=', 'p1.id')
@@ -143,13 +143,11 @@ class ResultController extends Controller
             'p8.nickname as p8',
             'p9.nickname as p9',
             'p10.nickname as p10'
-        )->orderBy('started', 'DESC');
-        if($page == 1){
-            $results->whereYear('started','=', $year)
-            ->whereMonth('started','=', $month)
-            ->where('type', $type);
-        }
-        $results->offset(($page-1)*10)
+        )->orderBy('started', 'DESC')
+        ->whereYear('started','=', $year)
+        ->whereMonth('started','=', $month)
+        ->where('type', $type)
+        ->offset(($page-1)*10)
         ->take(10)
         ->get();
         return ['success' => true, 'result' => $results, 'total' => $total];
