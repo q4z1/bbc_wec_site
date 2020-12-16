@@ -31,7 +31,7 @@
                 result: null,
                 year: null,
                 month: null,
-                type: 1, // regular games
+                type: 5, // regular games
                 page: 1, // we always start with page 1
             }
         },

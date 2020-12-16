@@ -67,7 +67,6 @@ class ResultController extends Controller
         $month = $request->input('month', date("m"));
         $page = $request->input('page', 1);
         $type = $request->input('type', 1);
-//        dd($year, $month, $page, $type);
         $results = DB::table('games')
         ->leftJoin('players as p1', 'games.pos1', '=', 'p1.id')
         ->leftJoin('players as p2', 'games.pos2', '=', 'p2.id')
@@ -95,7 +94,8 @@ class ResultController extends Controller
         ->whereYear('started','=', $year)
         ->whereMonth('started','=', $month)
         ->where('type', $type)
-        ->limit((10*($page-1)),10)
+        ->offset(($page-1)*10)
+        ->take(10)
         ->get();
         return ['success' => true, 'result' => $results];
     }
