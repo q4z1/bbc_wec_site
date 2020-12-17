@@ -4,7 +4,7 @@
         <b-row class="mb-3">
             <b-col >
                 <b-form-select v-model="year" @change="filter">
-                    <option value="0" selected="selected">Gesamt</option>                  
+                    <option value="0" selected="selected">All-time</option>                  
                     <option value="2020">2020</option>
                     <option value="2019">2019</option>
                     <option value="2018">2018</option>
