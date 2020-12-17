@@ -1,13 +1,7 @@
 <template>
     <div>
-        <b-pagination
-            v-model="page"
-            :total-rows="total"
-            :per-page="10"
-            aria-controls="results_table"
-            @page-click="paginate"
-        ></b-pagination>
-        <b-row>
+        <h3>Results</h3>
+        <b-row class="mb-3">
             <b-col>
                 <b-form-select v-model="year" @change="filter">                   
                     <option value="2020">2020</option>
@@ -49,12 +43,25 @@
                 </b-form-select>
             </b-col>
         </b-row>
+        <b-pagination
+            v-model="page"
+            :total-rows="total"
+            :per-page="10"
+            aria-controls="results_table"
+            @page-click="paginate"
+        ></b-pagination>
         <b-table striped hover 
             id="results_table"
             :items="result"
             @row-clicked="showGame"
         ></b-table>
-            
+        <b-pagination
+            v-model="page"
+            :total-rows="total"
+            :per-page="10"
+            aria-controls="results_table"
+            @page-click="paginate"
+        ></b-pagination>   
     </div>
 </template>
 <script>

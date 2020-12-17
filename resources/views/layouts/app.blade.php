@@ -38,6 +38,7 @@
                     </b-nav-item-dropdown>
                     @endauth
                     <b-nav-item href="{{ route('results') }}">Results</b-nav-item>
+                    @auth
                     <b-nav-item-dropdown>
                         <template #button-content>
                             <b-icon-award></b-icon-award>
@@ -46,7 +47,9 @@
                         <b-dropdown-item href="#">Upload</b-dropdown-item>
                         <b-dropdown-item href="#">Assign</b-dropdown-item>
                     </b-nav-item-dropdown>
-
+                    @else
+                        <b-nav-item href="{{ route('results.halloffame') }}">Hall of Fame</b-nav-item>
+                    @endauth
                     <b-nav-item href="#">Info</b-nav-item>
                     <b-nav-item href="#">Whatever</b-nav-item>
                 </b-navbar-nav>
@@ -83,7 +86,7 @@
                 </b-navbar-nav>
             </b-collapse>
         </b-navbar>
-        <main class="py-4" style="padding: 15px">
+        <main class="py-4">
             <b-container>
                 @yield('content')
             </b-container>
