@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Game;
 use App\Models\Player;
+use App\Models\Point;
 use App\Http\Controllers\LogFileController;
 use Illuminate\Http\Request;
 
@@ -67,6 +68,24 @@ class GameController extends Controller
         $g->number = $payload['gameno'];
         $g->unique_game_id = $game['game_id'];
         $g->save();
+        // score
+        for($i=1;$i<=10;$i++){
+            if(array_key_exists($i-1, $game['player_list'][1])){
+                $player = Player::where('nickname', $game['player_list'][1][$i-1])->first();
+                $pt = new Point();
+                $pt->points = 0;
+                if($i<8){
+                    $points = [75,45,30,20,15,10,5];
+                    $pt->points = $points[$i-1];
+                }
+                $pt->game_started = $payload["date"] . " " . $payload["time"];
+                $pt->game_id = $g->id;
+                $pt->pos = $i;
+                $pt->type = $g->type;
+                $pt->player_id = $player->id;
+                $pt->save();
+            }
+        }
         return ["status" => true, 'msg' => $g];
     }
 
