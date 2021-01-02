@@ -328,7 +328,7 @@ export default {
                     }else if(i === 4){
                         this.bbcode += '[color=black]4. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + "\n"
                     }else{
-                        this.bbcode += i + '. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + "\n"
+                        this.bbcode += i + '. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[7][i-1][0] + "\n"
                     }    
                 }else{
                     break;

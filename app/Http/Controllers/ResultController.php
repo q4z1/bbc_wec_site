@@ -95,7 +95,9 @@ class ResultController extends Controller
         ]);
     }
 
-    public function game(Request $request, Game $game){
+    public function game(Request $request, $game){
+        $game = Game::where('number', $game)->first();
+        if(!$game) return abort(404);
         for($i=1;$i<=10;$i++){
             $p = "pos$i";
             $pl = Player::find($game->{$p});
