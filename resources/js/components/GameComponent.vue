@@ -5,6 +5,10 @@
                 <b-col>
                     <h3>Basic data</h3>
                     <b-row>
+                        <b-col><strong>Game Number:</strong></b-col>
+                        <b-col>{{ game.number }}</b-col>
+                    </b-row>
+                    <b-row>
                         <b-col><strong>Number of Players:</strong></b-col>
                         <b-col>{{ game.stats['player_list'][0].length }}</b-col>
                     </b-row>
@@ -15,6 +19,9 @@
                     <b-row>
                         <b-col><strong>Hands:</strong></b-col>
                         <b-col>{{ game.stats['player_list'][3][0] }}</b-col>
+                    </b-row>
+                    <b-row class="mt-5">
+                        <b-button variant="warning" v-b-modal.bbcode>Show BB Code for Forum Post</b-button>
                     </b-row>
                 </b-col>
                 <b-col>
@@ -77,6 +84,14 @@
                 </b-col>
             </b-row>
         </b-container>
+        <b-modal id="bbcode" title="Forum BB Code">
+            <b-form-textarea
+                id="bbcode_content"
+                v-model="bbcode"
+                rows="10"
+                max-rows="12"
+            ></b-form-textarea>
+        </b-modal>
     </div>
 </template>
 <script>
@@ -97,7 +112,8 @@ export default {
             most_bets: null,
             most_bingo: null,
             basic_data: null,
-            ranking: null
+            ranking: null,
+            bbcode: null,
         }
     },
     methods:{
@@ -132,7 +148,6 @@ export default {
                 }
                 datasets1.push(set);
             }
-            // console.log(datasets1)
             this.datacollection1 = {
                 labels: labels1,
                 datasets: datasets1
@@ -282,7 +297,6 @@ export default {
             this.ranking = []
             for(let i=0;i<this.game.stats['player_list'][0].length;i++){
                 let eliminated = this.game.stats['player_list'][7][i][0]
-                console.log(eliminated)
                 if(eliminated.indexOf('[') == -1){
                     eliminated = 'eliminated by ' + eliminated
                 }else{
@@ -297,6 +311,39 @@ export default {
                     }
                 )
             }
+            this.bbcode = '[indent][img]/media/kunena/attachments/30607/Logo-WECUP_small1.jpg[/img][/indent]\n'
+            this.bbcode += '[hr][b][size=6][color=black]♣ [/color][color=darkred]♥[/color][color=black] ♠[/color][color=darkred] ♦ [/color][/size][size=3][color=goldenrod][font=Palatino Linotype]'
+            this.bbcode += 'WeCUP #' + this.game.number + ' - ' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(',', '')
+            this.bbcode += '[/font][/color][/size][size=6][color=darkred] ♦ [/color][color=black]♠ [/color][color=darkred] ♥[/color]'
+            this.bbcode += '[color=black] ♣[/color][/size][/b][br]'
+            for(let i=1;i<=10;i++){
+                if(typeof this.game.stats.result[i] !== 'undefined'){
+                    let game = this.game.stats.result[i]
+                    if(i === 1){
+                        this.bbcode += '[indent][color=goldenrod]1. ' + game.player + '  ' + game.hand + ' wins with ' + this.game.stats.player_list[7][0][0].replace(/(<([^>]+)>)/gi, "") + '[/color]' + "\n"
+                    }else if(i === 2){
+                        this.bbcode += '[color=silver]2. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + ' [/color]' + "\n"
+                    }else if(i === 3){
+                        this.bbcode += '[color=darkred]3. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + ' [/color]' + "\n"
+                    }else if(i === 4){
+                        this.bbcode += '[color=black]4. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + "\n"
+                    }else{
+                        this.bbcode += i + '. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + "\n"
+                    }    
+                }else{
+                    break;
+                }
+            }
+            this.bbcode += '[/color][/indent]'
+            this.bbcode += '[br][indent][color=darkred][size=4] Congratulations to [b]' + this.game.stats.result[1].player + '[/b][/size][/color][/indent]'
+            this.bbcode += '[hr][size=2][url=https://www.pokerth.net/log-file-analysis/?ID=' + this.game.pdb.replace('.pdb', '') + '&UniqueGameID=' + this.game.unique_game_id + '][color=darkred]Log-Analysis[/color][/url]'
+            this.bbcode += '[color=black] of WeCup [font=Arial Narrow]#' + this.game.number + '#' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(', ', '#') + '#'
+            for(let i=0;i<=10;i++){
+                if(typeof this.game.stats.player_list[1][i] !== 'undefined')
+                    this.bbcode += '#' + this.game.stats.player_list[1][i]
+            }
+            this.bbcode += '[/font][/color][/size]'
+            this.bbcode += '[size=2][url=https://www.pokerth.net/community/wec/13787-wecup-ranking-2020#44912][color=darkred][br]Ranking[/color][/url][color=black] of WeCup[/color][/size][hr]'
         }
     },
     mounted(){
@@ -304,6 +351,8 @@ export default {
     },
 }
 </script>
-<style lang="sass" scoped>
-
+<style lang="scss">
+    tbody tr{
+        cursor: pointer;
+    }
 </style>

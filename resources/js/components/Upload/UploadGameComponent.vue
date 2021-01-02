@@ -105,6 +105,13 @@ export default {
             return overview
         }
     },
+    created() {
+        this.$root.$on('bv::toast:hidden', bvEvent => {
+            if(bvEvent.vueTarget.variant === 'success'){
+                window.location.href = '/results/game/' + this.form.gameno
+            }
+        });
+    },
     methods: {
         onSubmit(evt) {
             evt.preventDefault()
@@ -127,7 +134,7 @@ export default {
                             this.$bvModal.hide('modal-preview')
                             this.$bvToast.toast(`Game succesfully uploaded!`, {
                                 title: 'Game uploaded!',
-                                autoHideDelay: 5000,
+                                autoHideDelay: 2000,
                                 appendToast: true,
                                 variant: 'success',
                             })
