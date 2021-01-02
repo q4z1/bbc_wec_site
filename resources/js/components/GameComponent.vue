@@ -337,7 +337,7 @@ export default {
             this.bbcode += '[/color][/indent]'
             this.bbcode += '[br][indent][color=darkred][size=4] Congratulations to [b]' + this.game.stats.result[1].player + '[/b][/size][/color][/indent]'
             this.bbcode += '[hr][size=2][url=https://www.pokerth.net/log-file-analysis/?ID=' + this.game.pdb.replace('.pdb', '') + '&UniqueGameID=' + this.game.unique_game_id + '][color=darkred]Log-Analysis[/color][/url]'
-            this.bbcode += '[color=black] of WeCup [font=Arial Narrow]#' + this.game.number + '#' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(', ', '#') + '#'
+            this.bbcode += '[color=black] of WeCup [font=Arial Narrow]#' + this.game.number + '#' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(', ', '#')
             for(let i=0;i<=10;i++){
                 if(typeof this.game.stats.player_list[1][i] !== 'undefined')
                     this.bbcode += '#' + this.game.stats.player_list[1][i]
