@@ -85,6 +85,7 @@ export default {
             types: [{ text: 'Regular', value: 1 }, { text: 'Monthly', value: 5 }, { text: 'Yearly', value: 6 }],
             game: null,
             show: true,
+            gameno: null,
             fields: ['Pos', 'Player', 'Hand', { key: 'html', label: 'Eliminated by/Wins with' }],
         }
     },
@@ -108,6 +109,7 @@ export default {
     created() {
         this.$root.$on('bv::toast:hidden', bvEvent => {
             if(bvEvent.vueTarget.variant === 'success'){
+                // console.log(this.form.gameno)
                 window.location.href = '/results/game/' + this.form.gameno
             }
         });
@@ -130,7 +132,7 @@ export default {
                             this.$bvModal.show('modal-preview')
                             this.game = response.data.msg
                         }else{
-                            this.game = null;
+                            // this.game = null;
                             this.$bvModal.hide('modal-preview')
                             this.$bvToast.toast(`Game succesfully uploaded!`, {
                                 title: 'Game uploaded!',
