@@ -90,7 +90,7 @@
         },
         methods:{
             showGame(item, index, event) {
-                window.location.href = '/results/game/' + item.id
+                window.location.href = '/results/game/' + item.number
             },
             filter(){
                 axios.post('/results', {
