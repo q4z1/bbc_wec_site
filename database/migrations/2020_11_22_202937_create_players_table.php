@@ -16,7 +16,7 @@ class CreatePlayersTable extends Migration
         Schema::create('players', function (Blueprint $table) {
             $table->id();
             $table->text('nickname');
-            $table->text('avatar');
+            $table->text('avatar')->default('');
             $table->timestamps();
         });
     }
