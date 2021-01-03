@@ -100,7 +100,10 @@ class GameController extends Controller
      */
     public function upload_view()
     {
-        return view('upload.game');
+        $last = Game::orderBy('number', 'DESC')->first();
+        $gameno = 123456;
+        if($last) $gameno = $last->number + 1;
+        return view('upload.game', ['last' => $gameno]);
     }
 
     /**

@@ -73,11 +73,13 @@
 </template>
 <script>
 export default {
+    props: ['last'],
     data() {
         return {
             form: {
                 loglink: '',
                 gametype: 1,
+                gameno: null,
                 preview: true,
                 date: new Date().toISOString().slice(0, 10),
                 time: "22:00",
@@ -85,7 +87,6 @@ export default {
             types: [{ text: 'Regular', value: 1 }, { text: 'Monthly', value: 5 }, { text: 'Yearly', value: 6 }],
             game: null,
             show: true,
-            gameno: null,
             fields: ['Pos', 'Player', 'Hand', { key: 'html', label: 'Eliminated by/Wins with' }],
         }
     },
@@ -106,10 +107,14 @@ export default {
             return overview
         }
     },
+    mounted() {
+        
+        if(!isNaN(this.last)) this.form.gameno = this.last
+        
+    },
     created() {
         this.$root.$on('bv::toast:hidden', bvEvent => {
             if(bvEvent.vueTarget.variant === 'success'){
-                // console.log(this.form.gameno)
                 window.location.href = '/results/game/' + this.form.gameno
             }
         });
@@ -118,7 +123,6 @@ export default {
         onSubmit(evt) {
             evt.preventDefault()
             this.$bvModal.hide('modal-preview')
-            // alert(JSON.stringify(this.form))
             axios({
                 method: 'post',
                 url: '/upload/game',
