@@ -319,17 +319,21 @@ export default {
             for(let i=1;i<=10;i++){
                 if(typeof this.game.stats.result[i] !== 'undefined'){
                     let game = this.game.stats.result[i]
-                    if(i === 1){
-                        this.bbcode += '[indent][color=goldenrod]1. ' + game.player + '  ' + game.hand + ' wins with ' + this.game.stats.player_list[7][0][0].replace(/(<([^>]+)>)/gi, "") + '[/color]' + "\n"
-                    }else if(i === 2){
-                        this.bbcode += '[color=silver]2. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + ' [/color]' + "\n"
-                    }else if(i === 3){
-                        this.bbcode += '[color=darkred]3. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + ' [/color]' + "\n"
-                    }else if(i === 4){
-                        this.bbcode += '[color=black]4. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + "\n"
-                    }else{
-                        this.bbcode += i + '. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[7][i-1][0] + "\n"
-                    }    
+                    try{
+                        if(i === 1){
+                            this.bbcode += '[indent][color=goldenrod]1. ' + game.player + '  ' + game.hand + ' wins with ' + this.game.stats.player_list[7][0][0].replace(/(<([^>]+)>)/gi, "") + '[/color]' + "\n"
+                        }else if(i === 2){
+                            this.bbcode += '[color=silver]2. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + ' [/color]' + "\n"
+                        }else if(i === 3){
+                            this.bbcode += '[color=darkred]3. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + ' [/color]' + "\n"
+                        }else if(i === 4){
+                            this.bbcode += '[color=black]4. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + "\n"
+                        }else{
+                            this.bbcode += i + '. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[7][i-1][0] + "\n"
+                        }  
+                    }catch(e){
+                        console.log(e)
+                    } 
                 }else{
                     break;
                 }
