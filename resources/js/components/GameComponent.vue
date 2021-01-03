@@ -341,6 +341,8 @@ export default {
             for(let i=0;i<=10;i++){
                 if(typeof this.game.stats.player_list[1][i] !== 'undefined')
                     this.bbcode += '#' + this.game.stats.player_list[1][i]
+                else if (i== 7)
+                    this.bbcode += '#disco_dummy'
             }
             this.bbcode += '[/font][/color][/size]'
             this.bbcode += '[size=2][url=https://www.pokerth.net/community/wec/13787-wecup-ranking-2020#44912][color=darkred][br]Ranking[/color][/url][color=black] of WeCup[/color][/size][hr]'
