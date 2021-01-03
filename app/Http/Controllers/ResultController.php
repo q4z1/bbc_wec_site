@@ -39,7 +39,7 @@ class ResultController extends Controller
             'p8.nickname as p8',
             'p9.nickname as p9',
             'p10.nickname as p10'
-        )->orderBy('started', 'DESC')
+        )->orderBy('number', 'DESC')
         ->count();
         $results = DB::table('games')
             ->leftJoin('players as p1', 'games.pos1', '=', 'p1.id')
@@ -64,7 +64,7 @@ class ResultController extends Controller
                 'p8.nickname as p8',
                 'p9.nickname as p9',
                 'p10.nickname as p10'
-            )->orderBy('started', 'DESC')
+            )->orderBy('number', 'DESC')
             ->limit(10)
             ->whereYear('started','=', date("Y"))
             ->whereMonth('started','=', date("m"))
@@ -139,7 +139,7 @@ class ResultController extends Controller
             'p8.nickname as p8',
             'p9.nickname as p9',
             'p10.nickname as p10'
-        )->orderBy('started', 'DESC')
+        )->orderBy('number', 'DESC')
         ->whereYear('started','=', $year)
         ->whereMonth('started','=', $month)
         ->where('type', $type)
@@ -167,7 +167,7 @@ class ResultController extends Controller
             'p8.nickname as p8',
             'p9.nickname as p9',
             'p10.nickname as p10'
-        )->orderBy('started', 'DESC')
+        )->orderBy('number', 'DESC')
         ->whereYear('started','=', $year)
         ->whereMonth('started','=', $month)
         ->where('type', $type)
