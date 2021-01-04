@@ -3,19 +3,7 @@
         <h3>Results</h3>
         <b-row class="mb-3">
             <b-col>
-                <b-form-select v-model="year" @change="filter">                   
-                    <option value="2020">2020</option>
-                    <option value="2019">2019</option>
-                    <option value="2018">2018</option>
-                    <option value="2017">2017</option>
-                    <option value="2016">2016</option>
-                    <option value="2015">2015</option>
-                    <option value="2014">2014</option>
-                    <option value="2013">2013</option>
-                    <option value="2012">2012</option>
-                    <option value="2011">2011</option>
-                    <option value="2010">2010</option>
-                </b-form-select>
+                <b-form-select v-model="year" @change="filter" :options="yearRange"></b-form-select>
             </b-col>
             <b-col>
                 <b-form-select v-model="month" @change="filter">                   
@@ -34,13 +22,7 @@
                 </b-form-select>
             </b-col>
             <b-col>
-                <b-form-select v-model="type" @change="filter">                   
-                    <option value="1">Type 1</option>
-                    <option value="2">Type 2</option>
-                    <option value="3">Type 3</option>
-                    <option value="4">Type 4</option>
-                    <option value="5">Type 5</option>
-                </b-form-select>
+                <b-form-select v-model="type" @change="filter" :options="gameTypes"></b-form-select>
             </b-col>
         </b-row>
         <b-pagination
@@ -78,17 +60,61 @@
                 total: null,
             }
         },
+        computed: {
+            yearRange: function(){
+                let years = []
+                let now = this.year
+                let past = 2010
+                for(let i=now;i>=past;i--){
+                    years.push({value: i, text: i})
+                }
+                return years
+            },
+            gameTypes: function(){
+                return [
+                    { value: 1, text:'regular' },
+                    { value: 5, text:'monthly' },
+                    { value: 6, text:'yearly' },
+                ]
+            },
+        },
         mounted() {
-            console.log('Results mounted.')
-
             this.year = new Date().getFullYear() // initially current year
             this.month = new Date().getMonth() + 1 // initially current month
 
             // ajax call => result.data into this.results
-            this.result = this.results
+
+            this.result = this.formatResult(this.results)
             this.total = this.totals
         },
         methods:{
+            formatResult(result){
+                let results = result.map(entry => {
+                    console.log(entry)
+                    let newEntry = entry
+                    let element = document.createElement('div');
+                    for(let i=1;i<=10;i++){
+                        if(entry['p'+i] !== null){
+                            let str = entry['p'+i]
+                            if(str && typeof str === 'string') {
+                                // strip script/html tags
+                                str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
+                                str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
+                                element.innerHTML = str;
+                                str = element.textContent;
+                                element.textContent = '';
+                            }
+                            newEntry['p'+i] = str
+                        } 
+                        console.log(newEntry['p'+i])
+                    }
+
+                    return newEntry
+                })
+
+                // @TODO: replace special html chars
+                return results
+            },
             showGame(item, index, event) {
                 window.location.href = '/results/game/' + item.number
             },
@@ -101,7 +127,7 @@
                 })
                 .then(response => {
                     if(response.data.success === true){
-                        this.result = response.data.result
+                        this.result = this.formatResult(response.data.result)
                         this.total = response.data.total
                     }
                 }, (error) => {
