@@ -131,22 +131,30 @@ export default {
                 'rgba(86, 104, 226, 1.0)'
             ]
             // hand cash
+            // console.log(this.game.stats.hand_cash)
             let labels1 = []
-            for(let i=1;i<=this.game.stats.hand_cash[0].length;i++){
+            for(let i=1;i<=this.game.stats.hand_cash.length;i++){
                 labels1.push("Hand: " + i);
             }
             let datasets1 = []
-            for(let i=0;i<this.game.stats.player_list[0].length;i++){
-                let data = []
-                for(let j=0;j<=this.game.stats.hand_cash[i].length;j++){
-                    data.push(Number(this.game.stats.hand_cash[i][j]));
+            // console.log(this.game.stats.hand_cash[0].length)
+            try{
+                for(let i=0;i<10;i++){
+                    let data = []
+                    for(let j=0;j<=this.game.stats.hand_cash[i].length;j++){
+                        data.push(Number(this.game.stats.hand_cash[i][j]));
+                    }
+                    // console.log(i, this.game.stats.result[i+1])
+                    let set = {
+                        label: this.game.stats.player_list[1][i],
+                        //label: this.game.stats.result[i+1].player,
+                        borderColor: colors[i],
+                        data: data
+                    }
+                    datasets1.push(set);
                 }
-                let set = {
-                    label: this.game.stats.player_list[1][i],
-                    borderColor: colors[i],
-                    data: data
-                }
-                datasets1.push(set);
+            }catch(e){
+                console.log(e)
             }
             this.datacollection1 = {
                 labels: labels1,
@@ -311,32 +319,34 @@ export default {
                     }
                 )
             }
+
             this.bbcode = '[indent][img]/media/kunena/attachments/30607/Logo-WECUP_small1.jpg[/img][/indent]\n'
             this.bbcode += '[hr][b][size=6][color=black]♣ [/color][color=darkred]♥[/color][color=black] ♠[/color][color=darkred] ♦ [/color][/size][size=3][color=goldenrod][font=Palatino Linotype]'
             this.bbcode += 'WeCUP #' + this.game.number + ' - ' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(',', '')
             this.bbcode += '[/font][/color][/size][size=6][color=darkred] ♦ [/color][color=black]♠ [/color][color=darkred] ♥[/color]'
             this.bbcode += '[color=black] ♣[/color][/size][/b][br]'
-            for(let i=1;i<=10;i++){
-                if(typeof this.game.stats.result[i] !== 'undefined'){
-                    let game = this.game.stats.result[i]
-                    try{
-                        if(i === 1){
-                            this.bbcode += '[indent][color=goldenrod]1. ' + game.player + '  ' + game.hand + ' wins with ' + this.game.stats.player_list[7][0][0].replace(/(<([^>]+)>)/gi, "") + '[/color]' + "\n"
-                        }else if(i === 2){
-                            this.bbcode += '[color=silver]2. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + ' [/color]' + "\n"
-                        }else if(i === 3){
-                            this.bbcode += '[color=darkred]3. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + ' [/color]' + "\n"
-                        }else if(i === 4){
-                            this.bbcode += '[color=black]4. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[1][i-1] + "\n"
-                        }else{
-                            this.bbcode += i + '. ' + game.player + '  ' + game.hand + ' eliminated by ' + this.game.stats.player_list[7][i-1][0] + "\n"
-                        }  
-                    }catch(e){
-                        console.log(e)
-                    } 
+            for(let i=0;i<this.game.stats['player_list'][0].length;i++){
+                let eliminated = this.game.stats['player_list'][7][i][0]
+                if(eliminated.indexOf('[') == -1){
+                    eliminated = 'eliminated by ' + eliminated
                 }else{
-                    break;
+                    eliminated = 'wins with ' + eliminated
                 }
+                try{
+                    if(i === 0){
+                        this.bbcode += '[indent][color=goldenrod]1. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' wins with ' + this.game.stats.player_list[7][0][0].replace(/(<([^>]+)>)/gi, "") + '[/color]' + "\n"
+                    }else if(i === 1){
+                        this.bbcode += '[color=silver]2. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + ' [/color]' + "\n"
+                    }else if(i === 2){
+                        this.bbcode += '[color=darkred]3. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + ' [/color]' + "\n"
+                    }else if(i === 3){
+                        this.bbcode += '[color=black]4. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + "\n"
+                    }else if(typeof this.game.stats.player_list[7][i-1] !== 'undefined'){
+                        this.bbcode += i + '. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + "\n"
+                    }  
+                }catch(e){
+                    console.log(e)
+                } 
             }
             this.bbcode += '[/color][/indent]'
             this.bbcode += '[br][indent][color=darkred][size=4] Congratulations to [b]' + this.game.stats.result[1].player + '[/b][/size][/color][/indent]'
@@ -349,7 +359,7 @@ export default {
                     this.bbcode += '#disco_dummy'
             }
             this.bbcode += '[/font][/color][/size]'
-            this.bbcode += '[size=2][url=https://www.pokerth.net/community/wec/13787-wecup-ranking-2020#44912][color=darkred][br]Ranking[/color][/url][color=black] of WeCup[/color][/size][hr]'
+            this.bbcode += '[size=2][url=https://www.pokerth.net/community/forum/wec/14084-wecup-ranking-2021#48770][color=darkred][br]Ranking[/color][/url][color=black] of WeCup[/color][/size][hr]'
         }
     },
     mounted(){

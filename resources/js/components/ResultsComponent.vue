@@ -64,7 +64,7 @@
             yearRange: function(){
                 let years = []
                 let now = this.year
-                let past = 2010
+                let past = 2012
                 for(let i=now;i>=past;i--){
                     years.push({value: i, text: i})
                 }
@@ -106,13 +106,10 @@
                             }
                             newEntry['p'+i] = str
                         } 
-                        console.log(newEntry['p'+i])
                     }
 
                     return newEntry
                 })
-
-                // @TODO: replace special html chars
                 return results
             },
             showGame(item, index, event) {
