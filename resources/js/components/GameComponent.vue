@@ -307,10 +307,14 @@ export default {
             this.ranking = []
             for(let i=0;i<this.game.stats['player_list'][0].length;i++){
                 let eliminated = this.game.stats['player_list'][7][i][0]
-                if(eliminated.indexOf('[') == -1){
-                    eliminated = 'eliminated by ' + eliminated
+                if(typeof eliminated !== 'undefined'){
+                    if(eliminated.indexOf('[') == -1){
+                        eliminated = 'eliminated by ' + eliminated
+                    }else{
+                        eliminated = 'wins with ' + eliminated
+                    }
                 }else{
-                    eliminated = 'wins with ' + eliminated
+                    eliminated = ''
                 }
                 this.ranking.push(
                     {
@@ -329,10 +333,14 @@ export default {
             this.bbcode += '[color=black] ♣[/color][/size][/b][br]'
             for(let i=0;i<this.game.stats['player_list'][0].length;i++){
                 let eliminated = this.game.stats['player_list'][7][i][0]
-                if(eliminated.indexOf('[') == -1){
-                    eliminated = 'eliminated by ' + eliminated
+                if(typeof eliminated !== 'undefined'){
+                    if(eliminated.indexOf('[') == -1){
+                        eliminated = 'eliminated by ' + eliminated
+                    }else{
+                        eliminated = 'wins with ' + eliminated
+                    }
                 }else{
-                    eliminated = 'wins with ' + eliminated
+                    eliminated = ''
                 }
                 try{
                     if(i === 0){
