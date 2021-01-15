@@ -139,10 +139,11 @@ export default {
             let datasets1 = []
             // console.log(this.game.stats.hand_cash[0].length)
             try{
-                for(let i=0;i<10;i++){
+                let i = 0
+                for(let hand in this.game.stats.hand_cash){
                     let data = []
-                    for(let j=0;j<=this.game.stats.hand_cash[i].length;j++){
-                        data.push(Number(this.game.stats.hand_cash[i][j]));
+                    for(let j=0;j<=hand.length;j++){
+                        data.push(Number(hand[j]));
                     }
                     // console.log(i, this.game.stats.result[i+1])
                     let set = {
@@ -152,6 +153,7 @@ export default {
                         data: data
                     }
                     datasets1.push(set);
+                    i++
                 }
             }catch(e){
                 console.log(e)
@@ -342,7 +344,7 @@ export default {
                     }else if(i === 3){
                         this.bbcode += '[color=black]4. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + "\n"
                     }else if(typeof this.game.stats.player_list[7][i-1] !== 'undefined'){
-                        this.bbcode += i + '. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + "\n"
+                        this.bbcode += (i+1) + '. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + "\n"
                     }  
                 }catch(e){
                     console.log(e)
