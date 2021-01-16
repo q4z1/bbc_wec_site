@@ -29,13 +29,7 @@
                 <b-navbar-nav>
                     <b-nav-item href="/">Home</b-nav-item>
                     @auth
-                    <b-nav-item-dropdown  id="dropdown-1">
-                        <template #button-content>
-                            <strong>Game-Admin</strong>
-                        </template>
-                        <b-dropdown-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-dropdown-item>
-                        <b-dropdown-item href="#">Edit Game</b-dropdown-item>
-                    </b-nav-item-dropdown>
+                    <b-nav-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-nav-item>
                     @endauth
                     <b-nav-item href="{{ route('results') }}">Results</b-nav-item>
                     @auth
