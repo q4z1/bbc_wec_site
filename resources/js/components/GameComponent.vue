@@ -178,7 +178,8 @@ export default {
             // console.log(this.game.stats.hand_cash)
             let labels1 = []
             for(let i=1;i<=this.game.stats.hand_cash[0].length;i++){
-                labels1.push("Hand: " + i);
+                if(i === 1)  labels1.push("Hand: " + i);
+                else   labels1.push(i);
             }
             let datasets1 = []
             console.log(this.game.stats.player_list[0].length)
