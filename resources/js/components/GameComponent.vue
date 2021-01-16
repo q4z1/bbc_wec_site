@@ -20,8 +20,18 @@
                         <b-col><strong>Hands:</strong></b-col>
                         <b-col>{{ game.stats['player_list'][3][0] }}</b-col>
                     </b-row>
-                    <b-row class="mt-5">
-                        <b-button variant="warning" v-b-modal.bbcode>Show BB Code for Forum Post</b-button>
+                    <b-row class="mt-5 ml-0">
+                        <b-col>
+                            <b-row class="w-75">
+                                <b-button variant="warning" v-b-modal.bbcode class="w-100">Show BB Code for Forum Post</b-button>
+                            </b-row>
+                            <b-row class="mt-2 w-75">
+                                <b-button variant="info" v-b-modal.edit class="w-100">Edit Game</b-button>
+                            </b-row>
+                            <b-row class="mt-2 w-75">
+                                <b-button variant="danger" v-b-modal.delete class="w-100">Delete Game</b-button>
+                            </b-row>
+                        </b-col>
                     </b-row>
                 </b-col>
                 <b-col>
@@ -84,13 +94,40 @@
                 </b-col>
             </b-row>
         </b-container>
-        <b-modal id="bbcode" title="Forum BB Code">
+        <b-modal id="bbcode" title="Forum BB Code" :cancel-disabled="true" v-model="show_bb">
             <b-form-textarea
                 id="bbcode_content"
                 v-model="bbcode"
                 rows="10"
                 max-rows="12"
             ></b-form-textarea>
+            <template #modal-footer>
+                <div class="w-100">
+                    <b-button
+                        variant="primary"
+                        size="sm"
+                        class="float-right"
+                        @click="show_bb=false"
+                    >
+                        Close
+                    </b-button>
+                    <b-button
+                        variant="warning"
+                        size="sm"
+                        class="float-right mr-2"
+                        @click="bb2clipboard"
+                        title="Copy to Clipboard"
+                    >
+                        <b-icon-clipboard-plus></b-icon-clipboard-plus>
+                    </b-button>
+                </div>
+            </template>
+        </b-modal>
+        <b-modal id="edit" title="Edit Game">
+            <game-edit-component :game="game"></game-edit-component>
+        </b-modal>
+        <b-modal id="delete" title="Delete Game">
+            <h1>Sure to delete?</h1>
         </b-modal>
     </div>
 </template>
@@ -114,6 +151,7 @@ export default {
             basic_data: null,
             ranking: null,
             bbcode: null,
+            show_bb: false,
         }
     },
     methods:{
@@ -368,6 +406,18 @@ export default {
             }
             this.bbcode += '[/font][/color][/size]'
             this.bbcode += '[size=2][url=https://www.pokerth.net/community/forum/wec/14084-wecup-ranking-2021#48770][color=darkred][br]Ranking[/color][/url][color=black] of WeCup[/color][/size][hr]'
+        },
+        async copy(s) {
+            await navigator.clipboard.writeText(s);
+            this.$bvToast.toast(`You can paste the BB Code into forum now.`, {
+                title: 'BB Code copied to clipboard.',
+                autoHideDelay: 2000,
+                appendToast: true,
+                variant: 'success',
+            })
+        },
+        bb2clipboard() {
+              this.copy(window.document.getElementById("bbcode_content").value)
         }
     },
     mounted(){

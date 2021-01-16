@@ -31,5 +31,6 @@ Route::get('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 
 Route::get('/results', [App\Http\Controllers\ResultController::class, 'index'])->name('results');
 Route::post('/results', [App\Http\Controllers\ResultController::class, 'filter'])->name('results.filter');
 Route::get('/results/game/{game}', [App\Http\Controllers\ResultController::class, 'game'])->name('results.game');
+Route::get('/results/game/edit/{game}', [App\Http\Controllers\ResultController::class, 'game_edit'])->name('results.game.edit');
 Route::get('/results/halloffame', [App\Http\Controllers\ResultController::class, 'halloffame'])->name('results.halloffame');
 Route::post('/results/halloffame', [App\Http\Controllers\ResultController::class, 'halloffame_filter'])->name('results.halloffame.filter');

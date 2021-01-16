@@ -111,6 +111,22 @@ class ResultController extends Controller
         ]);
     }
 
+    public function game_edit(Request $request, $game){
+        $game = Game::where('number', $game)->first();
+        if(!$game) return abort(404);
+        for($i=1;$i<=10;$i++){
+            $p = "pos$i";
+            $pl = Player::find($game->{$p});
+            if($pl) $pl = $pl->nickname;
+            $game->{$p} = $pl;
+        }
+        $log = new LogFileController();
+        $game->stats = $log->process_log_file($game->pdb);
+        return view('game_edit', [
+            "game" => $game
+        ]);
+    }
+
     public function filter(Request $request){
         $year = $request->input('year', date("Y"));
         $month = $request->input('month', date("m"));
