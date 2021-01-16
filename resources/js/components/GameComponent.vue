@@ -1,7 +1,7 @@
 <template>
     <div>
         <b-container>
-            <b-row>
+            <b-row class="mt-3">
                 <b-col>
                     <h3>Basic data</h3>
                     <b-row>
@@ -43,51 +43,61 @@
                     </b-table>
                 </b-col>
             </b-row>
-            <b-row>
+            <b-row class="mt-3">
                 <b-col>
                     <h3>Hand Cash</h3>
                     <line-chart-component :chart-data="datacollection1" :options="options1"></line-chart-component>
                 </b-col>
+            </b-row>
+            <b-row class="mt-3">
                 <b-col>
                     <h3>Pot Size</h3>
                     <bar-chart-component :chart-data="datacollection2" :options="options2"></bar-chart-component>
                 </b-col>
             </b-row>
-            <b-row>
+            <b-row class="mt-3">
                 <b-col>
                     <h3>Most hands played</h3>
                     <b-table striped hover :items="most_hands"></b-table>
                 </b-col>
+            </b-row>
+            <b-row class="mt-3">
                 <b-col>
                     <h3>Best hands</h3>
                     <b-table striped hover :items="best_hands"></b-table>
                 </b-col>
             </b-row>
-            <b-row>
+            <b-row class="mt-3">
                 <b-col>
                     <h3>Most wins</h3>
                     <b-table striped hover :items="most_wins"></b-table>
                 </b-col>
+            </b-row>
+            <b-row class="mt-3">
                 <b-col>
                     <h3>Highest wins</h3>
                     <b-table striped hover :items="highest_wins"></b-table>
                 </b-col>
             </b-row>
-            <b-row>
+            <b-row class="mt-3">
                 <b-col>
                     <h3>Longest wins</h3>
                     <b-table striped hover :items="longest_wins"></b-table>
                 </b-col>
+            </b-row>
+            <b-row class="mt-3">
                 <b-col>
                     <h3>Longest losses</h3>
                     <b-table striped hover :items="longest_losses"></b-table>
                 </b-col>
             </b-row>
-            <b-row>
+            <b-row class="mt-3">
                 <b-col>
                     <h3>Most bets/raises</h3>
                     <b-table striped hover :items="most_bets"></b-table>
                 </b-col>
+            </b-row>
+            <b-row class="mt-3">
                 <b-col>
                     <h3>Most all in</h3>
                     <b-table striped hover :items="most_bingo"></b-table>
@@ -108,18 +118,14 @@
                         size="sm"
                         class="float-right"
                         @click="show_bb=false"
-                    >
-                        Close
-                    </b-button>
+                    >Close</b-button>
                     <b-button
                         variant="warning"
                         size="sm"
                         class="float-right mr-2"
                         @click="bb2clipboard"
                         title="Copy to Clipboard"
-                    >
-                        <b-icon-clipboard-plus></b-icon-clipboard-plus>
-                    </b-button>
+                    ><b-icon-clipboard-plus></b-icon-clipboard-plus></b-button>
                 </div>
             </template>
         </b-modal>
