@@ -43,7 +43,7 @@
                     </b-table>
                 </b-col>
             </b-row>
-            <b-row class="mt-3 d-flex flex-grow-1">
+            <b-row class="mt-3">
                 <b-col>
                     <h3>Hand Cash</h3>
                     <line-chart-component :chart-data="datacollection1" :options="options1"></line-chart-component>
@@ -230,9 +230,8 @@ export default {
                         }
                     }]
                 },
-                // legend: {
-                //     display: false
-                // },
+                responsive: true,
+                maintainAspectRatio: false
             },
             this.options2 = {
                 scales: {
@@ -246,6 +245,8 @@ export default {
                 legend: {
                     display: false
                 },
+                responsive: true,
+                maintainAspectRatio: false
             }
             // console.log(this.game.stats['most hands played'])
             this.most_hands = []
@@ -423,7 +424,7 @@ export default {
             })
         },
         bb2clipboard() {
-              this.copy(window.document.getElementById("bbcode_content").value)
+            this.copy(window.document.getElementById("bbcode_content").value)
         }
     },
     mounted(){
