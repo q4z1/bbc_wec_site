@@ -133,27 +133,25 @@ export default {
             // hand cash
             // console.log(this.game.stats.hand_cash)
             let labels1 = []
-            for(let i=1;i<=this.game.stats.hand_cash.length;i++){
+            for(let i=1;i<=this.game.stats.hand_cash[0].length;i++){
                 labels1.push("Hand: " + i);
             }
             let datasets1 = []
-            // console.log(this.game.stats.hand_cash[0].length)
+            console.log(this.game.stats.player_list[0].length)
             try{
-                let i = 0
-                for(let hand in this.game.stats.hand_cash){
+                for(let index in this.game.stats.hand_cash){
+                    if(parseInt(index) >= this.game.stats.player_list[0].length) break;
+                    let hand = this.game.stats.hand_cash[index]
                     let data = []
                     for(let j=0;j<=hand.length;j++){
                         data.push(Number(hand[j]));
                     }
-                    // console.log(i, this.game.stats.result[i+1])
                     let set = {
-                        label: this.game.stats.player_list[1][i],
-                        //label: this.game.stats.result[i+1].player,
-                        borderColor: colors[i],
+                        label: this.game.stats.player_list[1][this.game.stats.player_list[0].indexOf((parseInt(index) + 1).toString())],
+                        borderColor: colors[parseInt(index)],
                         data: data
                     }
                     datasets1.push(set);
-                    i++
                 }
             }catch(e){
                 console.log(e)
