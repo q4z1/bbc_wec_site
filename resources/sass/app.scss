@@ -7,3 +7,13 @@
 // Bootstrap
 @import '~bootstrap/scss/bootstrap';
 
+body{
+    position: relative;
+}
+
+#app{
+    position: absolute;
+    right: 0px;
+    left: 0px;
+}
+

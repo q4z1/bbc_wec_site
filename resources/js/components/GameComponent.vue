@@ -43,7 +43,7 @@
                     </b-table>
                 </b-col>
             </b-row>
-            <b-row class="mt-3">
+            <b-row class="mt-3 d-flex flex-grow-1">
                 <b-col>
                     <h3>Hand Cash</h3>
                     <line-chart-component :chart-data="datacollection1" :options="options1"></line-chart-component>
