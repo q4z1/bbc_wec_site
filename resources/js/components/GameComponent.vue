@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-container>
+        <b-container v-if="!edit">
             <b-row class="mt-3">
                 <b-col>
                     <h3>Basic data</h3>
@@ -26,7 +26,7 @@
                                 <b-button variant="warning" v-b-modal.bbcode class="w-100">Get BB Code</b-button>
                             </b-row>
                             <b-row class="mt-2 w-75">
-                                <b-button variant="info" v-b-modal.edit class="w-100">Edit Game</b-button>
+                                <b-button variant="info" @click="edit = true" class="w-100">Edit Game</b-button>
                             </b-row>
                             <b-row class="mt-2 w-75">
                                 <b-button variant="danger" v-b-modal.delete class="w-100">Delete Game</b-button>
@@ -103,7 +103,14 @@
                     <b-table striped hover :items="most_bingo"></b-table>
                 </b-col>
             </b-row>
+            <b-row>
+                <b-col><small>
+                    *)	percental value: absolute value in relation to hands played<br>
+                    **)	percental value: number of hands with at least one bet/raise in relation to all hands played
+                </small></b-col>
+            </b-row>
         </b-container>
+        <b-container v-else><game-edit-component :game="game"></game-edit-component></b-container>
         <b-modal id="bbcode" title="Forum BB Code" :cancel-disabled="true" v-model="show_bb">
             <b-form-textarea
                 id="bbcode_content"
@@ -158,6 +165,7 @@ export default {
             ranking: null,
             bbcode: null,
             show_bb: false,
+            edit: false,
         }
     },
     methods:{
