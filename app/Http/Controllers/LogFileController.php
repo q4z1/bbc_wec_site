@@ -39,10 +39,20 @@ class LogFileController extends Controller
 		$most_raises = $this->get_most_raise($player_list[0],$player_list[1],$played_hands[2]);	
 		$most_all_in = $this->get_most_all_in($played_hands[2]);
 		$pot_size = $this->get_pot_size();
-        list($result_table, $hands) = $this->fetch_result_table_hands();
+		
+		// remove html entities
+		$best_hands[1] = $this->convertHtmlEntities($best_hands[1]);
+		$highest_win[1] = $this->convertHtmlEntities($highest_win[1]);
+		$longest_losses[1] = $this->convertHtmlEntities($longest_losses[1]);
+		$longest_wins[1] = $this->convertHtmlEntities($longest_wins[1]);
+		$most_all_in[1] = $this->convertHtmlEntities($most_all_in[1]);
+		$most_raises[1] = $this->convertHtmlEntities($most_raises[1]);
+		$played_hands[1] = $this->convertHtmlEntities($played_hands[1]);
+		$most_wins[1] = $this->convertHtmlEntities($most_wins[1]);
+		$player_list2[1] = $this->convertHtmlEntities($player_list2[1]);
 
 		$game = array(
-			"result" => $result_table,
+			// "result" => $result_table,
 			"player_list" => $player_list2,
 			"most hands played" => $played_hands,
 			"best hands" => $best_hands,
@@ -59,6 +69,13 @@ class LogFileController extends Controller
 		);
 
 		return $game;
+	}
+
+	private function convertHtmlEntities($array){
+		for($i=0; $i<count((array)$array); $i++){
+			$array[$i] = html_entity_decode($array[$i]);
+		}
+		return $array;
 	}
 	
     private function get_pot_size(){
@@ -555,40 +572,6 @@ class LogFileController extends Controller
 			
 		return $hand_cash;
 	
-	}
-	
-	private function fetch_result_table_hands(){
-		$query = "SELECT a.Player as Seat, a.HandID, p.Player, h.*, w.Player as winner, wp.Player as winnername
-		FROM Action a 
-		LEFT JOIN Player p ON (a.Player = p.Seat and a.UniqueGameID = p.UniqueGameID)
-		LEFT JOIN Hand h ON (h.HandID = a.HandID and h.UniqueGameID = a.UniqueGameID)
-		LEFT JOIN Action w ON (a.HandID = w.HandID and w.Action IN('wins', 'wins the game'))
-		LEFT JOIN Player wp ON (w.Player = wp.Seat and wp.UniqueGameID = p.UniqueGameID)
-		WHERE a.Action IN('wins game' ,'sits out') AND a.UniqueGameID= ".$this->game_id."
-		ORDER BY a.ActionID DESC;";
-		$query = $this->pdo->prepare($query);
-		$query->execute();
-		$game = [];
-		while($row = $query->fetch(PDO::FETCH_ASSOC)) {
-			$game[] = $row;
-		}
-		$result_table = array();
-		foreach($game as $i => $p){
-			$result_table[$i+1] = array(
-				"player" => $p['Player'],
-				"hand" => $p['HandID'],
-				"eleminatedBy" => $p['winnername']
-			);
-		}
-
-		$hands = [];
-		$query = $this->pdo->prepare("SELECT * FROM Hand");
-		$query->execute();
-		$game = [];
-		while($row = $query->fetch(PDO::FETCH_ASSOC)) {
-			$hands[] = $row;
-        }
-        return [$result_table, $hands];
 	}
 
 	private function get_played_hands($player_list_hands) {

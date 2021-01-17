@@ -23,7 +23,7 @@
                     <b-row class="mt-5 ml-0">
                         <b-col>
                             <b-row class="w-75">
-                                <b-button variant="warning" v-b-modal.bbcode class="w-100">Show BB Code for Forum Post</b-button>
+                                <b-button variant="warning" v-b-modal.bbcode class="w-100">Get BB Code</b-button>
                             </b-row>
                             <b-row class="mt-2 w-75">
                                 <b-button variant="info" v-b-modal.edit class="w-100">Edit Game</b-button>
@@ -403,7 +403,7 @@ export default {
                 } 
             }
             this.bbcode += '[/color][/indent]'
-            this.bbcode += '[br][indent][color=darkred][size=4] Congratulations to [b]' + this.game.stats.result[1].player + '[/b][/size][/color][/indent]'
+            this.bbcode += '[br][indent][color=darkred][size=4] Congratulations to [b]' + this.game.stats['player_list'][1][0] + '[/b][/size][/color][/indent]'
             this.bbcode += '[hr][size=2][url=https://www.pokerth.net/log-file-analysis/?ID=' + this.game.pdb.replace('.pdb', '') + '&UniqueGameID=' + this.game.unique_game_id + '][color=darkred]Log-Analysis[/color][/url]'
             this.bbcode += '[color=black] of WeCup [font=Arial Narrow]#' + this.game.number + '#' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(', ', '#')
             for(let i=0;i<=10;i++){
