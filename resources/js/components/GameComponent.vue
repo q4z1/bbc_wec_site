@@ -20,7 +20,7 @@
                         <b-col><strong>Hands:</strong></b-col>
                         <b-col>{{ game.stats['player_list'][3][0] }}</b-col>
                     </b-row>
-                    <b-row class="mt-5 ml-0">
+                    <b-row class="mt-5 ml-0 mb-3">
                         <b-col>
                             <b-row class="w-75">
                                 <b-button variant="warning" v-b-modal.bbcode class="w-100">Get BB Code</b-button>
@@ -441,8 +441,16 @@ export default {
     },
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
     tbody tr{
         cursor: pointer;
+    }
+    table{
+        overflow-x: scroll;
+    }
+</style>
+<style>
+    #app{
+        position: relative;
     }
 </style>
