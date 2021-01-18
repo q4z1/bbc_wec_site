@@ -136,8 +136,10 @@
                 </div>
             </template>
         </b-modal>
-        <b-modal id="delete" title="Delete Game">
-            <h1>Sure to delete?</h1>
+        <b-modal ref="delete" id="delete" title="Delete Game" ok-disabled>
+            Are you sure to delete game #{{ this.game.number }}?
+            <b-button class="mt-3" variant="outline-info" block @click="$refs['delete'].hide()">Cancel</b-button>
+            <b-button class="mt-2" variant="outline-danger" block @click="deleteGame">Delete</b-button>
         </b-modal>
     </div>
 </template>
@@ -437,7 +439,39 @@ export default {
         },
         back() {
             window.location.href = window.location.href
-        }
+        },
+        deleteGame(){
+            axios({
+                method: 'get',
+                url: '/delete/game/' + this.game.number,
+            })
+            .then(response => {
+                if(response.data.status){
+                    this.$bvToast.toast(response.data.msg, {
+                        title: 'Success!',
+                        autoHideDelay: 5000,
+                        appendToast: true,
+                        variant: 'success',
+                    })
+                    $(this.$emit('back'))
+                }else{
+                    this.$bvToast.toast(response.data.msg, {
+                        title: 'Game deletion failed!',
+                        autoHideDelay: 5000,
+                        appendToast: true,
+                        variant: 'danger',
+                    })
+                }
+            })
+            .catch(response => {
+                this.$bvToast.toast(response, {
+                    title: 'Game deletion failed!',
+                    autoHideDelay: 5000,
+                    appendToast: true,
+                    variant: 'danger',
+                })
+            })
+        },
     },
     mounted(){
         this.init()
@@ -455,5 +489,8 @@ export default {
 <style>
     #app{
         position: relative;
+    }
+    #delete footer{
+        display: none;
     }
 </style>

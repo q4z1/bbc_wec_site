@@ -149,6 +149,14 @@ class GameController extends Controller
         //
     }
 
+    public function delete_game(Request $request, $game)
+    {
+        $game = Game::where('number', $game)->first();
+        if(!$game) return ["status" => false, 'msg' => "Game not found!"];
+        $game->delete();
+        return ["status" => true, 'msg' => "Game deleted!"];
+    }
+
     public function update_game(Request $request, $game)
     {
         $game = Game::where('number', $game)->first();
