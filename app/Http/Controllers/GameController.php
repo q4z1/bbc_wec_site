@@ -153,6 +153,7 @@ class GameController extends Controller
     {
         $game = Game::where('number', $game)->first();
         if(!$game) return ["status" => false, 'msg' => "Game not found!"];
+        Point::where('game_id', $game->id)->delete();
         $game->delete();
         return ["status" => true, 'msg' => "Game deleted!"];
     }
