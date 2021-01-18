@@ -453,7 +453,7 @@ export default {
                         appendToast: true,
                         variant: 'success',
                     })
-                    $(this.$emit('back'))
+                    window.location.href = '/results'
                 }else{
                     this.$bvToast.toast(response.data.msg, {
                         title: 'Game deletion failed!',
