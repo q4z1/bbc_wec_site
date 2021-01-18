@@ -25,7 +25,7 @@
                 <b-form-select v-model="type" @change="filter" :options="gameTypes"></b-form-select>
             </b-col>
             <b-col class="text-right">
-                <b-button variant="info">Reset</b-button>
+                <b-button variant="warning" @click="reset">Reset</b-button>
             </b-col>
         </b-row>
         <b-pagination
@@ -137,6 +137,12 @@
             paginate(bvEvt, page){
                 bvEvt.preventDefault()
                 this.page = page
+                this.filter()
+            },
+            reset(){
+                this.year = new Date().getFullYear() // current year
+                this.month = new Date().getMonth() + 1 // current month
+                this.type = 1
                 this.filter()
             }
         }
