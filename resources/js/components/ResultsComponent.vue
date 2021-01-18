@@ -24,6 +24,9 @@
             <b-col>
                 <b-form-select v-model="type" @change="filter" :options="gameTypes"></b-form-select>
             </b-col>
+            <b-col class="text-right">
+                <b-button variant="info">Reset</b-button>
+            </b-col>
         </b-row>
         <b-pagination
             v-if="result.length"
@@ -39,7 +42,7 @@
             :items="result"
             @row-clicked="showGame"
         ></b-table>
-        <p v-else>No games found.</p>
+        <p v-else class="mt-4">No games found.</p>
         <b-pagination
             v-if="result.length"
             v-model="page"
