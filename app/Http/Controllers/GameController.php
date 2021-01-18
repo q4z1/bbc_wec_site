@@ -149,16 +149,49 @@ class GameController extends Controller
         //
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Game  $game
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Game $game)
+    public function update_game(Request $request, $game)
     {
-        //
+        $game = Game::where('number', $game)->first();
+        if(!$game) return ["status" => false, 'msg' => "Game not found!"];
+
+        // json gedöns
+        $payload = json_decode($request->getContent(), true);
+
+        if(is_null($payload)) return ["status" => false, 'msg' => "Parameter missing!"];
+
+        for($i=1;$i<=10;$i++){
+            $p = "pos" . $i;
+            if(array_key_exists($i-1, $payload['player'])){
+                $player = Player::where('nickname', $payload['player'][$i-1])->first();
+                if($player) $game->{$p} = $player->id;
+            }
+        }
+        $game->started = $payload["date"] . " " . $payload["time"];
+        $game->type = $payload['gametype'];
+        $game->number = $payload['gameno'];
+        $game->save();
+        // score
+        Point::where('game_id', $game->id)->delete();
+        for($i=1;$i<=10;$i++){
+            if(array_key_exists($i-1, $payload['player'])){
+                $player = Player::where('nickname', $payload['player'][$i-1])->first();
+                if($player){
+                    $pt = new Point();
+                    $pt->points = 0;
+                    if($i<8){
+                        $points = [75,45,30,20,15,10,5];
+                        $pt->points = $points[$i-1];
+                    }
+                    $pt->game_started = $payload["date"] . " " . $payload["time"];
+                    $pt->game_id = $game->id;
+                    $pt->pos = $i;
+                    $pt->type = $game->type;
+                    $pt->player_id = $player->id;
+                    $pt->save();
+                }
+            }
+        }
+        return ["status" => true, 'msg' => "Game succesfully saved!"];
     }
 
     /**

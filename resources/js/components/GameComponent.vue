@@ -110,7 +110,7 @@
                 </small></b-col>
             </b-row>
         </b-container>
-        <b-container v-else><game-edit-component :game="game"></game-edit-component></b-container>
+        <b-container v-else><game-edit-component :game="game" @back="back" @update="update"></game-edit-component></b-container>
         <b-modal id="bbcode" title="Forum BB Code" :cancel-disabled="true" v-model="show_bb">
             <b-form-textarea
                 id="bbcode_content"
@@ -135,9 +135,6 @@
                     ><b-icon-clipboard-plus></b-icon-clipboard-plus></b-button>
                 </div>
             </template>
-        </b-modal>
-        <b-modal id="edit" title="Edit Game">
-            <game-edit-component :game="game"></game-edit-component>
         </b-modal>
         <b-modal id="delete" title="Delete Game">
             <h1>Sure to delete?</h1>
@@ -166,6 +163,7 @@ export default {
             bbcode: null,
             show_bb: false,
             edit: false,
+            eGame: this.game
         }
     },
     methods:{
@@ -190,7 +188,6 @@ export default {
                 else   labels1.push(i);
             }
             let datasets1 = []
-            console.log(this.game.stats.player_list[0].length)
             try{
                 for(let index in this.game.stats.hand_cash){
                     if(parseInt(index) >= this.game.stats.player_list[0].length) break;
@@ -423,6 +420,9 @@ export default {
             this.bbcode += '[/font][/color][/size]'
             this.bbcode += '[size=2][url=https://www.pokerth.net/community/forum/wec/14084-wecup-ranking-2021#48770][color=darkred][br]Ranking[/color][/url][color=black] of WeCup[/color][/size][hr]'
         },
+        update(game){
+            this.eGame = game
+        },
         async copy(s) {
             await navigator.clipboard.writeText(s);
             this.$bvToast.toast(`You can paste the BB Code into forum now.`, {
@@ -434,6 +434,9 @@ export default {
         },
         bb2clipboard() {
             this.copy(window.document.getElementById("bbcode_content").value)
+        },
+        back() {
+            window.location.href = window.location.href
         }
     },
     mounted(){

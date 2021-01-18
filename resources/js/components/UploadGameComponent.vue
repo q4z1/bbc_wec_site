@@ -151,7 +151,7 @@ export default {
                             title: 'Game upload failed!',
                             autoHideDelay: 5000,
                             appendToast: true,
-                            variant: 'error',
+                            variant: 'danger',
                         })
                         this.form.loglink = ''
                         this.form.gametype = 1
@@ -167,7 +167,7 @@ export default {
                         title: 'Game upload failed!',
                         autoHideDelay: 5000,
                         appendToast: true,
-                        variant: 'error',
+                        variant: 'danger',
                     })
                 });
 

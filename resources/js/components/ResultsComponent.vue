@@ -95,16 +95,7 @@
                     let element = document.createElement('div');
                     for(let i=1;i<=10;i++){
                         if(entry['p'+i] !== null){
-                            let str = entry['p'+i]
-                            if(str && typeof str === 'string') {
-                                // strip script/html tags
-                                str = str.replace(/<script[^>]*>([\S\s]*?)<\/script>/gmi, '');
-                                str = str.replace(/<\/?\w(?:[^"'>]|"[^"]*"|'[^']*')*>/gmi, '');
-                                element.innerHTML = str;
-                                str = element.textContent;
-                                element.textContent = '';
-                            }
-                            newEntry['p'+i] = str
+                            newEntry['p'+i] = entry['p'+i]
                         } 
                     }
 
