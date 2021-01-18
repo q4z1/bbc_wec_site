@@ -26,6 +26,7 @@
             </b-col>
         </b-row>
         <b-pagination
+            v-if="result.length"
             v-model="page"
             :total-rows="total"
             :per-page="10"
@@ -33,11 +34,14 @@
             @page-click="paginate"
         ></b-pagination>
         <b-table striped hover 
+            v-if="result.length"
             id="results_table"
             :items="result"
             @row-clicked="showGame"
         ></b-table>
+        <p v-else>No games found.</p>
         <b-pagination
+            v-if="result.length"
             v-model="page"
             :total-rows="total"
             :per-page="10"
