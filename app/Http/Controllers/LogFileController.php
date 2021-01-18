@@ -11,10 +11,10 @@ class LogFileController extends Controller
     private $game_id;
 
 	public function process_log($url){
-		return $this->process_log_file($this->fetch_database($url));
+		return $this->process_log_file($this->fetch_database($url), null);
 	}
 
-	public function process_log_file($pdb){
+	public function process_log_file($pdb, $id){
 		if(!file_exists("/home/www/pokerth/log_file_analysis/upload/$pdb") && !file_exists("../storage/app/pdb/$pdb")){
 			return false;
 		}elseif(file_exists("/home/www/pokerth/log_file_analysis/upload/$pdb") && !file_exists("../storage/app/pdb/$pdb")){
@@ -22,7 +22,7 @@ class LogFileController extends Controller
 		}elseif(!file_exists("../storage/app/pdb/$pdb")){
 			return false;
 		}
-		if(is_null($this->game_id)) $this->game_id = 1;
+		if(is_null($this->game_id) && !is_null($id)) $this->game_id = $id;
 		$this->pdo = new PDO("sqlite:../storage/app/pdb/".$pdb);
 		// sqlite error handling necessary?
 

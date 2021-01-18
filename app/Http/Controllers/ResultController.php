@@ -105,7 +105,7 @@ class ResultController extends Controller
             $game->{$p} = $pl;
         }
         $log = new LogFileController();
-        $game->stats = $log->process_log_file($game->pdb);
+        $game->stats = $log->process_log_file($game->pdb, $game->unique_game_id);
         return view('game', [
             "game" => $game
         ]);
