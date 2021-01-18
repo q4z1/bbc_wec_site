@@ -5,7 +5,7 @@
                 <div class="row">
                     <div class="col">
                         <div class="row">
-                            <div class="col">
+                            <div class="col-7">
                                 <b-form-group
                                     id="input-group-1"
                                     label="Game-Number:"
@@ -52,9 +52,10 @@
                                             v-model="form.player[index]"
                                             class="mb-1"
                                             size="sm"
+                                            :disabled="form.disco_dummy[index] === 1"
                                             ></b-form-input>
                                         </div>
-                                        <div class="col-1 float-right">
+                                        <div class="col-1 float-right" v-b-tooltip.hover title="Disco Dummy">
                                             <b-form-checkbox
                                             v-model="form.disco_dummy[index]"
                                             value="1"
@@ -175,6 +176,9 @@ export default {
     },
 }
 </script>
-<style lang="sass" scoped>
-
+<style lang="scss" scoped>
+    label{
+        font-size: 24px;
+        font-weight: bold;
+    }
 </style>
