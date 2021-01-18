@@ -87,6 +87,11 @@
             this.result = this.formatResult(this.results)
             this.total = this.totals
         },
+        created(){
+            for(let i=0;i<this.results.length;i++){
+                this.results[i].type = this.gameTypes[i].text
+            }
+        },
         methods:{
             formatResult(result){
                 let results = result.map(entry => {
