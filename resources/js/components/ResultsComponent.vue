@@ -65,6 +65,7 @@
                 type: 1, // regular games
                 page: 1, // we always start with page 1
                 total: null,
+                types: [{ text: 'Regular', value: 1 }, { text: 'Monthly', value: 5 }, { text: 'Yearly', value: 6 }],
             }
         },
         computed: {
@@ -109,7 +110,11 @@
                             newEntry['p'+i] = entry['p'+i]
                         } 
                     }
-
+                    this.types.map(typ => { 
+                        if(typ.value == entry.type) newEntry.type = typ.text 
+                        else if(typ.text.toLowerCase()  == entry.type.toLowerCase()) newEntry.type = typ.text 
+                    })
+                    console.log(newEntry)
                     return newEntry
                 })
                 return results
