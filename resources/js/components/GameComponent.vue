@@ -9,6 +9,10 @@
                         <b-col>{{ game.number }}</b-col>
                     </b-row>
                     <b-row>
+                        <b-col><strong>Type:</strong></b-col>
+                        <b-col>{{ type }}</b-col>
+                    </b-row>
+                    <b-row>
                         <b-col><strong>Number of Players:</strong></b-col>
                         <b-col>{{ game.stats['player_list'][0].length }}</b-col>
                     </b-row>
@@ -165,7 +169,9 @@ export default {
             bbcode: null,
             show_bb: false,
             edit: false,
-            eGame: this.game
+            eGame: this.game,
+            type: 1,
+            types: [{ text: 'Regular', value: 1 }, { text: 'Monthly', value: 5 }, { text: 'Yearly', value: 6 }],
         }
     },
     methods:{
@@ -376,6 +382,9 @@ export default {
                     }
                 )
             }
+            this.types.map(typ => { 
+                if(typ.value == this.game.type) this.type = typ.text 
+            })
 
             this.bbcode = '[indent][img]/media/kunena/attachments/30607/Logo-WECUP_small1.jpg[/img][/indent]\n'
             this.bbcode += '[hr][b][size=6][color=black]♣ [/color][color=darkred]♥[/color][color=black] ♠[/color][color=darkred] ♦ [/color][/size][size=3][color=goldenrod][font=Palatino Linotype]'
@@ -416,7 +425,7 @@ export default {
             for(let i=0;i<=10;i++){
                 if(typeof this.game.stats.player_list[1][i] !== 'undefined')
                     this.bbcode += '#' + this.game.stats.player_list[1][i]
-                else if (i== 7)
+                else if (i > 5 && i < 7)
                     this.bbcode += '#disco_dummy'
             }
             this.bbcode += '[/font][/color][/size]'
