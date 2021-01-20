@@ -29,7 +29,7 @@
             </b-col>
         </b-row>
         <b-pagination
-            v-if="result.length"
+            v-if="result"
             v-model="page"
             :total-rows="total"
             :per-page="10"
@@ -37,14 +37,14 @@
             @page-click="paginate"
         ></b-pagination>
         <b-table striped hover 
-            v-if="result.length"
+            v-if="result"
             id="results_table"
             :items="result"
             @row-clicked="showGame"
         ></b-table>
         <p v-else class="mt-4">No games found.</p>
         <b-pagination
-            v-if="result.length"
+            v-if="result"
             v-model="page"
             :total-rows="total"
             :per-page="10"
@@ -102,7 +102,6 @@
         methods:{
             formatResult(result){
                 let results = result.map(entry => {
-                    console.log(entry)
                     let newEntry = entry
                     let element = document.createElement('div');
                     for(let i=1;i<=10;i++){
