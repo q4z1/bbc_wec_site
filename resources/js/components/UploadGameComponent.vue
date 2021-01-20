@@ -53,7 +53,7 @@
             </b-card-text>
         </b-card>
         <b-modal id="modal-preview" title="Data correct?" hide-footer>
-            <h4 class="text-success">Game #{{ this.form.gameno }}</h4>
+            <h4 class="text-success">Game #{{ this.form.gameno }} - {{ this.game_type }}</h4>
             <h5 class="text-info">{{ new Date(this.form.date + " "  + this.form.time).toLocaleString()}}</h5>
             <b-table striped hover :items="gameOverview" :fields="fields">
                 <template #cell(html)="data">
@@ -84,6 +84,7 @@ export default {
                 date: new Date().toISOString().slice(0, 10),
                 time: "22:00",
             },
+            game_type: '',
             types: [{ text: 'Regular', value: 1 }, { text: 'Monthly', value: 5 }, { text: 'Yearly', value: 6 }],
             game: null,
             show: true,
@@ -135,6 +136,10 @@ export default {
                         if(this.form.preview){
                             this.$bvModal.show('modal-preview')
                             this.game = response.data.msg
+                            this.types.map(type => {
+                                    if(type.value == this.form.gametype) this.game_type = type.text
+                                }
+                            )
                         }else{
                             // this.game = null;
                             this.$bvModal.hide('modal-preview')
@@ -188,6 +193,7 @@ export default {
         },
         hideModal() {
             this.$bvModal.hide('modal-preview')
+            this.form.preview = true
         },
     }
 }
