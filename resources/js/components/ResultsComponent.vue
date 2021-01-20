@@ -112,7 +112,7 @@
                     }
                     this.types.map(typ => { 
                         if(typ.value == entry.type) newEntry.type = typ.text 
-                        else if(typ.text.toLowerCase()  == entry.type.toLowerCase()) newEntry.type = typ.text 
+                        // else if(typ.text.toLowerCase()  == entry.type.toLowerCase()) newEntry.type = typ.text 
                     })
                     console.log(newEntry)
                     return newEntry
