@@ -97,7 +97,11 @@
         },
         created(){
             for(let i=0;i<this.results.length;i++){
-                this.results[i].type = this.gameTypes[i].text
+                this.gameTypes.map(type => {
+                        if(type.value ==  this.results[i].type) this.results[i].type = type.text
+                    }
+                )
+                
             }
         },
         methods:{
@@ -110,11 +114,10 @@
                             newEntry['p'+i] = entry['p'+i]
                         } 
                     }
-                    // this.types.map(typ => { 
-                    //     if(parseInt(typ.value) === parseInt(entry.type)) newEntry.type = typ.text 
-                    //     // else if(typ.text.toLowerCase()  == entry.type.toLowerCase()) newEntry.type = typ.text 
-                    // })
-                    console.log(newEntry)
+                    this.gameTypes.map(type => {
+                            if(type.value ==  entry.type) entry.type = type.text
+                        }
+                    )
                     return newEntry
                 })
                 return results
