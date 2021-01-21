@@ -33,6 +33,7 @@
                     @endauth
                     <b-nav-item href="{{ route('results') }}">Results</b-nav-item>
                     @auth
+                    @if(in_array(auth()->user()->role, ['s']))
                     <b-nav-item-dropdown>
                         <template #button-content>
                             <b-icon-award></b-icon-award>
@@ -41,6 +42,7 @@
                         <b-dropdown-item href="#">Upload</b-dropdown-item>
                         <b-dropdown-item href="#">Assign</b-dropdown-item>
                     </b-nav-item-dropdown>
+                    @endif
                     @else
                         <b-nav-item href="{{ route('results.halloffame') }}">Hall of Fame</b-nav-item>
                     @endauth
