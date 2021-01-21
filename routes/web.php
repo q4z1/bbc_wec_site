@@ -25,7 +25,7 @@ Route::get('/upload/game', [App\Http\Controllers\GameController::class, 'upload_
 Route::get('/delete/game/{game}', [App\Http\Controllers\GameController::class, 'delete_game'])->name('delete.game');
 Route::post('/upload/game', [App\Http\Controllers\GameController::class, 'upload'])->name('upload.game.ajax');
 Route::post('/update/game/{game}', [App\Http\Controllers\GameController::class, 'update_game'])->name('update.game');
-
+Route::get('/player/{player?}', [App\Http\Controllers\PlayerController::class, 'index'])->name('player');
 Route::get('/user/theme', [App\Http\Controllers\UserController::class, 'set_theme'])->name('user.theme.set');
 
 Route::get('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 'index'])->name('shoutbox');

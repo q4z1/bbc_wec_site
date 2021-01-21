@@ -18,7 +18,7 @@
                     </b-row>
                     <b-row>
                         <b-col><strong>Winner:</strong></b-col>
-                        <b-col>{{ game.stats['player_list'][1][0] }}</b-col>
+                        <b-col class="cplink">{{ game.stats['player_list'][1][0] }}</b-col>
                     </b-row>
                     <b-row>
                         <b-col><strong>Hands:</strong></b-col>
@@ -27,23 +27,26 @@
                     <b-row class="mt-5 ml-0 mb-3">
                         <b-col>
                             <b-row class="w-75">
-                                <b-button variant="warning" v-b-modal.bbcode class="w-100">Get BB Code</b-button>
+                                <b-button variant="warning" v-b-modal.bbcode class="w-100" v-if="arole !== ''">Get BB Code</b-button>
                             </b-row>
                             <b-row class="mt-2 w-75">
-                                <b-button variant="info" @click="edit = true" class="w-100">Edit Game</b-button>
+                                <b-button variant="info" @click="edit = true" class="w-100" v-if="arole === 's'">Edit Game</b-button>
                             </b-row>
                             <b-row class="mt-2 w-75">
-                                <b-button variant="danger" v-b-modal.delete class="w-100">Delete Game</b-button>
+                                <b-button variant="danger" v-b-modal.delete class="w-100" v-if="arole === 's'">Delete Game</b-button>
                             </b-row>
                         </b-col>
                     </b-row>
                 </b-col>
                 <b-col>
                     <h3>Ranking</h3>
-                    <b-table striped hover :items="ranking">
+                    <b-table striped hover :items="ranking" :tbody-td-class="tdClass">
                         <template #cell(_)="data">
                             <span v-html="data.value"></span>
                         </template>
+                        <!-- <template #cell(name)="data">
+                            {{ data.player }}
+                        </template> -->
                     </b-table>
                 </b-col>
             </b-row>
@@ -172,6 +175,7 @@ export default {
             eGame: this.game,
             type: 1,
             types: [{ text: 'Regular', value: 1 }, { text: 'Monthly', value: 5 }, { text: 'Yearly', value: 6 }],
+            arole: window.arole,
         }
     },
     methods:{
@@ -430,6 +434,11 @@ export default {
             }
             this.bbcode += '[/font][/color][/size]'
             this.bbcode += '[size=2][url=https://www.pokerth.net/community/forum/wec/14084-wecup-ranking-2021#48770][color=darkred][br]Ranking[/color][/url][color=black] of WeCup[/color][/size][hr]'
+        },
+        tdClass(item, type) {
+            console.log(item, type)
+            if (!item || type !== 'td') return
+            if (item.status === 'awesome') return 'table-success'
         },
         update(game){
             this.eGame = game

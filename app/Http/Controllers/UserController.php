@@ -14,4 +14,12 @@ class UserController extends Controller
             $u->save();
         }
     }
+
+    public function set_role(Request $request){
+        if(auth()->user() && $request->input('r')){
+            $u = User::where('id', auth()->id())->first();
+            $u->role = $request->input('r');
+            $u->save();
+        }
+    }
 }

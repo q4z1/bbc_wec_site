@@ -121,7 +121,7 @@ class ResultController extends Controller
             $game->{$p} = $pl;
         }
         $log = new LogFileController();
-        $game->stats = $log->process_log_file($game->pdb);
+        $game->stats = $log->process_log_file($game->pdb, null);
         return view('game_edit', [
             "game" => $game
         ]);

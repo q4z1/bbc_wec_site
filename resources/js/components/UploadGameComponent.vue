@@ -89,6 +89,7 @@ export default {
             game: null,
             show: true,
             fields: ['Pos', 'Player', 'Hand', { key: 'html', label: 'Eliminated by/Wins with' }],
+            arole: window.arole,
         }
     },
     computed: {

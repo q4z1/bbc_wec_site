@@ -12,9 +12,12 @@ class PlayerController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request, $player)
     {
-        //
+        $player = Player::where('nickname', $player)->first();
+        return view('player', [
+            "player" => $player
+        ]);
     }
 
     /**

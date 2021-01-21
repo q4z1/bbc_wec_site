@@ -29,7 +29,7 @@
                 <b-navbar-nav>
                     <b-nav-item href="/">Home</b-nav-item>
                     @auth
-                    <b-nav-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-nav-item>
+                    @if(in_array(auth()->user()->role, ['a', 's']))<b-nav-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-nav-item>@endif
                     @endauth
                     <b-nav-item href="{{ route('results') }}">Results</b-nav-item>
                     @auth
@@ -87,6 +87,7 @@
         </main>
     </div>
     <script>
+        window.arole = "{!! (auth()->user()) ? auth()->user()->role : '' !!}";
         document.addEventListener('DOMContentLoaded', function(event) {
             $('#theme-toggle').click(function(e){
                 e.preventDefault();
