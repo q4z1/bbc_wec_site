@@ -29,25 +29,22 @@
                 <b-navbar-nav>
                     <b-nav-item href="/">Home</b-nav-item>
                     @auth
-                    @if(in_array(auth()->user()->role, ['a', 's']))<b-nav-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-nav-item>@endif
-                    @endauth
-                    <b-nav-item href="{{ route('results') }}">Results</b-nav-item>
-                    @auth
+                    @if(in_array(auth()->user()->role, ['a', 's']))
+                    <b-nav-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-nav-item>@endif
                     @if(in_array(auth()->user()->role, ['s']))
                     <b-nav-item-dropdown>
                         <template #button-content>
                             <b-icon-award></b-icon-award>
-                            <strong>Awards / Hall of Fame</strong>
+                            <strong>Awards</strong>
                         </template>
                         <b-dropdown-item href="#">Upload</b-dropdown-item>
                         <b-dropdown-item href="#">Assign</b-dropdown-item>
                     </b-nav-item-dropdown>
                     @endif
-                    @else
-                        <b-nav-item href="{{ route('results.halloffame') }}">Hall of Fame</b-nav-item>
                     @endauth
-                    <b-nav-item href="#">Info</b-nav-item>
-                    <b-nav-item href="#">Whatever</b-nav-item>
+                    <b-nav-item href="{{ route('results') }}">Results</b-nav-item>
+                    <b-nav-item href="{{ route('results.ranking') }}">Ranking</b-nav-item>
+                    <b-nav-item href="{{ route('results.halloffame') }}">Hall of Fame</b-nav-item>
                 </b-navbar-nav>
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">

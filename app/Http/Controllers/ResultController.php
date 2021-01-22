@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\LogFileController;
 use App\Models\Game;
 use App\Models\Player;
+use App\Models\Point;
 
 class ResultController extends Controller
 {
@@ -90,6 +91,31 @@ class ResultController extends Controller
         ->limit(100)
         ->get();
         return view('halloffame', [
+            "results" => $results,
+            "totals" => $totals
+        ]);
+    }
+
+    public function ranking(Request $request){
+        $totals = DB::table('players')
+        ->select(
+            'players.id', 'players.nickname', 'players.avatar'
+        )
+        ->count();
+        $results = DB::table('players')
+        ->select(
+            'players.id', 'players.nickname', 'players.avatar'
+        )->orderBy('id', 'ASC')
+        ->limit(100)
+        ->get();
+
+        $results = Point::selectRaw('players.nickname, sum(points.points) as psum')
+        ->leftJoin('players', 'players.id', '=', 'points.player_id')
+        ->orderBy('psum', 'DESC')
+        ->groupBy('player_id')
+        ->get();
+
+        return view('ranking', [
             "results" => $results,
             "totals" => $totals
         ]);

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h3>Hall of Fame</h3>
+        <h3>Ranking</h3>
         <b-row class="mb-3">
             <b-col >
                 <b-form-select v-model="year" @change="filter">
