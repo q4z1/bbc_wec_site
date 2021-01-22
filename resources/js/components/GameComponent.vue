@@ -18,7 +18,7 @@
                     </b-row>
                     <b-row>
                         <b-col><strong>Winner:</strong></b-col>
-                        <b-col class="cplink">{{ game.stats['player_list'][1][0] }}</b-col>
+                        <b-col><a :href="'/player/' + game.stats['player_list'][1][0]" :title="game.stats['player_list'][1][0]">{{ game.stats['player_list'][1][0] }}</a></b-col>
                     </b-row>
                     <b-row>
                         <b-col><strong>Hands:</strong></b-col>
@@ -40,13 +40,10 @@
                 </b-col>
                 <b-col>
                     <h3>Ranking</h3>
-                    <b-table striped hover :items="ranking" :tbody-td-class="tdClass">
+                    <b-table id="game_ranking" striped hover :items="ranking" @row-clicked="rowClick">
                         <template #cell(_)="data">
                             <span v-html="data.value"></span>
                         </template>
-                        <!-- <template #cell(name)="data">
-                            {{ data.player }}
-                        </template> -->
                     </b-table>
                 </b-col>
             </b-row>
@@ -65,49 +62,49 @@
             <b-row class="mt-3">
                 <b-col>
                     <h3>Most hands played</h3>
-                    <b-table striped hover :items="most_hands"></b-table>
+                    <b-table striped :items="most_hands"></b-table>
                 </b-col>
             </b-row>
             <b-row class="mt-3">
                 <b-col>
                     <h3>Best hands</h3>
-                    <b-table striped hover :items="best_hands"></b-table>
+                    <b-table striped :items="best_hands"></b-table>
                 </b-col>
             </b-row>
             <b-row class="mt-3">
                 <b-col>
                     <h3>Most wins</h3>
-                    <b-table striped hover :items="most_wins"></b-table>
+                    <b-table striped :items="most_wins"></b-table>
                 </b-col>
             </b-row>
             <b-row class="mt-3">
                 <b-col>
                     <h3>Highest wins</h3>
-                    <b-table striped hover :items="highest_wins"></b-table>
+                    <b-table striped :items="highest_wins"></b-table>
                 </b-col>
             </b-row>
             <b-row class="mt-3">
                 <b-col>
                     <h3>Longest wins</h3>
-                    <b-table striped hover :items="longest_wins"></b-table>
+                    <b-table striped :items="longest_wins"></b-table>
                 </b-col>
             </b-row>
             <b-row class="mt-3">
                 <b-col>
                     <h3>Longest losses</h3>
-                    <b-table striped hover :items="longest_losses"></b-table>
+                    <b-table striped :items="longest_losses"></b-table>
                 </b-col>
             </b-row>
             <b-row class="mt-3">
                 <b-col>
                     <h3>Most bets/raises</h3>
-                    <b-table striped hover :items="most_bets"></b-table>
+                    <b-table striped :items="most_bets"></b-table>
                 </b-col>
             </b-row>
             <b-row class="mt-3">
                 <b-col>
                     <h3>Most all in</h3>
-                    <b-table striped hover :items="most_bingo"></b-table>
+                    <b-table striped :items="most_bingo"></b-table>
                 </b-col>
             </b-row>
             <b-row>
@@ -435,10 +432,17 @@ export default {
             this.bbcode += '[/font][/color][/size]'
             this.bbcode += '[size=2][url=https://www.pokerth.net/community/forum/wec/14084-wecup-ranking-2021#48770][color=darkred][br]Ranking[/color][/url][color=black] of WeCup[/color][/size][hr]'
         },
-        tdClass(item, type) {
-            console.log(item, type)
-            if (!item || type !== 'td') return
-            if (item.status === 'awesome') return 'table-success'
+        rowClass(item, type) {
+            if (!item || type !== 'row') return
+            // console.log("rowClass", item, type)
+            return 'cplink'
+        },
+        rowAttr(item, type) {
+            if (!item || type !== 'row') return
+            return { "data-player": item.player }
+        },
+        rowClick(item, index, event){
+            window.location.href = window.location.origin + '/player/' + item.player
         },
         update(game){
             this.eGame = game
