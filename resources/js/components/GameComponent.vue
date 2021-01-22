@@ -6,19 +6,23 @@
                     <h3>Basic data</h3>
                     <b-row>
                         <b-col><strong>Game Number:</strong></b-col>
-                        <b-col>{{ game.number }}</b-col>
+                        <b-col>#{{ game.number }}</b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col><strong>Date/Time:</strong></b-col>
+                        <b-col>{{ game.started }}</b-col>
                     </b-row>
                     <b-row>
                         <b-col><strong>Type:</strong></b-col>
                         <b-col>{{ type }}</b-col>
                     </b-row>
                     <b-row>
-                        <b-col><strong>Number of Players:</strong></b-col>
-                        <b-col>{{ game.stats['player_list'][0].length }}</b-col>
-                    </b-row>
-                    <b-row>
                         <b-col><strong>Winner:</strong></b-col>
                         <b-col><a :href="'/player/' + game.stats['player_list'][1][0]" :title="game.stats['player_list'][1][0]">{{ game.stats['player_list'][1][0] }}</a></b-col>
+                    </b-row>
+                    <b-row>
+                        <b-col><strong>Number of Players:</strong></b-col>
+                        <b-col>{{ game.stats['player_list'][0].length }}</b-col>
                     </b-row>
                     <b-row>
                         <b-col><strong>Hands:</strong></b-col>
@@ -171,7 +175,7 @@ export default {
             edit: false,
             eGame: this.game,
             type: 1,
-            types: [{ text: 'Regular', value: 1 }, { text: 'Monthly', value: 5 }, { text: 'Yearly', value: 6 }],
+            types: [{ text: 'regular', value: 1 }, { text: 'monthly', value: 5 }, { text: 'yearly', value: 6 }],
             arole: window.arole,
         }
     },
