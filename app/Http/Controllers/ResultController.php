@@ -109,9 +109,9 @@ class ResultController extends Controller
         ->limit(100)
         ->get();
 
-        $results = Point::selectRaw('players.nickname, sum(points.points) as psum')
+        $results = Point::selectRaw('players.nickname, sum(points.points) as points')
         ->leftJoin('players', 'players.id', '=', 'points.player_id')
-        ->orderBy('psum', 'DESC')
+        ->orderBy('points', 'DESC')
         ->groupBy('player_id')
         ->get();
 
