@@ -428,8 +428,13 @@ export default {
             this.bbcode += '[hr][size=2][url=https://www.pokerth.net/log-file-analysis/?ID=' + this.game.pdb.replace('.pdb', '') + '&UniqueGameID=' + this.game.unique_game_id + '][color=darkred]Log-Analysis[/color][/url]'
             this.bbcode += '[color=black] of WeCup [font=Arial Narrow]#' + this.game.number + '#' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(', ', '#')
             for(let i=0;i<=10;i++){
-                if(typeof this.game.stats.player_list[1][i] !== 'undefined')
-                    this.bbcode += '#' + this.game.stats.player_list[1][i]
+                if(typeof this.game.stats.player_list[1][i] !== 'undefined'){
+                    if(this.game.stats.player_list[1][i] == this.game['pos'+(i+1)]){
+                        this.bbcode += '#' + this.game.stats.player_list[1][i]
+                    }else{
+                        this.bbcode += '#' + this.game['pos'+(i+1)]
+                    }
+                }
                 else if (i > 5 && i < 7)
                     this.bbcode += '#disco_dummy'
             }
