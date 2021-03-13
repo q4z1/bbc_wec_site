@@ -65,7 +65,7 @@
                 type: 1, // regular games
                 page: 1, // we always start with page 1
                 total: null,
-                types: [{ text: 'Regular', value: 1 }, { text: 'Monthly', value: 5 }, { text: 'Yearly', value: 6 }],
+                types: [{ text: 'Step 1', value: 1 }, { text: 'Step 2', value: 2 }, { text: 'Step 3', value: 3 }, { text: 'Step 4', value: 4 }],
             }
         },
         computed: {
@@ -80,9 +80,10 @@
             },
             gameTypes: function(){
                 return [
-                    { value: 1, text:'regular' },
-                    { value: 5, text:'monthly' },
-                    { value: 6, text:'yearly' },
+                    { value: 1, text:'Step 1' },
+                    { value: 2, text:'Step 2' },
+                    { value: 3, text:'Step 3' },
+                    { value: 4, text:'Step 4' },
                 ]
             },
         },

@@ -175,7 +175,7 @@ export default {
             edit: false,
             eGame: this.game,
             type: 1,
-            types: [{ text: 'regular', value: 1 }, { text: 'monthly', value: 5 }, { text: 'yearly', value: 6 }],
+            types: [{ text: 'Step 1', value: 1 }, { text: 'Step 2', value: 2 }, { text: 'Step 3', value: 3 }, { text: 'Step 4', value: 4 }],
             arole: window.arole,
         }
     },

@@ -85,7 +85,7 @@ export default {
                 time: "22:00",
             },
             game_type: '',
-            types: [{ text: 'Regular', value: 1 }, { text: 'Monthly', value: 5 }, { text: 'Yearly', value: 6 }],
+            types: [{ text: 'Step 1', value: 1 }, { text: 'Step 2', value: 2 }, { text: 'Step 3', value: 3 }, { text: 'Step 4', value: 4 }],
             game: null,
             show: true,
             fields: ['Pos', 'Player', 'Hand', { key: 'html', label: 'Eliminated by/Wins with' }],
