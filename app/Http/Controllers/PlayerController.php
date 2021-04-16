@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Support\Facades\DB;
 use App\Models\Game;
 use App\Models\Player;
 use App\Models\Point;
@@ -38,6 +39,15 @@ class PlayerController extends Controller
             'stats' => $stats,
             'awards' => $awards
         ]);
+    }
+
+    public function playerlist(Request $request){
+        $res = DB::table('players')
+        ->select(
+            'players.id', 'players.nickname'
+        )->orderBy('id', 'ASC')
+        ->get();
+        return $res;
     }
 
     /**

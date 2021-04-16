@@ -391,11 +391,11 @@ export default {
                 if(typ.value == this.game.type) this.type = typ.text 
             })
 
-            this.bbcode = '[indent][img]/media/kunena/attachments/30607/Logo-WECUP_small1.jpg[/img][/indent]\n'
-            this.bbcode += '[hr][b][size=6][color=black]♣ [/color][color=darkred]♥[/color][color=black] ♠[/color][color=darkred] ♦ [/color][/size][size=3][color=goldenrod][font=Palatino Linotype]'
-            this.bbcode += 'WeCUP #' + this.game.number + ' - ' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(',', '')
-            this.bbcode += '[/font][/color][/size][size=6][color=darkred] ♦ [/color][color=black]♠ [/color][color=darkred] ♥[/color]'
-            this.bbcode += '[color=black] ♣[/color][/size][/b][br]'
+            this.bbcode = '[indent][img]/images/bbc_logo.jpg[/img][/indent]\n'
+            this.bbcode += '[hr][b][size=185][color=black]♣ [/color][color=darkred]♥[/color][color=black] ♠[/color][color=darkred] ♦ [/color][/size][size=200][color=goldenrod][font=Palatino Linotype]'
+            this.bbcode += 'BBC Step' + this.game.type + ' # ' + this.game.number + ' - ' + this.game.started
+            this.bbcode += '[/font][/color][/size][size=185][color=darkred] ♦ [/color][color=black]♠ [/color][color=darkred] ♥[/color]'
+            this.bbcode += '[color=black] ♣[/color][/size][/b][br][br]'
             for(let i=0;i<this.game.stats['player_list'][0].length;i++){
                 let eliminated = this.game.stats['player_list'][7][i][0]
                 if(typeof eliminated !== 'undefined'){
@@ -415,7 +415,7 @@ export default {
                     }else if(i === 2){
                         this.bbcode += '[color=darkred]3. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + ' [/color]' + "\n"
                     }else if(i === 3){
-                        this.bbcode += '[color=black]4. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + "\n"
+                        this.bbcode += '4. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + "\n"
                     }else if(typeof this.game.stats.player_list[7][i-1] !== 'undefined'){
                         this.bbcode += (i+1) + '. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + "\n"
                     }  
@@ -423,23 +423,24 @@ export default {
                     console.log(e)
                 } 
             }
-            this.bbcode += '[/color][/indent]'
-            this.bbcode += '[br][indent][color=darkred][size=4] Congratulations to [b]' + this.game.stats['player_list'][1][0] + '[/b][/size][/color][/indent]'
-            this.bbcode += '[hr][size=2][url=https://www.pokerth.net/log-file-analysis/?ID=' + this.game.pdb.replace('.pdb', '') + '&UniqueGameID=' + this.game.unique_game_id + '][color=darkred]Log-Analysis[/color][/url]'
-            this.bbcode += '[color=black] of WeCup [font=Arial Narrow]#' + this.game.number + '#' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(', ', '#')
-            for(let i=0;i<=10;i++){
-                if(typeof this.game.stats.player_list[1][i] !== 'undefined'){
-                    if(this.game.stats.player_list[1][i] == this.game['pos'+(i+1)]){
-                        this.bbcode += '#' + this.game.stats.player_list[1][i]
-                    }else{
-                        this.bbcode += '#' + this.game['pos'+(i+1)]
-                    }
-                }
-                else if (i > 5 && i < 7)
-                    this.bbcode += '#disco_dummy'
-            }
-            this.bbcode += '[/font][/color][/size]'
-            this.bbcode += '[size=2][url=https://www.pokerth.net/community/forum/wec/14084-wecup-ranking-2021#48770][color=darkred][br]Ranking[/color][/url][color=black] of WeCup[/color][/size][hr]'
+            this.bbcode += '[/indent]'
+            this.bbcode += '[br][indent][color=goldenrod][size=150] Congratulations to [b]' + this.game.stats['player_list'][1][0] + ' & ' + this.game.stats['player_list'][1][1] + '[/b][/size][/color][/indent]'
+            this.bbcode += '[br][indent][size=150][color=silver] Bravo '+ this.game.stats['player_list'][1][2] + '[/size][/indent]'
+            this.bbcode += '[hr][size=200][url=https://bbc.pokerth.net/results/game/' + this.game.number + '][color=brightred][indent]Game Results[/color][/url]'
+//            this.bbcode += '[color=black] of WeCup [font=Arial Narrow]#' + this.game.number + '#' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(', ', '#')
+//            for(let i=0;i<=10;i++){
+//                if(typeof this.game.stats.player_list[1][i] !== 'undefined'){
+//                    if(this.game.stats.player_list[1][i] == this.game['pos'+(i+1)]){
+//                        this.bbcode += '#' + this.game.stats.player_list[1][i]
+//                    }else{
+//                        this.bbcode += '#' + this.game['pos'+(i+1)]
+//                    }
+//                }
+//                else if (i > 5 && i < 7)
+//                    this.bbcode += '#disco_dummy'
+//            }
+//           this.bbcode += '[/font][/color][/size]'
+//           this.bbcode += '[size=2][url=https://www.pokerth.net/community/forum/wec/14084-wecup-ranking-2021#48770][color=darkred][br]Ranking[/color][/url][color=black] of WeCup[/color][/size][hr]'
         },
         rowClass(item, type) {
             if (!item || type !== 'row') return

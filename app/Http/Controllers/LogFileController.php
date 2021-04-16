@@ -15,10 +15,10 @@ class LogFileController extends Controller
 	}
 
 	public function process_log_file($pdb, $id){
-		if(!file_exists("/home/www/pokerth/log_file_analysis/upload/$pdb") && !file_exists("../storage/app/pdb/$pdb")){
+		if(!file_exists("/var/www/pokerth/log_file_analysis/upload/$pdb") && !file_exists("../storage/app/pdb/$pdb")){
 			return false;
-		}elseif(file_exists("/home/www/pokerth/log_file_analysis/upload/$pdb") && !file_exists("../storage/app/pdb/$pdb")){
-			copy("/home/www/pokerth/log_file_analysis/upload/$pdb", "../storage/app/pdb/$pdb");
+		}elseif(file_exists("/var/www/pokerth/log_file_analysis/upload/$pdb") && !file_exists("../storage/app/pdb/$pdb")){
+			copy("/var/www/pokerth/log_file_analysis/upload/$pdb", "../storage/app/pdb/$pdb");
 		}elseif(!file_exists("../storage/app/pdb/$pdb")){
 			return false;
 		}

@@ -17,6 +17,9 @@ class CreatePlayersTable extends Migration
             $table->id();
             $table->text('nickname');
             $table->text('avatar')->default('');
+            $table->integer('s2_tickets')->default(0);
+            $table->integer('s3_tickets')->default(0);
+            $table->integer('s4_tickets')->default(0);
             $table->timestamps();
         });
     }

@@ -31,7 +31,8 @@
                 <b-navbar-nav>
                     <b-nav-item href="/">Home</b-nav-item>
                     @auth
-                    @if(in_array(auth()->user()->role, ['a', 's']))
+                    <!-- revert 'u' permission in productive mode -->
+                    @if(in_array(auth()->user()->role, ['a', 's', 'u'])) 
                     <b-nav-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-nav-item>@endif
                     @if(in_array(auth()->user()->role, ['s']))
                     <b-nav-item-dropdown>

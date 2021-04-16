@@ -37,3 +37,6 @@ Route::get('/results/game/edit/{game}', [App\Http\Controllers\ResultController::
 Route::get('/results/halloffame', [App\Http\Controllers\ResultController::class, 'halloffame'])->name('results.halloffame');
 Route::get('/results/ranking', [App\Http\Controllers\ResultController::class, 'ranking'])->name('results.ranking');
 Route::post('/results/halloffame', [App\Http\Controllers\ResultController::class, 'halloffame_filter'])->name('results.halloffame.filter');
+
+
+Route::get('/playerlist', [App\Http\Controllers\PlayerController::class, 'playerlist'])->name('player.playerlist');
