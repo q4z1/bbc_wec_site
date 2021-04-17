@@ -80,7 +80,7 @@
             </b-collapse>
         </b-navbar>
         <main class="py-4">
-            <b-container>
+            <b-container fluid>
                 @yield('content')
             </b-container>
         </main>
