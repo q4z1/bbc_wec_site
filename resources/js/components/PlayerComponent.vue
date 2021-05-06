@@ -23,7 +23,7 @@
                         <strong>Tickets:</strong><br />
                     </b-col>
                     <b-col>
-                        <b-row v-if="s2">
+                        <b-row>
                             <b-col>
                                 <strong class="text-success">Step 2:</strong>&nbsp;&nbsp;{{ s2 }}
                             </b-col>
@@ -143,7 +143,7 @@
             <b-button class="mt-3" variant="outline-info" block @click="$refs['delete'].hide()">Cancel</b-button>
             <b-button class="mt-2" variant="outline-danger" block @click="deletePlayer">Yes, Delete!</b-button>
         </b-modal>
-        <b-modal v-if="s2" ref="tickets" id="tickets" :title="'Edit Tickets of ' + player.nickname" ok-disabled hide-footer>
+        <b-modal ref="tickets" id="tickets" :title="'Edit Tickets of ' + player.nickname" ok-disabled hide-footer>
                 <template #modal-header>
                     <h5>Edit Tickets of {{ player.nickname }}</h5>
                 </template>

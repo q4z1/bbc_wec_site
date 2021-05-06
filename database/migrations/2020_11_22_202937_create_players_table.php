@@ -15,7 +15,7 @@ class CreatePlayersTable extends Migration
     {
         Schema::create('players', function (Blueprint $table) {
             $table->id();
-            $table->text('nickname');
+            $table->string('nickname', 64);
             $table->text('avatar')->default('');
             $table->integer('s2_tickets')->default(0);
             $table->integer('s3_tickets')->default(0);

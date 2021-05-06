@@ -91,7 +91,8 @@ class PlayerController extends Controller
     }
 
     public function delete(Request $request, Player $player){
-        return ['success' => false];
+        $player->delete();
+        return ['success' => true];
     }
 
     /**

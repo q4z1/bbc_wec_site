@@ -72,6 +72,37 @@ class GameController extends Controller
         for($i=1;$i<=10;$i++){
             if(array_key_exists($i-1, $game['player_list'][1])){
                 $player = Player::where('nickname', $game['player_list'][1][$i-1])->first();
+                // ticket handling
+                switch($g->type){
+                    case(1):
+                        if($i < 3){
+                            $player->s2_tickets += 1;
+                        }
+                        break;
+                    case(2):
+                        if($i != 3){
+                            $player->s2_tickets -= 1;
+                        }
+                        if($i < 3){
+                            $player->s3_tickets += 1;
+                        }
+                        break;
+                    case(3):
+                        if($i != 3){
+                            $player->s3_tickets -= 1;
+                        }
+                        if($i < 3){
+                            $player->s4_tickets += 1;
+                        }
+                        break;
+                    case(4):
+                        if($i != 3){
+                            $player->s4_tickets -= 1;
+                        }
+                        break;
+                }
+                $player->save();
+
                 $pt = new Point();
                 $pt->points = 0;
                 if($i<8){
