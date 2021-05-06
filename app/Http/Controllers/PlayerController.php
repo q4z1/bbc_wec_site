@@ -41,6 +41,34 @@ class PlayerController extends Controller
         ]);
     }
 
+    public function all(Request $request){
+        if($request->method() == 'GET'){
+            return view('players');
+        }else{
+            $filters = $request->input('filters');
+            $page = $request->input('page', 1);
+            $pagesize = $request->input('pageSize', 50);
+            $sort = $request->input('sort');
+
+            $total = Player::get()->count();
+
+    
+            $query = Player::orderBy($sort['prop'], (($sort['order'] == 'descending') ? 'DESC' : 'ASC'))
+            ->offset(($page-1)*$pagesize)->limit($pagesize);
+            if(!empty($filters)){
+                $query->where('nickname', 'LIKE', $filters['value'] . '%');
+            }
+            $players = $query->get()->map(function($player){
+                // $player->final_score = number_format((float)($player->final_score / 100), 2, '.', '');
+                // $player->average_score = number_format((float)($player->average_score / 100), 2, '.', '');
+                return $player;
+            });
+
+            return ['total' => $total, 'data' => $players];
+        }
+
+    }
+
     public function playerlist(Request $request){
         $res = DB::table('players')
         ->select(
@@ -48,6 +76,22 @@ class PlayerController extends Controller
         )->orderBy('id', 'ASC')
         ->get();
         return $res;
+    }
+
+    public function tickets(Request $request, Player $player){
+        $success = false;
+        if($request->exists('s2') && $request->exists('s3') && $request->exists('s4')){
+            $player->s2_tickets = $request->s2;
+            $player->s3_tickets = $request->s3;
+            $player->s4_tickets = $request->s4;
+            $player->save();
+            $success = true;
+        }
+        return ['success' => $success];
+    }
+
+    public function delete(Request $request, Player $player){
+        return ['success' => false];
     }
 
     /**

@@ -32,7 +32,7 @@
                     <b-nav-item href="/">Home</b-nav-item>
                     @auth
                     <!-- revert 'u' permission in productive mode -->
-                    @if(in_array(auth()->user()->role, ['a', 's', 'u'])) 
+                    @if(in_array(auth()->user()->role, ['a', 's'])) 
                     <b-nav-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-nav-item>@endif
                     @if(in_array(auth()->user()->role, ['s']))
                     <b-nav-item-dropdown>
@@ -47,6 +47,7 @@
                     @endauth
                     <b-nav-item href="{{ route('results') }}">Results</b-nav-item>
                     <b-nav-item href="{{ route('results.ranking') }}">Ranking</b-nav-item>
+                    <b-nav-item href="{{ route('player.all') }}">Players</b-nav-item>
                     <b-nav-item href="{{ route('results.halloffame') }}">Hall of Fame</b-nav-item>
                 </b-navbar-nav>
                 <!-- Right aligned nav items -->
@@ -83,7 +84,7 @@
             </b-collapse>
         </b-navbar>
         <main class="py-4">
-            <b-container>
+            <b-container fluid>
                 @yield('content')
             </b-container>
         </main>
