@@ -780,8 +780,8 @@ class LogFileController extends Controller
     private function fetch_database($url){
 		$parts = parse_url($url);
         parse_str($parts['query'], $query);
-		$this->game_id = $query['UniqueGameID'];
-		return $query['ID'] . '.pdb';
+		$this->game_id = $query['game_id'];
+		return $query['pdb'] . '.pdb';
 	}
 
     private function get_player_list() {
