@@ -394,7 +394,7 @@ export default {
             this.bbcode = '[indent][img]/images/Logo-WECUP_small.jpg[/img][/indent]\n'
             this.bbcode += '[hr][b][size=85][color=black]♣ [/color][color=darkred]♥[/color][color=black] ♠[/color][color=darkred] ♦ [/color][/size][size=150][color=goldenrod][font=Palatino Linotype]'
             //this.bbcode += 'WeCUP #' + this.game.number + ' - ' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(',', '')
-            this.bbcode += 'WeCUP #' + this.game.number + ' - ' + this.game.started
+            this.bbcode += 'WeCUP #' + this.game.number + ' - ' + this.game.started.replace(':00', '')
             this.bbcode += '[/font][/color][/size][size=85][color=darkred] ♦ [/color][color=black]♠ [/color][color=darkred] ♥[/color]'
             this.bbcode += '[color=black] ♣[/color][/size][/b][br][br]'
             for(let i=0;i<this.game.stats['player_list'][0].length;i++){
@@ -428,7 +428,8 @@ export default {
             this.bbcode += '[br][indent][color=darkred][size=150] Congratulations to [b]' + this.game.stats['player_list'][1][0] + '[/b][/size][/color][/indent]'
 //            this.bbcode += '[hr][size=85][url=https://www.pokerth.net/log-file-analysis/?ID=' + this.game.pdb.replace('.pdb', '') + '&UniqueGameID=' + this.game.unique_game_id + '][color=darkred]Log-Analysis[/color][/url]'
             this.bbcode += '[hr][size=85][url=https://wec.pokerth.net/results/game/' + this.game.number + '][color=darkred]Log-Analysis[/color][/url]'
-            this.bbcode += ' of WeCup [font=Arial Narrow]#' + this.game.number + '#' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(', ', '#')
+//            this.bbcode += ' of WeCup [font=Arial Narrow]#' + this.game.number + '#' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(', ', '#')
+            this.bbcode += ' of WeCup [font=Arial Narrow]#' + this.game.number + '#' + this.game.started.replace(' ', '#').replace(':00', '')
             for(let i=0;i<=10;i++){
                 if(typeof this.game.stats.player_list[1][i] !== 'undefined'){
                     if(this.game.stats.player_list[1][i] == this.game['pos'+(i+1)]){

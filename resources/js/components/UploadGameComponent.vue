@@ -23,7 +23,7 @@
                         v-model="form.loglink"
                         type="text"
                         required
-                        placeholder="https://www.pokerth.net/log-file-analysis/?ID=1234567890abcdef&UniqueGameID=1"
+                        placeholder="https://pokerth.net/gamelog?pdb=1234567890abcdef&game_id=1"
                         ></b-form-input>
                     </b-form-group>
                     <b-form-group
