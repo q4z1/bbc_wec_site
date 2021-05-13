@@ -864,6 +864,7 @@ class LogFileController extends Controller
 						$seat_ctr++;
 					} else {
 						if(!is_null($row['WinnerPlayer'])) {
+							if(!is_array($player_list[7][$seat_ctr-1])) $player_list[7][$seat_ctr-1] = [];
 							$player_list[7][$seat_ctr-1][] = $this->replace_spec_char($row['WinnerPlayer']);
 						}
 					}
