@@ -5,7 +5,41 @@
                 <h3>{{ player.nickname }}</h3>
                 <b-row>
                     <b-col><strong>Total games:</strong></b-col>
-                    <b-col>{{ stats.length }}</b-col>
+                    <b-col>{{ stats.games_alltime }}</b-col>
+                </b-row>
+                <b-row class="mt-3">
+                    <b-col>
+                        <h5>Current Month</h5>
+                        <b-row>
+                            <b-col><strong>Place:</strong></b-col>
+                            <b-col></b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col><strong>Games:</strong></b-col>
+                            <b-col>{{ stats.month.games }}</b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col><strong>Score:</strong></b-col>
+                            <b-col>{{ stats.score_month }}</b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row class="mt-3">
+                    <b-col>
+                        <h5>Current Year</h5>
+                        <b-row>
+                            <b-col><strong>Place:</strong></b-col>
+                            <b-col></b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col><strong>Games:</strong></b-col>
+                            <b-col>{{ stats.year.games }}</b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col><strong>Score:</strong></b-col>
+                            <b-col>{{ stats.score_year }}</b-col>
+                        </b-row>
+                    </b-col>
                 </b-row>
             </b-col>
             <b-col>

@@ -6,6 +6,7 @@ use App\Models\Game;
 use App\Models\Player;
 use App\Models\Point;
 use App\Http\Controllers\LogFileController;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Http\Request;
 
 class GameController extends Controller
@@ -86,6 +87,7 @@ class GameController extends Controller
                 $pt->save();
             }
         }
+        Cache::flush();
         return ["status" => true, 'msg' => $g];
     }
 
@@ -200,6 +202,7 @@ class GameController extends Controller
                 }
             }
         }
+        Cache::flush();
         return ["status" => true, 'msg' => "Game succesfully saved!"];
     }
 

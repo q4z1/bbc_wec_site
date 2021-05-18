@@ -1,5 +1,5 @@
 @extends('layouts.app')
 
 @section('content')
-<ranking-component :results="{{json_encode($results, true)}}"></ranking-component>
+<ranking-component :stats="{{json_encode($stats, true)}}"></ranking-component>
 @endsection

@@ -20,7 +20,7 @@ class PointsTable extends Migration
             $table->bigInteger('player_id');
             $table->integer('pos');
             $table->integer('points');
-            $table->date('game_started');
+            $table->dateTime('game_started');
             $table->timestamps();
         });
     }

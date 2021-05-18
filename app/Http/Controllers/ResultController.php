@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\LogFileController;
+use App\Http\Controllers\PlayerController;
 use App\Models\Game;
 use App\Models\Player;
 use App\Models\Point;
@@ -97,28 +99,37 @@ class ResultController extends Controller
     }
 
     public function ranking(Request $request){
-        $totals = DB::table('players')
-        ->select(
-            'players.id', 'players.nickname', 'players.avatar'
-        )
-        ->count();
-        $results = DB::table('players')
-        ->select(
-            'players.id', 'players.nickname', 'players.avatar'
-        )->orderBy('id', 'ASC')
-        ->limit(100)
-        ->get();
+        $year = $request->input('year', date("Y"));
 
-        $results = Point::selectRaw('players.nickname, sum(points.points) as points, count(*) as total_games')
-        ->leftJoin('players', 'players.id', '=', 'points.player_id')
-        ->orderBy('points', 'DESC')
-        ->groupBy('player_id')
-        ->get();
+        $payload = json_decode($request->getContent(), true);
+        if(!is_null($payload) && isset($payload['year'])) $year = $payload['year'];
+
+        $stats = $this->all_player_stats($year);
+
+        usort($stats, function($a, $b) {
+            return $a['score_year'] <=> $b['score_year'];
+        });
+        $stats = array_reverse($stats);
+
+
+        if($request->isMethod('post')) return ['success' => true, 'stats' => $stats];
 
         return view('ranking', [
-            "results" => $results,
-            "totals" => $totals
+            "stats" => $stats,
         ]);
+    }
+
+    public function all_player_stats($year){
+        Cache::flush();
+        return Cache::remember('all_player_stats_'.$year, now()->addHours(24), function() use($year){
+            $all_stats = [];
+            $pc = new PlayerController();
+            $players = Player::get();
+            foreach($players as $player){
+                $all_stats[$player->id] = $pc->stats($player, $year);
+            }
+            return $all_stats;
+        });
     }
 
     public function game(Request $request, $game){

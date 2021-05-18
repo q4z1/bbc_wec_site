@@ -2,21 +2,8 @@
     <div>
         <h3>Ranking</h3>
         <b-row class="mb-3">
-            <b-col >
-                <b-form-select v-model="year" @change="filter">
-                    <option value="0" selected="selected">All-time</option>                  
-                    <option value="2020">2020</option>
-                    <option value="2019">2019</option>
-                    <option value="2018">2018</option>
-                    <option value="2017">2017</option>
-                    <option value="2016">2016</option>
-                    <option value="2015">2015</option>
-                    <option value="2014">2014</option>
-                    <option value="2013">2013</option>
-                    <option value="2012">2012</option>
-                    <option value="2011">2011</option>
-                    <option value="2010">2010</option>
-                </b-form-select>
+            <b-col>
+                <b-form-select v-model="year" @change="filter" :options="yearRange"></b-form-select>
             </b-col>
             <b-col></b-col>
             <b-col></b-col>
@@ -34,34 +21,60 @@
 </template>
 <script>
     export default {
-        props: ['results', 'totals'],
+        props: ['stats'],
         data() {
             return {
                 renderTable: true,
                 result: null,
+                current_year: 0,
                 year: 0,
-                player: null,
             }
         },
+        computed: {
+            yearRange: function(){
+                let years = []
+                // years.push({value: '0', text: 'All-Time'})
+                let now = this.current_year
+                let past = 2012
+                for(let i=now;i>=past;i--){
+                    years.push({value: i, text: i})
+                }
+                return years
+            },
+        },
         mounted() {
-            console.log('Halloffame mounted.')
-
-            this.result = this.results
+            this.current_year = this.year = new Date().getFullYear()
+            this.result = this.formatResult(this.stats)
         },
         methods:{
+            formatResult(stats){
+                // console.log('formatResult')
+                let stats_formatted = []
+                let l = stats.length
+                for(let i=0; i<l; i++){
+                    let s = stats[i]
+                    stats_formatted.push({
+                        'pos': i + 1,
+                        // 'player_id': s.player.id,
+                        'nickname': s.player.nickname,
+                        // 'score_month': s.score_month,
+                        // 'score_year': s.score_year,
+                        'score': s.score_year,
+                        'games': s.year.games
+                    })
+                }
+                return stats_formatted
+            },
             showPlayer(item, index, event) {
                 window.location.href = '/player/' + item.nickname
             },
             filter(){
-                axios.post('/results/halloffame', {
+                axios.post('/results/ranking', {
                     year: this.year,
-                    month: this.month,
-                    page: this.page,
-                    type: this.type
                 })
                 .then(response => {
                     if(response.data.success === true){
-                        this.result = response.data.result
+                        this.result = this.formatResult(response.data.stats)
                     }
                 }, (error) => {
                     console.log(error)
