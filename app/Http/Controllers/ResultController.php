@@ -120,7 +120,6 @@ class ResultController extends Controller
     }
 
     public function all_player_stats($year){
-        Cache::flush();
         return Cache::remember('all_player_stats_'.$year, now()->addHours(24), function() use($year){
             $all_stats = [];
             $pc = new PlayerController();
