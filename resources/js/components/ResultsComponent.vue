@@ -3,23 +3,7 @@
         <h3>Results</h3>
         <b-row class="mb-3">
             <b-col>
-                <b-form-select v-model="year" @change="filter" :options="yearRange"></b-form-select>
-            </b-col>
-            <b-col>
-                <b-form-select v-model="month" @change="filter">                   
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">Jun</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                </b-form-select>
+                <b-form-select v-model="season_select" @change="filter" :options="seasons"></b-form-select>
             </b-col>
             <b-col>
                 <b-form-select v-model="type" @change="filter" :options="gameTypes"></b-form-select>
@@ -55,13 +39,12 @@
 </template>
 <script>
     export default {
-        props: ['results', 'totals'],
+        props: ['results', 'totals', 'season', 'allseasons'],
         data() {
             return {
                 renderTable: true,
                 result: null,
-                year: null,
-                month: null,
+                season_select: null,
                 type: 1, // regular games
                 page: 1, // we always start with page 1
                 total: null,
@@ -69,15 +52,6 @@
             }
         },
         computed: {
-            yearRange: function(){
-                let years = []
-                let now = this.year
-                let past = 2012
-                for(let i=now;i>=past;i--){
-                    years.push({value: i, text: i})
-                }
-                return years
-            },
             gameTypes: function(){
                 return [
                     { value: 1, text:'Step 1' },
@@ -86,13 +60,19 @@
                     { value: 4, text:'Step 4' },
                 ]
             },
+            seasons: function(){
+                let l = this.allseasons.length
+                let s = []
+                for(let i=0;i<l;i++){
+                    s.push(
+                        { value: this.allseasons[i].id, text:'Season ' + this.allseasons[i].id }
+                    )
+                }
+                return s
+            }
         },
         mounted() {
-            this.year = new Date().getFullYear() // initially current year
-            this.month = new Date().getMonth() + 1 // initially current month
-
-            // ajax call => result.data into this.results
-
+            this.season_select = this.season
             this.result = this.formatResult(this.results)
             this.total = this.totals
         },
@@ -128,8 +108,7 @@
             },
             filter(){
                 axios.post('/results', {
-                    year: this.year,
-                    month: this.month,
+                    season: this.season_select,
                     page: this.page,
                     type: this.type
                 })
@@ -148,9 +127,8 @@
                 this.filter()
             },
             reset(){
-                this.year = new Date().getFullYear() // current year
-                this.month = new Date().getMonth() + 1 // current month
                 this.type = 1
+                this.season_select = this.season
                 this.filter()
             }
         }

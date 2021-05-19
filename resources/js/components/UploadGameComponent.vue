@@ -110,7 +110,6 @@ export default {
         }
     },
     mounted() {
-        
         if(!isNaN(this.last)) this.form.gameno = this.last
         
     },

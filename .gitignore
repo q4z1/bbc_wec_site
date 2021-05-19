@@ -1,11 +1,14 @@
 etc/config.php
 www/.htaccess
 core
+tmp/
 /node_modules
 /public/hot
 /public/storage
 /public/css
 /public/js
+/public/exp3/
+/public/fonts/
 /storage/*.key
 /vendor
 .env

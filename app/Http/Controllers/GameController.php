@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\Game;
 use App\Models\Player;
 use App\Models\Point;
+use App\Models\Season;
 use App\Http\Controllers\LogFileController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class GameController extends Controller
 {
@@ -108,18 +110,23 @@ class GameController extends Controller
 
                 $pt = new Point();
                 $pt->points = 0;
-                if($i<8){
-                    $points = [75,45,30,20,15,10,5];
-                    $pt->points = $points[$i-1];
-                }
+                $points = [10,9,8,7,6,5,4,3,2,1];
+                $pt->points = $points[$i-1] * $g->type;
                 $pt->game_started = $payload["date"] . " " . $payload["time"];
                 $pt->game_id = $g->id;
                 $pt->pos = $i;
                 $pt->type = $g->type;
                 $pt->player_id = $player->id;
                 $pt->save();
+
+                if($g->type == 4){
+                    $season = new Season();
+                    $season->start = date("Y-m-d H:i:s");
+                    $season->save();
+                }
             }
         }
+        Cache::flush();
         return ["status" => true, 'msg' => $g];
     }
 
@@ -222,8 +229,8 @@ class GameController extends Controller
                     $pt = new Point();
                     $pt->points = 0;
                     if($i<8){
-                        $points = [75,45,30,20,15,10,5];
-                        $pt->points = $points[$i-1];
+                        $points = [10,9,8,7,6,5,4,3,2,1];
+                        $pt->points = $points[$i-1] * $game->type;
                     }
                     $pt->game_started = $payload["date"] . " " . $payload["time"];
                     $pt->game_id = $game->id;
@@ -234,6 +241,7 @@ class GameController extends Controller
                 }
             }
         }
+        Cache::flush();
         return ["status" => true, 'msg' => "Game succesfully saved!"];
     }
 

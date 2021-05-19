@@ -40,15 +40,15 @@
                             <b-icon-award></b-icon-award>
                             <strong>Awards</strong>
                         </template>
-                        <b-dropdown-item href="#">Upload</b-dropdown-item>
-                        <b-dropdown-item href="#">Assign</b-dropdown-item>
+                        <b-dropdown-item href="{{ route('upload.award.view') }}">Upload</b-dropdown-item>
+                        <b-dropdown-item href="{{ route('assign.award.view') }}">Assign / Edit</b-dropdown-item>
                     </b-nav-item-dropdown>
                     @endif
                     @endauth
                     <b-nav-item href="{{ route('results') }}">Results</b-nav-item>
                     <b-nav-item href="{{ route('results.ranking') }}">Ranking</b-nav-item>
                     <b-nav-item href="{{ route('player.all') }}">Players</b-nav-item>
-                    <b-nav-item href="{{ route('results.halloffame') }}">Hall of Fame</b-nav-item>
+                    {{--  <b-nav-item href="{{ route('results.halloffame') }}">Hall of Fame</b-nav-item>  --}}
                 </b-navbar-nav>
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">

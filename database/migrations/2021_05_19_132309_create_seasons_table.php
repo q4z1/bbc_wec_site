@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class PointsTable extends Migration
+class CreateSeasonsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,9 @@ class PointsTable extends Migration
      */
     public function up()
     {
-        Schema::create('points', function (Blueprint $table) {
+        Schema::create('seasons', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('game_id');
-            $table->tinyInteger('type');
-            $table->bigInteger('player_id');
-            $table->integer('pos');
-            $table->integer('points');
-            $table->dateTime('game_started');
+            $table->dateTime('start');
             $table->timestamps();
         });
     }
@@ -32,6 +27,6 @@ class PointsTable extends Migration
      */
     public function down()
     {
-        //
+        Schema::dropIfExists('seasons');
     }
 }

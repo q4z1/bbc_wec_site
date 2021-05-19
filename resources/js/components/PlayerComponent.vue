@@ -8,15 +8,49 @@
                 <h1>{{ player.nickname }}</h1>
                 <b-row>
                     <b-col md="4"><strong>Total games:</strong></b-col>
-                    <b-col>{{ stats.length }}</b-col>
+                    <b-col>{{ stats.games_alltime }}</b-col>
                 </b-row>
-                <b-row>
-                    <b-col md="4"><strong>Current Season rank:</strong></b-col>
-                    <b-col>to come</b-col>
+                <b-row class="mt-3">
+                    <b-col>
+                        <h5>Current Season</h5>
+                        <b-row>
+                            <b-col md="4"><strong>Place:</strong></b-col>
+                            <b-col>to come</b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col md="4"><strong>Games:</strong></b-col>
+                            <b-col>{{ stats.games_season }}</b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col md="4"><strong>Points:</strong></b-col>
+                            <b-col>{{ stats.points_season }}</b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col md="4"><strong>Score:</strong></b-col>
+                            <b-col>{{ stats.score_season }}</b-col>
+                        </b-row>
+                    </b-col>
                 </b-row>
-                <b-row>
-                    <b-col md="4"><strong>All-time rank:</strong></b-col>
-                    <b-col>to come</b-col>
+                <b-row class="mt-3">
+                    <b-col>
+                        <h5>All-Time</h5>
+                        <b-row>
+                            <b-col md="4"><strong>Place:</strong></b-col>
+                            <b-col>to come</b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col md="4"><strong>Games:</strong></b-col>
+                            <b-col>{{ stats.games_alltime }}</b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col md="4"><strong>Points:</strong></b-col>
+                            <b-col>{{ stats.points_alltime }}</b-col>
+                        </b-row>
+                        <b-row>
+                            <b-col md="4"><strong>Score:</strong></b-col>
+                            <b-col>{{ stats.score_alltime }}</b-col>
+                        </b-row>
+                    </b-col>
                 </b-row>
                 <b-row class="pb-2">
                     <b-col md="4">
@@ -62,23 +96,7 @@
         </b-row>
         <b-row class="mb-3">
             <b-col>
-                <b-form-select v-model="year" @change="filter" :options="yearRange"></b-form-select>
-            </b-col>
-            <b-col>
-                <b-form-select v-model="month" @change="filter">                   
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">Jun</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                </b-form-select>
+                <b-form-select v-model="season_select" @change="filter" :options="seasons"></b-form-select>
             </b-col>
             <b-col>
                 <b-form-select v-model="type" @change="filter" :options="gameTypes"></b-form-select>
@@ -183,7 +201,7 @@
 </template>
 <script>
     export default {
-        props: ['player', 'stats'],
+        props: ['player', 'season', 'stats', 'awards'],
         data() {
             return {
                 ticket_fail: false,
@@ -192,14 +210,10 @@
                 s2: 0,
                 s3: 0,
                 s4: 0,
-                totalPoints: 0,
-                currentMonthPoints: 0,
-                currentYearPoints: 0,
                 types: [{ text: 'Step 1', value: 1 }, { text: 'Step 2', value: 2 }, { text: 'Step 3', value: 3 }, { text: 'Step 4', value: 4 }],
                 renderTable: true,
                 result: null,
-                year: null,
-                month: null,
+                season_select: null,
                 type: 1, // regular games
                 page: 1, // we always start with page 1
                 total: null,
@@ -225,10 +239,21 @@
                     { value: 4, text:'Step 4' },
                 ]
             },
+            seasons: function(){
+                let l = this.stats.seasons.length
+                console.log(this.stats.seasons)
+                let s = []
+                for(let i=0;i<l;i++){
+                    console.log(this.stats.seasons[i].id)
+                    s.push(
+                        { value: this.stats.seasons[i].id, text:'Season ' + this.stats.seasons[i].id }
+                    )
+                }
+                return s
+            }
         },
         mounted() {
-            this.year = new Date().getFullYear() // initially current year
-            this.month = new Date().getMonth() + 1 // initially current month
+            this.season_select = this.season
             this.type = 1
             this.s2 = this.player.s2_tickets
             this.s3 = this.player.s3_tickets
@@ -262,8 +287,7 @@
             },
             filter(){
                 axios.post('/results/games/' + this.player.id, {
-                    year: this.year,
-                    month: this.month,
+                    season: this.season_selected,
                     page: this.page,
                     type: this.type
                 })

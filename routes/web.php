@@ -21,8 +21,12 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
+Route::get('/upload/award', [App\Http\Controllers\AwardController::class, 'upload_view'])->name('upload.award.view');
+Route::get('/award/assign', [App\Http\Controllers\AwardController::class, 'assign_view'])->name('assign.award.view');
+Route::post('/upload/award', [App\Http\Controllers\AwardController::class, 'upload'])->name('upload.award.ajax');
 Route::get('/upload/game', [App\Http\Controllers\GameController::class, 'upload_view'])->name('upload.game.view');
 Route::get('/delete/game/{game}', [App\Http\Controllers\GameController::class, 'delete_game'])->name('delete.game');
+Route::get('/delete/award/{award}', [App\Http\Controllers\AwardController::class, 'delete_award'])->name('delete.award');
 Route::post('/upload/game', [App\Http\Controllers\GameController::class, 'upload'])->name('upload.game.ajax');
 Route::post('/update/game/{game}', [App\Http\Controllers\GameController::class, 'update_game'])->name('update.game');
 Route::get('/player/{player?}', [App\Http\Controllers\PlayerController::class, 'index'])->name('player');
@@ -41,6 +45,7 @@ Route::post('/results/games/{player}', [App\Http\Controllers\ResultController::c
 Route::get('/results/game/edit/{game}', [App\Http\Controllers\ResultController::class, 'game_edit'])->name('results.game.edit');
 Route::get('/results/halloffame', [App\Http\Controllers\ResultController::class, 'halloffame'])->name('results.halloffame');
 Route::get('/results/ranking', [App\Http\Controllers\ResultController::class, 'ranking'])->name('results.ranking');
+Route::post('/results/ranking', [App\Http\Controllers\ResultController::class, 'ranking']);
 Route::post('/results/halloffame', [App\Http\Controllers\ResultController::class, 'halloffame_filter'])->name('results.halloffame.filter');
 
 
