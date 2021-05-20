@@ -270,7 +270,8 @@ class ResultController extends Controller
     }
 
     public function filter(Request $request){
-        $season = $request->input('season', SeasonController::dateRange(Season::orderBy('start', 'DESC')->first()->id));
+        $season = $request->input('season', Season::orderBy('start', 'DESC')->first()->id);
+        $sr = SeasonController::dateRange($season);
         $page = $request->input('page', 1);
         $type = $request->input('type', 1);
         $total = DB::table('games')
@@ -298,8 +299,8 @@ class ResultController extends Controller
             'p10.nickname as p10'
         )->orderBy('number', 'DESC');
         $total = $total->whereBetween('started', [
-            $season['start'],
-            $season['end']
+            $sr['start'],
+            $sr['end']
         ]);
         $total = $total->where('type', $type)
         ->count();
@@ -328,8 +329,8 @@ class ResultController extends Controller
             'p10.nickname as p10'
         )->orderBy('number', 'DESC');
         $results = $results->whereBetween('started', [
-            $season['start'],
-            $season['end']
+            $sr['start'],
+            $sr['end']
         ]);
         $results = $results->where('type', $type)
         ->offset(($page-1)*10)
