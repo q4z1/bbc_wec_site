@@ -164,6 +164,7 @@ class ResultController extends Controller
     }
 
     public function filter(Request $request){
+        $alltime = $request->input('alltime', false);
         $year = $request->input('year', date("Y"));
         $month = $request->input('month', date("m"));
         $page = $request->input('page', 1);
@@ -191,11 +192,14 @@ class ResultController extends Controller
             'p8.nickname as p8',
             'p9.nickname as p9',
             'p10.nickname as p10'
-        )->orderBy('number', 'DESC')
-        ->whereYear('started','=', $year)
-        ->whereMonth('started','=', $month)
-        ->where('type', $type)
+        )->orderBy('number', 'DESC');
+        if(!$alltime){
+            $total = $total->whereYear('started','=', $year)
+            ->whereMonth('started','=', $month);
+        }
+        $total = $total->where('type', $type)
         ->count();
+
         $results = DB::table('games')
         ->leftJoin('players as p1', 'games.pos1', '=', 'p1.id')
         ->leftJoin('players as p2', 'games.pos2', '=', 'p2.id')
@@ -219,10 +223,12 @@ class ResultController extends Controller
             'p8.nickname as p8',
             'p9.nickname as p9',
             'p10.nickname as p10'
-        )->orderBy('number', 'DESC')
-        ->whereYear('started','=', $year)
-        ->whereMonth('started','=', $month)
-        ->where('type', $type)
+        )->orderBy('number', 'DESC');
+        if(!$alltime){
+            $results = $results->whereYear('started','=', $year)
+            ->whereMonth('started','=', $month);
+        }
+        $results = $results->where('type', $type)
         ->offset(($page-1)*10)
         ->take(10)
         ->get();

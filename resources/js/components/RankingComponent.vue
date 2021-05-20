@@ -33,7 +33,7 @@
         computed: {
             yearRange: function(){
                 let years = []
-                // years.push({value: '0', text: 'All-Time'})
+                years.push({value: '0', text: 'All-Time'})
                 let now = this.current_year
                 let past = 2012
                 for(let i=now;i>=past;i--){
@@ -54,7 +54,7 @@
                 for(let i=0; i<l; i++){
                     let s = stats[i]
                     stats_formatted.push({
-                        'pos': i + 1,
+                        'position': i + 1,
                         // 'player_id': s.player.id,
                         'nickname': s.player.nickname,
                         // 'score_month': s.score_month,

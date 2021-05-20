@@ -44,7 +44,7 @@
                     @endauth
                     <b-nav-item href="{{ route('results') }}">Results</b-nav-item>
                     <b-nav-item href="{{ route('results.ranking') }}">Ranking</b-nav-item>
-                    <b-nav-item href="{{ route('results.halloffame') }}">Hall of Fame</b-nav-item>
+                    {{-- <b-nav-item href="{{ route('results.halloffame') }}">Hall of Fame</b-nav-item> --}}
                 </b-navbar-nav>
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">

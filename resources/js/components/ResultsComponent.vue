@@ -3,10 +3,10 @@
         <h3>Results</h3>
         <b-row class="mb-3">
             <b-col>
-                <b-form-select v-model="year" @change="filter" :options="yearRange"></b-form-select>
+                <b-form-select v-model="year" @change="filter" :options="yearRange" id="year"></b-form-select>
             </b-col>
             <b-col>
-                <b-form-select v-model="month" @change="filter">                   
+                <b-form-select v-model="month" @change="filter" id="month">                   
                     <option value="1">January</option>
                     <option value="2">February</option>
                     <option value="3">March</option>
@@ -23,6 +23,11 @@
             </b-col>
             <b-col>
                 <b-form-select v-model="type" @change="filter" :options="gameTypes"></b-form-select>
+            </b-col>
+            <b-col>
+                <b-form-checkbox class="mt-2" @change="allTime" v-model="alltime" name="alltime" switch>
+                    All-Time
+                </b-form-checkbox>
             </b-col>
             <b-col class="text-right">
                 <b-button variant="warning" @click="reset">Reset</b-button>
@@ -58,6 +63,7 @@
         props: ['results', 'totals'],
         data() {
             return {
+                alltime: false,
                 renderTable: true,
                 result: null,
                 year: null,
@@ -71,7 +77,7 @@
         computed: {
             yearRange: function(){
                 let years = []
-                let now = this.year
+                let now = new Date().getFullYear()
                 let past = 2012
                 for(let i=now;i>=past;i--){
                     years.push({value: i, text: i})
@@ -125,12 +131,23 @@
             showGame(item, index, event) {
                 window.location.href = '/results/game/' + item.number
             },
+            allTime() {
+                if(this.alltime){
+                    window.document.getElementById('month').setAttribute('disabled', true)
+                    window.document.getElementById('year').setAttribute('disabled', true)
+                }else{
+                    window.document.getElementById('month').removeAttribute('disabled')
+                    window.document.getElementById('year').removeAttribute('disabled')
+                }
+                this.filter()
+            },
             filter(){
                 axios.post('/results', {
                     year: this.year,
                     month: this.month,
                     page: this.page,
-                    type: this.type
+                    type: this.type,
+                    alltime: this.alltime
                 })
                 .then(response => {
                     if(response.data.success === true){
