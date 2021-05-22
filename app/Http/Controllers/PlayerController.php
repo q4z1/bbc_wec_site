@@ -81,10 +81,23 @@ class PlayerController extends Controller
             }
             $avg_month = ($all_month['num'] > 0) ? round($all_month['total'] / $all_month['num']) : 0;
             $avg_year = ($all_year['num'] > 0) ? round($all_year['total'] / $all_year['num']) : 0;
+            $m = ($year2 != date('Y')) ? 12 : date('m');
+            if($year1 == 2012){
+                $ts1 = strtotime('2012-09-03');
+                $ts2 = strtotime(date('Y-m-d'));
+
+                $y1 = date('Y', $ts1);
+                $y2 = date('Y', $ts2);
+
+                $month1 = date('m', $ts1);
+                $month2 = date('m', $ts2);
+
+                $m = (($y2 - $y1) * 12) + ($month2 - $month1);
+            }
             $stats =
             [
                 'score_month' => number_format($stat_month['points'] / (1 + $stat_month['games'] + max(($avg_month - $stat_month['games']), 0)), 2),
-                'score_year' => number_format($stat_year['points'] / (date("m") + $stat_year['games'] + max(($avg_year - $stat_year['games']), 0)), 2),
+                'score_year' => number_format($stat_year['points'] / ($m + $stat_year['games'] + max(($avg_year - $stat_year['games']), 0)), 2),
                 'month' => $stat_month,
                 'year' => $stat_year,
                 'avg_games_month' => $avg_month,
