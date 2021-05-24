@@ -57,8 +57,6 @@
                         'position': i + 1,
                         // 'player_id': s.player.id,
                         'nickname': s.player.nickname,
-                        // 'score_month': s.score_month,
-                        // 'score_year': s.score_year,
                         'score': s.score_year,
                         'games': s.year.games
                     })

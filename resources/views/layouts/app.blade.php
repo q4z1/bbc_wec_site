@@ -30,16 +30,10 @@
                     <b-nav-item href="/">Home</b-nav-item>
                     @auth
                     @if(in_array(auth()->user()->role, ['a', 's']))
-                    <b-nav-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-nav-item>@endif
+                    <b-nav-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-nav-item>
+                    @endif
                     @if(in_array(auth()->user()->role, ['s']))
-                    <b-nav-item-dropdown>
-                        <template #button-content>
-                            <b-icon-award></b-icon-award>
-                            <strong>Awards</strong>
-                        </template>
-                        <b-dropdown-item href="#">Upload</b-dropdown-item>
-                        <b-dropdown-item href="#">Assign</b-dropdown-item>
-                    </b-nav-item-dropdown>
+                    <b-nav-item href="{{ route('award.view') }}"><b-icon-award></b-icon-award>&nbsp;Awards</b-nav-item>
                     @endif
                     @endauth
                     <b-nav-item href="{{ route('results') }}">Results</b-nav-item>

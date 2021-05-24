@@ -30,6 +30,13 @@ Route::get('/user/theme', [App\Http\Controllers\UserController::class, 'set_them
 
 Route::get('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 'index'])->name('shoutbox');
 
+Route::get('/awards', [App\Http\Controllers\AwardController::class, 'index'])->name('award.view');
+Route::post('/awards/upload', [App\Http\Controllers\AwardController::class, 'upload'])->name('award.upload');
+Route::post('/awards/edit/{award}', [App\Http\Controllers\AwardController::class, 'edit'])->name('award.edit');
+Route::get('/awards/delete/{award}', [App\Http\Controllers\AwardController::class, 'delete'])->name('award.delete');
+Route::post('/awards/assign/{award}', [App\Http\Controllers\AwardController::class, 'assign'])->name('award.assign');
+Route::get('/awards/assignments/{award}', [App\Http\Controllers\AwardController::class, 'assignments'])->name('award.assignments');
+
 Route::get('/results', [App\Http\Controllers\ResultController::class, 'index'])->name('results');
 Route::post('/results', [App\Http\Controllers\ResultController::class, 'filter'])->name('results.filter');
 Route::get('/results/game/{game}', [App\Http\Controllers\ResultController::class, 'game'])->name('results.game');

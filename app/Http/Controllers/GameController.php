@@ -22,16 +22,6 @@ class GameController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
-    /**
      * game upload ajax
      */
     public function upload(Request $request)
@@ -106,49 +96,6 @@ class GameController extends Controller
         $gameno = 123456;
         if($last) $gameno = $last->number + 1;
         return view('upload.game', ['last' => $gameno]);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Game  $game
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Game $game)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Game  $game
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Game $game)
-    {
-        //
     }
 
     public function delete_game(Request $request, $game)
