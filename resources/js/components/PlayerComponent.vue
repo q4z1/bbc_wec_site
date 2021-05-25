@@ -45,7 +45,7 @@
             <b-col class="awards">
                 <h3>Awards:</h3>
                 <b-row>
-                    <b-col v-for="(award, key) in awards" :key="key" class="w-25">
+                    <b-col v-for="(award, key) in awards" :key="key">
                         <b-row>
                             <b-col class="text-center"><img :src="award.filename" /></b-col>
                         </b-row>
@@ -85,6 +85,6 @@
 </script>
 <style lang="scss" scoped>
 .awards img{
-    width: 112px;
+    width: 120px;
 }
 </style>
