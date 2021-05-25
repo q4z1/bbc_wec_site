@@ -95,7 +95,7 @@ class GameController extends Controller
         $last = Game::orderBy('number', 'DESC')->first();
         $gameno = 123456;
         if($last) $gameno = $last->number + 1;
-        return view('upload.game', ['last' => $gameno]);
+        return view('game_upload', ['last' => $gameno]);
     }
 
     public function delete_game(Request $request, $game)

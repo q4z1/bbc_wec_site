@@ -32,6 +32,36 @@ class PlayerController extends Controller
         ]);
     }
 
+    public function all(Request $request){
+        $pagesize = $request->input('pageSize', 10);
+        if($request->method() == 'GET'){
+            return view('players', [
+                'players' => Player::limit($pagesize)->orderBy('nickname')->get(),
+                'total' => Player::count()
+            ]);
+        }else{
+            $nickname = $request->input('nickname');
+            $page = $request->input('page', 1);
+            
+            $sort = $request->input('sort', ['prop' => 'nickname', 'order' => 'ascending']);
+
+            $total = Player::get()->count();
+
+    
+            $query = Player::orderBy($sort['prop'], (($sort['order'] == 'descending') ? 'DESC' : 'ASC'))
+            ->offset(($page-1)*$pagesize)->limit($pagesize);
+            if(!empty($nickname)){
+                $query->where('nickname', 'LIKE', $nickname . '%');
+            }
+            $players = $query->get()->map(function($player){
+                return $player;
+            });
+
+            return ['success' => true, 'total' => $total, 'players' => $players];
+        }
+
+    }
+
     public function stats(Player $player, $year)
     {
         return Cache::remember('player.' . $player->id . "_" . $year, now()->addHours(24), function () use ($player, $year) {

@@ -36,8 +36,9 @@
                     <b-nav-item href="{{ route('award.view') }}"><b-icon-award></b-icon-award>&nbsp;Awards</b-nav-item>
                     @endif
                     @endauth
-                    <b-nav-item href="{{ route('results') }}">Results</b-nav-item>
-                    <b-nav-item href="{{ route('results.ranking') }}">Ranking</b-nav-item>
+                    <b-nav-item href="{{ route('results') }}"><b-icon-book-fill></b-icon-book-fill>&nbsp;Results</b-nav-item>
+                    <b-nav-item href="{{ route('results.ranking') }}"><b-icon-trophy-fill></b-icon-trophy-fill>&nbsp;Ranking</b-nav-item>
+                    <b-nav-item href="{{ route('players') }}"><b-icon-person-fill></b-icon-person-fill>&nbsp;Players</b-nav-item>
                     {{-- <b-nav-item href="{{ route('results.halloffame') }}">Hall of Fame</b-nav-item> --}}
                 </b-navbar-nav>
                 <!-- Right aligned nav items -->
@@ -45,7 +46,7 @@
                     @auth
                     <b-nav-item id="theme-toggle" v-b-tooltip.hover title="Toggle Theme"><b-icon-front></b-icon-front></b-nav-item>
                     @endauth
-                    <b-nav-item href="{{ route('shoutbox') }}" v-b-tooltip.hover title="Shoutbox"><b-icon-chat-text></b-icon-chat-text></b-nav-item>
+                    {{--  <b-nav-item href="{{ route('shoutbox') }}" v-b-tooltip.hover title="Shoutbox"><b-icon-chat-text></b-icon-chat-text></b-nav-item>  --}}
                     <b-nav-item-dropdown right>
                         <!-- Using 'button-content' slot -->
                         <template #button-content>

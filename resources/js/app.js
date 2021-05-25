@@ -12,7 +12,6 @@ window.Vue = require('vue');
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
-//import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
 /**
@@ -36,7 +35,7 @@ const app = new Vue({
     el: '#app',
     data() {
         return {
-            name: 'BootstrapVue',
+            name: 'WEC',
             isDropdown2Visible: false
         }
     },
