@@ -3,11 +3,21 @@
         <h3>Ranking</h3>
         <b-row class="mb-3">
             <b-col>
-                <b-form-select v-model="year" @change="filter" :options="yearRange"></b-form-select>
+                <b-overlay
+                :show="loading"
+                rounded
+                opacity="0.6"
+                spinner-small
+                spinner-variant="primary"
+                class="d-inline-block"
+                >
+                    <b-form-select :disabled="loading" v-model="year" @change="filter" :options="yearRange"></b-form-select>
+                </b-overlay>
             </b-col>
             <b-col></b-col>
             <b-col></b-col>
         </b-row>
+
         <b-table striped hover 
             id="results_table"
             :items="result"
@@ -28,6 +38,7 @@
                 result: null,
                 current_year: 0,
                 year: 0,
+                loading: false,
             }
         },
         computed: {
@@ -67,15 +78,18 @@
                 window.location.href = '/player/' + item.nickname
             },
             filter(){
+                this.loading = true
                 axios.post('/results/ranking', {
                     year: this.year,
                 })
                 .then(response => {
                     if(response.data.success === true){
                         this.result = this.formatResult(response.data.stats)
+                        this.loading = false
                     }
                 }, (error) => {
                     console.log(error)
+                    this.loading = true
                 });
             },
         }
