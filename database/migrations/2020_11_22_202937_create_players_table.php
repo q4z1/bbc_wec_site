@@ -20,6 +20,7 @@ class CreatePlayersTable extends Migration
             $table->integer('s2_tickets')->default(0);
             $table->integer('s3_tickets')->default(0);
             $table->integer('s4_tickets')->default(0);
+            $table->tinyInteger('new')->default(0);
             $table->timestamps();
         });
     }

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Player;
+use App\Models\PlayerAward;
 use App\Models\Point;
 use App\Models\Season;
 use App\Http\Controllers\SeasonController;
@@ -21,7 +22,11 @@ class PlayerController extends Controller
     public function index(Request $request, $player)
     {
         $player = Player::where('nickname', $player)->first();
-        $awards = [];
+
+        $awards = PlayerAward::where('player_id', $player->id)->with('award')->get()
+        ->map(function ($a) {
+            return $a->award;
+        });
 
         $this->season = Season::orderBy('start', 'DESC')->first();
         $season = $this->season->id;
@@ -66,7 +71,7 @@ class PlayerController extends Controller
         $res = DB::table('players')
         ->select(
             'players.id', 'players.nickname'
-        )->orderBy('id', 'ASC')
+        )->orderBy('nickname', 'ASC')
         ->get();
         return $res;
     }
@@ -135,69 +140,4 @@ class PlayerController extends Controller
         return ['success' => true];
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Player  $player
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Player $player)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Player  $player
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Player $player)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Player  $player
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Player $player)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Player  $player
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Player $player)
-    {
-        //
-    }
 }

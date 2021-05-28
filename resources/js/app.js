@@ -15,7 +15,8 @@ Vue.use(IconsPlugin)
 //import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 
-import InfiniteLoading from 'vue-infinite-loading';
+// import InfiniteLoading from 'vue-infinite-loading';
+
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
 
@@ -29,7 +30,7 @@ import { DataTables, DataTablesServer  } from 'vue-data-tables'
 Vue.use(DataTables)
 Vue.use(DataTablesServer)
 
-Vue.use(InfiniteLoading, { /* options */ })
+// Vue.use(InfiniteLoading, { /* options */ })
 
 /**
  * The following block of code may be used to automatically register your

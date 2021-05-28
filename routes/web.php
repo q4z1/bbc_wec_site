@@ -21,9 +21,6 @@ Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 
-Route::get('/upload/award', [App\Http\Controllers\AwardController::class, 'upload_view'])->name('upload.award.view');
-Route::get('/award/assign', [App\Http\Controllers\AwardController::class, 'assign_view'])->name('assign.award.view');
-Route::post('/upload/award', [App\Http\Controllers\AwardController::class, 'upload'])->name('upload.award.ajax');
 Route::get('/upload/game', [App\Http\Controllers\GameController::class, 'upload_view'])->name('upload.game.view');
 Route::get('/delete/game/{game}', [App\Http\Controllers\GameController::class, 'delete_game'])->name('delete.game');
 Route::get('/delete/award/{award}', [App\Http\Controllers\AwardController::class, 'delete_award'])->name('delete.award');
@@ -34,10 +31,15 @@ Route::post('/player/tickets/{player?}', [App\Http\Controllers\PlayerController:
 Route::get('/players/delete/{player?}', [App\Http\Controllers\PlayerController::class, 'delete'])->name('player.delete');
 Route::get('/players', [App\Http\Controllers\PlayerController::class, 'all'])->name('player.all');
 Route::post('/players', [App\Http\Controllers\PlayerController::class, 'all'])->name('player.all');
+Route::get('/players/list', [App\Http\Controllers\PlayerController::class, 'playerlist'])->name('player.list');
 Route::get('/user/theme', [App\Http\Controllers\UserController::class, 'set_theme'])->name('user.theme.set');
 
 Route::get('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 'index'])->name('shoutbox');
 
+Route::get('/registration', [App\Http\Controllers\RegistrationController::class, 'index'])->name('registration');
+Route::post('/registration', [App\Http\Controllers\RegistrationController::class, 'add'])->name('registration.add');
+Route::post('/registration/{reg?}', [App\Http\Controllers\RegistrationController::class, 'update'])->name('registration.update');
+Route::delete('/registration/{reg?}', [App\Http\Controllers\RegistrationController::class, 'delete'])->name('registration.delete');
 Route::get('/results', [App\Http\Controllers\ResultController::class, 'index'])->name('results');
 Route::post('/results', [App\Http\Controllers\ResultController::class, 'filter'])->name('results.filter');
 Route::get('/results/game/{game}', [App\Http\Controllers\ResultController::class, 'game'])->name('results.game');
@@ -48,5 +50,9 @@ Route::get('/results/ranking', [App\Http\Controllers\ResultController::class, 'r
 Route::post('/results/ranking', [App\Http\Controllers\ResultController::class, 'ranking']);
 Route::post('/results/halloffame', [App\Http\Controllers\ResultController::class, 'halloffame_filter'])->name('results.halloffame.filter');
 
-
-Route::get('/playerlist', [App\Http\Controllers\PlayerController::class, 'playerlist'])->name('player.playerlist');
+Route::get('/awards', [App\Http\Controllers\AwardController::class, 'index'])->name('award.view');
+Route::post('/awards/upload', [App\Http\Controllers\AwardController::class, 'upload'])->name('award.upload');
+Route::post('/awards/edit/{award}', [App\Http\Controllers\AwardController::class, 'edit'])->name('award.edit');
+Route::get('/awards/delete/{award}', [App\Http\Controllers\AwardController::class, 'delete'])->name('award.delete');
+Route::post('/awards/assign/{award}', [App\Http\Controllers\AwardController::class, 'assign'])->name('award.assign');
+Route::get('/awards/assignments/{award}', [App\Http\Controllers\AwardController::class, 'assignments'])->name('award.assignments');

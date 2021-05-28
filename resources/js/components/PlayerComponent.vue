@@ -84,8 +84,19 @@
         </b-row>
         <hr />
         <b-row>
-            <b-col>
+            <b-col class="awards">
                 <h3>Awards:</h3>
+                <b-row>
+                    <b-col v-for="(award, key) in awards" :key="key">
+                        <b-row>
+                            <b-col class="text-center"><img :src="award.filename" /></b-col>
+                        </b-row>
+                        <b-row class="text-center">
+                            <b-col>{{ award.title }}</b-col>
+                        </b-row>
+                        
+                    </b-col>
+                </b-row>
             </b-col>
         </b-row>
         <hr />
@@ -373,4 +384,9 @@
             }
         } 
     } 
+</style>
+<style lang="scss" scoped>
+.awards img{
+    width: 120px;
+}
 </style>

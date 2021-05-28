@@ -4,7 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\Award;
 use App\Models\Player;
+use App\Models\PlayerAward;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Storage;
 
 class AwardController extends Controller
 {
@@ -13,26 +16,6 @@ class AwardController extends Controller
         $this->middleware('auth');
     }
 
-    public function upload_view(){
-        return view('upload.award');
-    }
-
-    public function assign_view(){
-        $awards = ['blah'];
-        $players = Player::get();
-        return view('award_assign', ['awards' => $awards, 'players' => $players]);
-    }
-
-    public function upload(Request $request){
-        return ['status' => true, 'msg' => $request->toArray()];
-    }
-
-    public function delete_award(Request $request, $award)
-    {
-        return ["status" => true, 'msg' => "Award deleted!"];
-    }
-
-
     /**
      * Display a listing of the resource.
      *
@@ -40,72 +23,78 @@ class AwardController extends Controller
      */
     public function index()
     {
-        //
+        $awards = Cache::rememberForever('awards', function () {
+            return Award::get();
+        });
+        $players = Cache::rememberForever('players', function () {
+            return Player::orderBy('nickname', 'ASC')->get();
+        });
+        return view('awards', [
+            'awards' => $awards, 
+            'players' => $players
+        ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+    public function upload(Request $request){
+        if(!$request->hasFile('award')) return ['success' => false, 'msg' => 'Uploaded File invalid.'];
+        $path = str_replace('public', '/storage', $request->file('award')->store('public/awards'));
+        $award = new Award();
+        $award->filename = $path;
+        $award->title = $request->title;
+        $award->save();
+        Cache::forget('awards');
+        $awards = Cache::rememberForever('awards', function () {
+            return Award::get();
+        });
+        return ['success' => true, 'msg' => 'Award uploaded.', 'awards' => $awards];
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
+    public function edit(Request $request, Award $award){
+        if($request->hasFile('award')){
+            Storage::delete('public/awards/' . basename($award->filename));
+            $path = '/storage/awards/' . basename($request->file('award')->store('public/awards'));
+            $award->filename = $path;
+        }
+        $award->title = $request->title;
+        $award->save();
+        Cache::forget('awards');
+        $awards = Cache::rememberForever('awards', function () {
+            return Award::get();
+        });
+        return ['success' => true, 'msg' => 'Award updated.', 'awards' => $awards];
     }
 
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Award  $award
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Award $award)
-    {
-        //
+    public function assign(Request $request, Award $award){
+        PlayerAward::where('award_id', $award->id)->delete();
+        foreach($request->player as $player_id){
+            $pa = new PlayerAward();
+            $pa->award_id = $award->id;
+            $pa->player_id = $player_id;
+            $pa->save();
+        }
+        return ['success' => true];
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Award  $award
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Award $award)
-    {
-        //
+
+    public function assignments(Request $request, Award $award){
+        return [
+            'success' => true, 
+            'assignments' => PlayerAward::where('award_id', $award->id)->with('player')->get()
+            ->map(function ($a) {
+                return $a->player;
+            })
+        ];
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Award  $award
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Award $award)
-    {
-        //
+    public function delete(Request $request, Award $award){
+        Storage::delete('public/awards/' . basename($award->filename));
+        PlayerAward::where('award_id', $award->id)->delete();
+        $award->delete();
+        Cache::forget('awards');
+        $awards = Cache::rememberForever('awards', function () {
+            return Award::get();
+        });
+        return ['success' => true, 'msg' => 'Award deleted.', 'awards' => $awards];
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Award  $award
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Award $award)
-    {
-        //
-    }
 }
