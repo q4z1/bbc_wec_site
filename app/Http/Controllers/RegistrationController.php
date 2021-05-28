@@ -31,6 +31,11 @@ class RegistrationController extends Controller
         //
     }
 
+    public function register(Request $request, GameDate $date)
+    {
+        //
+    }
+
     public function getUpcomingGames(){
         $dates = GameDate::where('date','>=', date("Y-m-01 00:00:00", strtotime('-1 month')))->with('regs.player')->get()->map(function($date){
             foreach($date->regs as $i => $reg){

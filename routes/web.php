@@ -37,7 +37,8 @@ Route::get('/user/theme', [App\Http\Controllers\UserController::class, 'set_them
 Route::get('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 'index'])->name('shoutbox');
 
 Route::get('/registration', [App\Http\Controllers\RegistrationController::class, 'index'])->name('registration');
-Route::post('/registration', [App\Http\Controllers\RegistrationController::class, 'add'])->name('registration.add');
+Route::post('/registration/newdate', [App\Http\Controllers\RegistrationController::class, 'add'])->name('registration.newdate');
+Route::put('/registration/add/{date?}', [App\Http\Controllers\RegistrationController::class, 'register'])->name('registration.register');
 Route::post('/registration/{reg?}', [App\Http\Controllers\RegistrationController::class, 'update'])->name('registration.update');
 Route::delete('/registration/{reg?}', [App\Http\Controllers\RegistrationController::class, 'delete'])->name('registration.delete');
 Route::get('/results', [App\Http\Controllers\ResultController::class, 'index'])->name('results');

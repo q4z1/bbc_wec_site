@@ -30,7 +30,7 @@ export default {
                         addEvent: {
                             text: '+',
                             click: function() {
-                                alert('clicked addEvent');
+                                console.log('clicked addEvent');
                             }
                         }
                     },
@@ -49,8 +49,8 @@ export default {
                         hour12: false
                     },
                     events: this.game_dates,
-                    eventClick: function(info) {
-                        console.log('click', info.event.title)
+                    eventClick: (info) => {
+                        this.showDate(info.event.id)
                     },
                     eventMouseEnter: function(info) {
                         $(info.el).tooltip({title: info.event.extendedProps.description}); 
@@ -69,8 +69,14 @@ export default {
             this.game_dates = this.formatDates(this.gamedates)
         },
         methods:{
-            addReg() {
+            addReg(){
                 
+            },
+            register(){
+
+            },
+            showDate(id){
+                console.log('showDate', id)
             },
             formatDates(dates){
                 let new_dates = []
