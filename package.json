@@ -24,6 +24,7 @@
         "vue-template-compiler": "^2.6.10"
     },
     "dependencies": {
+        "@fingerprintjs/fingerprintjs": "^3.1.2",
         "@fullcalendar/daygrid": "^5.7.0",
         "@fullcalendar/interaction": "^5.7.0",
         "@fullcalendar/vue": "^5.7.0",

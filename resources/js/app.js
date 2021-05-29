@@ -12,10 +12,7 @@ window.Vue = require('vue');
 import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 Vue.use(BootstrapVue)
 Vue.use(IconsPlugin)
-//import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
-
-// import InfiniteLoading from 'vue-infinite-loading';
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -30,6 +27,7 @@ import { DataTables, DataTablesServer  } from 'vue-data-tables'
 Vue.use(DataTables)
 Vue.use(DataTablesServer)
 
+// import InfiniteLoading from 'vue-infinite-loading';
 // Vue.use(InfiniteLoading, { /* options */ })
 
 /**

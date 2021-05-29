@@ -17,6 +17,8 @@ class CreateRegistrationsTable extends Migration
             $table->id();
             $table->integer('player_id');
             $table->integer('game_date_id');
+            $table->string('ip', 64)->nullable();
+            $table->string('fp', 64)->nullable();
             $table->timestamps();
         });
     }

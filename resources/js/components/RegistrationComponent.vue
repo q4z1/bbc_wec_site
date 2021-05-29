@@ -1,105 +1,155 @@
 <template>
     <div class="registration">
+        <b-alert
+            v-if="alert"
+            :show="alert"
+            dismissible
+            :variant="alertVar"
+            @dismissed="alert = false"
+        >
+        {{ alertMsg }}
+        </b-alert>
         <h3>Registration</h3>
         <b-row class="d-flex justify-content-center">
             <b-col class="calendar"><FullCalendar v-if="game_dates" ref="fullCalendar" :options="calendarOptions" /></b-col>
         </b-row>
+        <b-modal :size="gModalSize" id="modal-date" :title="(date) ? 'Step ' + date.step + ' - ' + date.date : ''"  hide-footer>
+            <game-date-component @show-alert="showAlert" @update-dates="updateDates" v-if="date" :date="date" :fp="fp" />
+        </b-modal>
+        <b-modal id="modal-newdate" title="New Game" v-if="arole === 'a'" hide-footer>
+            <game-date-new-component @show-alert="showAlert" @update-dates="updateDates" />
+        </b-modal>
     </div>
 </template>
 <script>
-import FullCalendar from "@fullcalendar/vue";
-import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-
+import FullCalendar from "@fullcalendar/vue"
+import dayGridPlugin from "@fullcalendar/daygrid"
+import interactionPlugin from "@fullcalendar/interaction"
+import GameDateComponent from './GameDateComponent.vue'
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
 export default {
-        props: ['gamedates', 'calstart'],
-        components: {
-            FullCalendar,
-        },
-        data() {
+    props: ['gamedates', 'calstart'],
+    components: {
+        FullCalendar,
+        GameDateComponent,
+    },
+    data() {
+        return {
+            game_dates: null,
+            date: null,
+            fp: null,
+            gModalSize: 'md',
+            alertVar: 'danger',
+            alertMsg: '',
+            alert: false,
+            arole: (window.arole === 's') ? 'a' : window.arole,
+        }
+    },
+    computed: {
+        calendarOptions: function () {
             return {
-                game_dates: null,
-            }
-        },
-        computed: {
-            calendarOptions: function () {
-                return {
-                    plugins: [dayGridPlugin, interactionPlugin],
-                    initialView: "dayGridMonth",
-                    customButtons: {
-                        addEvent: {
-                            text: '+',
-                            click: function() {
-                                console.log('clicked addEvent');
-                            }
+                plugins: [dayGridPlugin, interactionPlugin],
+                initialView: "dayGridMonth",
+                customButtons: {
+                    addEvent: {
+                        text: '+',
+                        click: () => {
+                            this.$bvModal.show('modal-newdate')
                         }
-                    },
-                    validRange: {
-                        start: this.calstart
-                    },
-                    headerToolbar: {
-                        left: 'prev,next today',
-                        center: 'title',
-                        right: (window.arole === 's') ? 'addEvent' : '',
-                    },
-                    eventTimeFormat: {
-                        hour: '2-digit',
-                        minute: '2-digit',
-                        meridiem: false,
-                        hour12: false
-                    },
-                    events: this.game_dates,
-                    eventClick: (info) => {
-                        this.showDate(info.event.id)
-                    },
-                    eventMouseEnter: function(info) {
-                        $(info.el).tooltip({title: info.event.extendedProps.description}); 
-                    },
-                    loading: function( isLoading, view ) {
-                        if(isLoading) {// isLoading gives boolean value
-                            // console.log('loading')
-                        } else {
-                            // console.log('not loading')
-                        }
+                    }
+                },
+                firstDay: 1,
+                validRange: {
+                    start: this.calstart
+                },
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: (window.arole === 's') ? 'addEvent' : '',
+                },
+                eventTimeFormat: {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    meridiem: false,
+                    hour12: false
+                },
+                events: this.game_dates,
+                eventClick: (info) => {
+                    this.showDate(info.event.id)
+                },
+                eventMouseEnter: function(info) {
+                    $(info.el).tooltip({title: info.event.extendedProps.description}).tooltip('show') 
+                },
+                eventMouseLeave: function(info) {
+                    $(info.el).tooltip('hide') 
+                },
+                loading: function( isLoading, view ) {
+                    if(isLoading) {// isLoading gives boolean value
+                        // console.log('loading')
+                    } else {
+                        // console.log('not loading')
                     }
                 }
             }
+        }
+    },
+    mounted() {
+        if(window.arole === 's') this.gModalSize = 'xl'
+        this.game_dates = this.formatDates(this.gamedates)
+        const fpPromise = FingerprintJS.load();(async () => {
+            let fp = await fpPromise
+            let result = await fp.get()
+            this.fp = result.visitorId
+        })()
+    },
+    methods:{
+        addReg(){
+            
         },
-        mounted() {
-            this.game_dates = this.formatDates(this.gamedates)
+        showAlert(msg, variant, duration=5){
+            // console.log('showAlert()', msg, variant, duration)
+            this.alertVar = variant
+            this.alertMsg = msg
+            this.alert = duration
         },
-        methods:{
-            addReg(){
-                
-            },
-            register(){
-
-            },
-            showDate(id){
-                console.log('showDate', id)
-            },
-            formatDates(dates){
-                let new_dates = []
-                for(let i in dates){
-                    let date = dates[i]
-                    let admin = 'n/a'
-                    for(let j in date.regs){
-                        let player = date.regs[j].player
-                        if(player.admin && admin == 'n/a') admin = player.nickname
-                    }
-                    let num = date.regs.length
-                    new_dates.push(
-                        {
-                            id: date.id,
-                            title: 'Step' + date.step,
-                            start: date.date.replace(' ', 'T'),
-                            description: 'Admin: ' + admin + ', Players: ' + num + '/10'
-                        }
-                    )
+        showDate(id){
+            axios.get('/registration/date/get/' + id)
+            .then(response => {
+                if(response.data.success === true){
+                    this.date = response.data.date
+                    this.$bvModal.show('modal-date')
+                }else{
+                    console.log(response.data)
                 }
-                return new_dates
+            }, (error) => {
+                console.log(error)
+            });
+        },
+        updateDates(dates){
+            this.game_dates = this.formatDates(dates)
+        },
+        formatDates(dates){
+            let new_dates = []
+            for(let i in dates){
+                let date = dates[i]
+                let admin = 'n/a'
+                for(let j in date.regs){
+                    let player = date.regs[j].player
+                    if(player.admin && admin == 'n/a') admin = player.nickname
+                }
+                let num = date.regs.length
+                new_dates.push(
+                    {
+                        id: date.id,
+                        title: 'Step' + date.step,
+                        start: date.date.replace(' ', 'T'),
+                        description: 'Admin: ' + admin + ', Players: ' + num + '/10'
+                    }
+                )
             }
-        }  
+            return new_dates
+        }
+    }  
 }
 </script>
 <style lang="scss">
