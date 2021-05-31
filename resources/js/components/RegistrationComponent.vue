@@ -137,13 +137,18 @@ export default {
                     let player = date.regs[j].player
                     if(player.admin && admin == 'n/a') admin = player.nickname
                 }
+                let colors = { 1: 'primary', 2: 'success', 3: 'warning', 4: 'danger'}
+                let color = 'var(--' + colors[date.step] + ')'
+                
                 let num = date.regs.length
                 new_dates.push(
                     {
                         id: date.id,
                         title: 'Step' + date.step,
                         start: date.date.replace(' ', 'T'),
-                        description: 'Admin: ' + admin + ', Players: ' + num + '/10'
+                        end: date.date.replace(' ', 'T').replace(date.date.substr(date.date.length - 2, 2), '59'),
+                        description: 'Admin: ' + admin + ', Players: ' + num + '/10',
+                        color: color,
                     }
                 )
             }
@@ -166,7 +171,7 @@ export default {
                 }
             }
             .fc-view-harness{
-                height: 570px!important;
+                height: 720px!important;
                 .fc-event{
                     cursor: pointer;
                 }
@@ -176,8 +181,10 @@ export default {
                         height: auto!important;
                         tbody{
                             tr{
-                                height: 90px!important;
-                                overflow: hidden;
+                                height: 115px!important;
+                                td {
+                                    overflow-y: scroll;
+                                }
                             }
                         }
                     }

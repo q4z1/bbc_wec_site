@@ -196,10 +196,4 @@ export default {
 .b-icon{
     cursor: pointer;
 }
-.fc-event{
-    color: var(--warning);
-    .fc-daygrid-event-dot{
-        border-color: var(--warning);
-    }
-}
 </style>

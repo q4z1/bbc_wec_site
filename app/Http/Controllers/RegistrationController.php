@@ -24,6 +24,7 @@ class RegistrationController extends Controller
 
     public function delete(Registration $reg)
     {
+        if(!(auth() && in_array(auth()->user()->role, ['s']))) return ['success' => false, 'msg' => 'Not valid.'];
         Registration::where('id', $reg->id)->first()->delete();
         return ['success' => true, 'dates' => GameDate::getUpcomingGames()];
     }
