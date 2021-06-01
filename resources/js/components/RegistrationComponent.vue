@@ -74,7 +74,12 @@ export default {
                     hour12: false
                 },
                 events: this.game_dates,
-                eventDidMount: function(info) { },
+                eventDidMount: function(info) {
+                    $(info.el).data('powertip', info.event.extendedProps.description).powerTip({
+                        placement: 'n',
+                        smartPlacement: true
+                    })
+                },
                 eventClick: (info) => {
                     this.showDate(info.event.id)
                 },
@@ -100,9 +105,6 @@ export default {
         })()
     },
     methods:{
-        addReg(){
-            
-        },
         showAlert(msg, variant, duration=5){
             // console.log('showAlert()', msg, variant, duration)
             this.alertVar = variant
@@ -123,7 +125,10 @@ export default {
             });
         },
         updateDates(dates){
-            this.game_dates = this.formatDates(dates)
+            this.game_dates = false
+            this.$nextTick(() => {
+                this.game_dates = this.formatDates(dates)
+            })
         },
         formatDates(dates){
             let new_dates = []

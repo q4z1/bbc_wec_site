@@ -30,6 +30,10 @@ Vue.use(DataTablesServer)
 // import InfiniteLoading from 'vue-infinite-loading';
 // Vue.use(InfiniteLoading, { /* options */ })
 
+require('jquery-powertip')
+import 'jquery-powertip/dist/css/jquery.powertip.min.css'
+
+
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
