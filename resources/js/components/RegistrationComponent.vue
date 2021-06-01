@@ -74,20 +74,17 @@ export default {
                     hour12: false
                 },
                 events: this.game_dates,
+                eventDidMount: function(info) { },
                 eventClick: (info) => {
                     this.showDate(info.event.id)
                 },
-                eventMouseEnter: function(info) {
-                    $(info.el).tooltip({title: info.event.extendedProps.description}).tooltip('show') 
-                },
-                eventMouseLeave: function(info) {
-                    $(info.el).tooltip('hide') 
-                },
+                eventMouseEnter: function(info) { },
+                eventMouseLeave: function(info) { },
                 loading: function( isLoading, view ) {
                     if(isLoading) {// isLoading gives boolean value
-                        // console.log('loading')
+
                     } else {
-                        // console.log('not loading')
+
                     }
                 }
             }

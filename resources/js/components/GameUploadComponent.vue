@@ -114,11 +114,11 @@ export default {
         
     },
     created() {
-        this.$root.$on('bv::toast:hidden', bvEvent => {
-            if(bvEvent.vueTarget.variant === 'success'){
-                window.location.href = '/results/game/' + this.form.gameno
-            }
-        });
+        // this.$root.$on('bv::toast:hidden', bvEvent => {
+        //     if(bvEvent.vueTarget.variant === 'success'){
+        //         window.location.href = window.location.origin + '/results/game/' + this.form.gameno
+        //     }
+        // });
     },
     methods: {
         onSubmit(evt) {
@@ -145,10 +145,11 @@ export default {
                             this.$bvModal.hide('modal-preview')
                             this.$bvToast.toast(`Game succesfully uploaded!`, {
                                 title: 'Game uploaded!',
-                                autoHideDelay: 2000,
+                                autoHideDelay: 1500,
                                 appendToast: true,
                                 variant: 'success',
                             })
+                            window.setTimeout(() => {window.location.href = window.location.origin + '/results/game/' + this.form.gameno}, 1500)
                         } 
                         this.form.preview = !this.form.preview                      
                     }else{

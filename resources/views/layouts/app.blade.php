@@ -37,12 +37,12 @@
                     @endif
                     @if(in_array(auth()->user()->role, ['s']))
                     <b-nav-item href="{{ route('award.view') }}"><b-icon-award></b-icon-award>&nbsp;Awards</b-nav-item>
-                    <b-nav-item href="{{ route('registration') }}"><b-icon-calendar2-check-fill></b-icon-calendar2-check-fill>&nbsp;Registration</b-nav-item>
                     @endif
                     @endauth
                     <b-nav-item href="{{ route('results') }}"><b-icon-book-fill></b-icon-book-fill>&nbsp;Results</b-nav-item>
                     <b-nav-item href="{{ route('results.ranking') }}"><b-icon-trophy-fill></b-icon-trophy-fill>&nbsp;Ranking</b-nav-item>
                     <b-nav-item href="{{ route('player.all') }}"><b-icon-person-fill></b-icon-person-fill>&nbsp;Players</b-nav-item>
+                    <b-nav-item href="{{ route('registration') }}"><b-icon-calendar2-check-fill></b-icon-calendar2-check-fill>&nbsp;Registration</b-nav-item>
                     {{--  <b-nav-item href="{{ route('results.halloffame') }}">Hall of Fame</b-nav-item>  --}}
                 </b-navbar-nav>
                 <!-- Right aligned nav items -->
