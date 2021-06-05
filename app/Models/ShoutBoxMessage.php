@@ -8,4 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class ShoutBoxMessage extends Model
 {
     use HasFactory;
+
+    public function player(){
+        return $this->hasOne(Player::class, 'id', 'player_id');
+    }
 }

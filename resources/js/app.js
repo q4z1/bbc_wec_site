@@ -27,9 +27,6 @@ import { DataTables, DataTablesServer  } from 'vue-data-tables'
 Vue.use(DataTables)
 Vue.use(DataTablesServer)
 
-// import InfiniteLoading from 'vue-infinite-loading';
-// Vue.use(InfiniteLoading, { /* options */ })
-
 require('jquery-powertip')
 import 'jquery-powertip/dist/css/jquery.powertip.min.css'
 

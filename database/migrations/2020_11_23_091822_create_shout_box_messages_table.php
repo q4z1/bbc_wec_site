@@ -15,6 +15,12 @@ class CreateShoutBoxMessagesTable extends Migration
     {
         Schema::create('shout_box_messages', function (Blueprint $table) {
             $table->id();
+            $table->integer('user_id')->nullable();
+            $table->string('nickname', 64)->nullable();
+            $table->text('message');
+            $table->string('ip', 64)->nullable();
+            $table->string('fp', 64)->nullable();
+            $table->tinyInteger('active')->default(1);
             $table->timestamps();
         });
     }
