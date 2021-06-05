@@ -39,7 +39,7 @@ class ShoutBoxMessageController extends Controller
         $sbp->user_id = $user_id;
         $sbp->nickname = $nickname;
         $sbp->fp = $fp;
-        $sbp->ip = $request->ip;
+        $sbp->ip = $request->ip();
         $sbp->message = $msg;
         $sbp->active = $post_active;
         $sbp->save();

@@ -18,11 +18,11 @@
                                 </b-col>
                                 <b-col v-if="arole === 's'" class="data">
                                     <b-row>
-                                        <b-col><small class="text-success font-weight-bolder">IP:</small></b-col>
+                                        <b-col sm="4"><small class="text-success font-weight-bolder">IP:</small></b-col>
                                         <b-col><small>{{ post.ip }}</small></b-col>
                                     </b-row>
                                     <b-row>
-                                        <b-col><small class="text-primary font-weight-bolder">Fingerprint:</small></b-col>
+                                        <b-col sm="4"><small class="text-primary font-weight-bolder">Fingerprint:</small></b-col>
                                         <b-col><small>{{ post.fp }}</small></b-col>
                                     </b-row>
                                 </b-col>
