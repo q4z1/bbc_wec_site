@@ -166,16 +166,9 @@ export default {
         if(this.user !== null){
             this.nickname = this.user.name
         }
-        // setInterval(() => { 
-        //     console.log("updating?")
-        //     // this.show = false
-        //     // let offset_prev = this.offset
-        //     // this.offset = 0
-        //     // this.$nextTick(() => {
-        //     //     this.show = true
-        //     //     this.offset = offset_prev
-        //     // })
-        // }, 10000)
+        setInterval(() => { 
+            this.filter(null, true)
+        }, 10000)
     },
     methods: {
         date(index, updated=false) {
@@ -187,10 +180,10 @@ export default {
             while (num.length < 2) num = "0" + num
             return num
         },
-        filter(state=null){
+        filter(state=null, update=false){
             let data = new FormData()
             if(this.sbid !== null) data.append('id', this.sbid)
-            data.append('offset', this.offset)
+            data.append('offset', (update) ? 0 : this.offset)
             axios({
                 method: "post",
                 url: "/shoutbox",
@@ -200,10 +193,14 @@ export default {
             .then(response => {
                 if(response.data.success === true){
                     if(state === null){ 
-                        let posts = response.data.posts.reverse()
-                        for(let i in posts){
-                            if(posts[i].id > this.posts[this.posts.length - 1].id){
-                                this.posts.push(posts[i])
+                        let posts = response.data.posts
+                        if(!update){
+                            this.posts = posts
+                        }else{
+                            for(let i in posts){
+                                if(posts[i].id > this.posts[this.posts.length - 1].id){
+                                    this.posts.push(posts[i])
+                                }
                             }
                         }
                         this.$nextTick(() => {
