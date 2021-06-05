@@ -3,10 +3,11 @@
         <h3>Shoutbox</h3>
         <b-row class="box">
             <b-col v-if="posts">
-                <b-card no-body no-header>
+                <b-card no-body no-header v-if="show">
                     <infinite-loading direction="top" @infinite="infiniteHandler">
                         <span slot="no-more"></span>
                         <span slot="no-results"></span>
+                        <span slot="spinner"></span>
                     </infinite-loading>
                     <b-list-group flush v-if="show">
                         <b-list-group-item v-for="(post, index) in posts" :key="post.id" :class="(post.active === 3) ? 'admin' : ''">
@@ -165,7 +166,16 @@ export default {
         if(this.user !== null){
             this.nickname = this.user.name
         }
-        // this.filter()
+        // setInterval(() => { 
+        //     console.log("updating?")
+        //     // this.show = false
+        //     // let offset_prev = this.offset
+        //     // this.offset = 0
+        //     // this.$nextTick(() => {
+        //     //     this.show = true
+        //     //     this.offset = offset_prev
+        //     // })
+        // }, 10000)
     },
     methods: {
         date(index, updated=false) {
@@ -189,8 +199,13 @@ export default {
             })
             .then(response => {
                 if(response.data.success === true){
-                    if(state === null){
-                        this.posts = response.data.posts.reverse()
+                    if(state === null){ 
+                        let posts = response.data.posts.reverse()
+                        for(let i in posts){
+                            if(posts[i].id > this.posts[this.posts.length - 1].id){
+                                this.posts.push(posts[i])
+                            }
+                        }
                         this.$nextTick(() => {
                             $( ".shoutbox .box .card" ).prop('scrollTop', $( ".shoutbox .box .card" ).prop('scrollHeight'))
                         })
