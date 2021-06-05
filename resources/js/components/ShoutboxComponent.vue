@@ -173,7 +173,7 @@ export default {
     methods: {
         date(index, updated=false) {
             let d = new Date(Date.parse((updated) ? this.posts[index].updated_at : this.posts[index].created_at))
-            return d.getFullYear() + '-' + this.pad(d.getMonth()) + '-' + this.pad((d.getDay() + 1)) + ' ' + this.pad(d.getHours()) + ':' + this.pad(d.getMinutes()) + ':' + this.pad(d.getSeconds())
+            return d.getFullYear() + '-' + this.pad((d.getMonth() + 1)) + '-' + this.pad(d.getDate()) + ' ' + this.pad(d.getHours()) + ':' + this.pad(d.getMinutes()) + ':' + this.pad(d.getSeconds())
         },
         pad(num) {
             num = num.toString()
