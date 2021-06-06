@@ -1,5 +1,5 @@
 <template>
-    <div class="container-fluid leaderboard">
+    <div class="container-fluid players">
         <div class="row justify-content-center">
             <div class="col-md-12">
                 <div class="card">

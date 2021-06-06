@@ -193,6 +193,7 @@ export default {
             .then(response => {
                 if(response.data.success === true){
                     if(state === null){ 
+                        let scroll = true
                         let posts = response.data.posts
                         if(!update){
                             this.posts = posts
@@ -200,12 +201,15 @@ export default {
                             for(let i in posts){
                                 if(posts[i].id > this.posts[this.posts.length - 1].id){
                                     this.posts.push(posts[i])
+                                    scroll = false
                                 }
                             }
                         }
-                        this.$nextTick(() => {
-                            $( ".shoutbox .box .card" ).prop('scrollTop', $( ".shoutbox .box .card" ).prop('scrollHeight'))
-                        })
+                        if(scroll){
+                            this.$nextTick(() => {
+                                $( ".shoutbox .box .card" ).prop('scrollTop', $( ".shoutbox .box .card" ).prop('scrollHeight'))
+                            })
+                        }
                     }
                     else{
                         if(response.data.posts.length !== 0){
@@ -289,7 +293,6 @@ export default {
             this.sbmsg = null
         },
         del(id){
-            console.log('delete', id)
             this.sbid = id
             this.$refs['delete'].show()
         },

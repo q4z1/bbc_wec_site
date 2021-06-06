@@ -30,12 +30,14 @@ Route::post('/update/game/{game}', [App\Http\Controllers\GameController::class, 
 Route::get('/player/{player?}', [App\Http\Controllers\PlayerController::class, 'index'])->name('player');
 Route::post('/player/tickets/{player?}', [App\Http\Controllers\PlayerController::class, 'tickets'])->name('player.tickets');
 Route::get('/players/delete/{player?}', [App\Http\Controllers\PlayerController::class, 'delete'])->name('player.delete');
-
 Route::get('/players', [App\Http\Controllers\PlayerController::class, 'all'])->name('player.all');
 Route::post('/players', [App\Http\Controllers\PlayerController::class, 'all'])->name('player.all');
 Route::get('/players/list', [App\Http\Controllers\PlayerController::class, 'playerlist'])->name('player.list');
 
 Route::get('/user/theme', [App\Http\Controllers\UserController::class, 'set_theme'])->name('user.theme.set');
+Route::get('/users', [App\Http\Controllers\UserController::class, 'index'])->name('user.view');
+Route::get('/user/delete/{user}', [App\Http\Controllers\UserController::class, 'delete'])->name('user.delete');
+Route::post('/user/update/{user}', [App\Http\Controllers\UserController::class, 'update'])->name('user.update');
 
 Route::get('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 'index'])->name('shoutbox');
 Route::post('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 'filter'])->name('shoutbox.filter');
