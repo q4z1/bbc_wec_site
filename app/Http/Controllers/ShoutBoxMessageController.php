@@ -3,10 +3,164 @@
 namespace App\Http\Controllers;
 
 use App\Models\ShoutBoxMessage;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
 
 class ShoutBoxMessageController extends Controller
 {
+    protected $ascii_emoji;
+
+    public function __construct(){
+        $this->ascii_emoji = [
+            'o/' => '👋',
+            '</3' => '💔',
+            '<3' => '💗',
+            '8-D' => '😁',
+            '8D' => '😁',
+            ':-D' => '😁',
+            '=-3' => '😁',
+            '=-D' => '😁',
+            '=3' => '😁',
+            '=D' => '😁',
+            'B^D' => '😁',
+            'X-D' => '😁',
+            'XD' => '😁',
+            'x-D' => '😁',
+            'xD' => '😁',
+            ':\')' => '😂',
+            ':\'-)' => '😂',
+            ':-))' => '😃',
+            '8)' => '😄',
+            ':)' => '😄',
+            ':-)' => '😄',
+            ':3' => '😄',
+            ':D' => '😄',
+            ':]' => '😄',
+            ':^)' => '😄',
+            ':c)' => '😄',
+            ':o)' => '😄',
+            ':}' => '😄',
+            ':っ)' => '😄',
+            '=)' => '😄',
+            '=]' => '😄',
+            '0:)' => '😇',
+            '0:-)' => '😇',
+            '0:-3' => '😇',
+            '0:3' => '😇',
+            '0;^)' => '😇',
+            'O:-)' => '😇',
+            '3:)' => '😈',
+            '3:-)' => '😈',
+            '}:)' => '😈',
+            '}:-)' => '😈',
+            '*)' => '😉',
+            '*-)' => '😉',
+            ':-,' => '😉',
+            ';)' => '😉',
+            ';-)' => '😉',
+            ';-]' => '😉',
+            ';D' => '😉',
+            ';]' => '😉',
+            ';^)' => '😉',
+            ':-|' => '😐',
+            ':|' => '😐',
+            ':(' => '😒',
+            ':-(' => '😒',
+            ':-<' => '😒',
+            ':-[' => '😒',
+            ':-c' => '😒',
+            ':<' => '😒',
+            ':[' => '😒',
+            ':c' => '😒',
+            ':{' => '😒',
+            ':っC' => '😒',
+            '%)' => '😖',
+            '%-)' => '😖',
+            ':-P' => '😜',
+            ':-b' => '😜',
+            ':-p' => '😜',
+            ':-Þ' => '😜',
+            ':-þ' => '😜',
+            ':P' => '😜',
+            ':b' => '😜',
+            ':p' => '😜',
+            ':Þ' => '😜',
+            ':þ' => '😜',
+            ';(' => '😜',
+            '=p' => '😜',
+            'X-P' => '😜',
+            'XP' => '😜',
+            'd:' => '😜',
+            'x-p' => '😜',
+            'xp' => '😜',
+            ':-||' => '😠',
+            ':@' => '😠',
+            ':-.' => '😡',
+            ':-/' => '😡',
+            ':/' => '😡',
+            ':L' => '😡',
+            ':S' => '😡',
+            ':\\' => '😡',
+            '=/' => '😡',
+            '=L' => '😡',
+            '=\\' => '😡',
+            ':\'(' => '😢',
+            ':\'-(' => '😢',
+            '^5' => '😤',
+            '^<_<' => '😤',
+            'o/\\o' => '😤',
+            '|-O' => '😫',
+            '|;-)' => '😫',
+            ':###..' => '😰',
+            ':-###..' => '😰',
+            'D-\':' => '😱',
+            'D8' => '😱',
+            'D:' => '😱',
+            'D:<' => '😱',
+            'D;' => '😱',
+            'D=' => '😱',
+            'DX' => '😱',
+            'v.v' => '😱',
+            '8-0' => '😲',
+            ':-O' => '😲',
+            ':-o' => '😲',
+            ':O' => '😲',
+            ':o' => '😲',
+            'O-O' => '😲',
+            'O_O' => '😲',
+            'O_o' => '😲',
+            'o-o' => '😲',
+            'o_O' => '😲',
+            'o_o' => '😲',
+            ':$' => '😳',
+            '#-)' => '😵',
+            ':#' => '😶',
+            ':&' => '😶',
+            ':-#' => '😶',
+            ':-&' => '😶',
+            ':-X' => '😶',
+            ':X' => '😶',
+            ':-J' => '😼',
+            ':*' => '😽',
+            ':^*' => '😽',
+            'ಠ_ಠ' => '🙅',
+            '*\\0/*' => '🙆',
+            '\\o/' => '🙆',
+            ':>' => '😄',
+            '>.<' => '😡',
+            '>:(' => '😠',
+            '>:)' => '😈',
+            '>:-)' => '😈',
+            '>:/' => '😡',
+            '>:O' => '😲',
+            '>:P' => '😜',
+            '>:[' => '😒',
+            '>:\\' => '😡',
+            '>;)' => '😈',
+            '>_>^' => '😤',
+        ];
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -40,13 +194,13 @@ class ShoutBoxMessageController extends Controller
         $sbp->nickname = $nickname;
         $sbp->fp = $fp;
         $sbp->ip = $request->ip();
-        $sbp->message = $msg;
+        $sbp->message = strip_tags($msg);
         $sbp->active = $post_active;
         $sbp->save();
 
         $posts = ShoutBoxMessage::where('active', '>=', $active)->limit(25)->orderBy('created_at', 'ASC')->with('player')->get();
 
-        return ['success' => true, 'msg' => 'Message posted.', 'posts' => $posts];
+        return ['success' => true, 'msg' => 'Message posted.', 'posts' => $this->map($posts)];
     }
 
     public function delete(Request $request, ShoutBoxMessage $shoutBoxMessage)
@@ -71,7 +225,7 @@ class ShoutBoxMessageController extends Controller
 
         $posts = ShoutBoxMessage::whereBetween('active', [1, $post_active])->orderBy('id', 'DESC')->limit(25)->offset($offset)->with('player')->get();
 
-        return ['success' => true, 'posts' => $posts];
+        return ['success' => true, 'posts' => $this->map($posts)];
     }
 
     public function update(Request $request, ShoutBoxMessage $shoutBoxMessage)
@@ -81,8 +235,24 @@ class ShoutBoxMessageController extends Controller
         if(is_null($request->user()) || $request->user()->id !== $shoutBoxMessage->user_id ) return ['success' => false, 'msg' => 'Unauthorized!'];
         elseif(is_null($msg)) return ['success' => false, 'msg' => 'Missing Parameter!'];
         $shoutBoxMessage->active = (in_array($request->user()->role, ['a', 's']) && $admin_post > 0) ? 3 : 2;
-        $shoutBoxMessage->message = $msg;
+        $shoutBoxMessage->message = strip_tags($msg);
         $shoutBoxMessage->save();
         return ['success' => true, 'msg' => 'Post updated.', 'post' => $shoutBoxMessage];
+    }
+
+    private function map($posts){
+        return $posts->map(function($p){
+            // 1. urls
+            $url = '@(http(s)?)?(://)?(([a-zA-Z])([-\w]+\.)+([^\s\.]+[^\s]*)+[^,.\s])@';
+            $p->message = preg_replace($url, '<a href="http$2://$4" target="_blank" title="$0">$0</a>', $p->message);
+            $p->message = str_replace(array_keys($this->ascii_emoji), $this->ascii_emoji, $p->message);
+            $p->message = str_replace(['http😡', 'https😡'], ['http:/', 'https:/'], $p->message);            
+            return $p;
+        });
+    }
+
+
+    public function map_single(Request $request, ShoutBoxMessage $sbpost){
+        return ['success' => true, 'post' => $this->map(collect([$sbpost]))->first()];
     }
 }

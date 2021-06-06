@@ -42,7 +42,7 @@
                                 <b-col><hr /></b-col>
                             </b-row>
                             <b-row>
-                                <b-col>{{ post.message }}</b-col>
+                                <b-col v-html="post.message"></b-col>
                             </b-row>
                             <b-row v-if="post.created_at < post.updated_at">
                                 <b-col><small class="font-italic">Last edited: {{ date(index, true) }}</small></b-col>
@@ -245,18 +245,21 @@ export default {
             })
             this.sbmsg = null
         },
-        getPostById(id){
-            for(let i in this.posts){
-                if(this.posts[i].id === id) return this.posts[i]
-            }
-            return null;
-        },
         edit(id){
             this.sbid = id
-            let post = this.getPostById(id)
-            this.sbmsg = post.message
-            this.admin_post = (post.active === 3) ? true : false
-            this.$refs['edit'].show()
+            axios.get("/shoutbox/map/" + this.sbid)
+            .then(response => {
+                if(response.data.success === true){
+                    let post = response.data.post
+                    this.sbmsg = post.message
+                    this.admin_post = (post.active === 3) ? true : false
+                    this.$refs['edit'].show()
+                }else{
+                    console.log(response.data.msg)
+                }
+            }, (error) => {
+                console.log(error)
+            })
         },
         doUpdate(){
             let data = new FormData()

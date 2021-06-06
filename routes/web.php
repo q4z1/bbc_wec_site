@@ -39,6 +39,7 @@ Route::get('/user/theme', [App\Http\Controllers\UserController::class, 'set_them
 
 Route::get('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 'index'])->name('shoutbox');
 Route::post('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 'filter'])->name('shoutbox.filter');
+Route::get('/shoutbox/map/{sbpost}', [App\Http\Controllers\ShoutBoxMessageController::class, 'map_single'])->name('shoutbox.map');
 Route::post('/shoutbox/new', [App\Http\Controllers\ShoutBoxMessageController::class, 'post'])->name('shoutbox.post');
 Route::get('/shoutbox/delete/{shoutBoxMessage}', [App\Http\Controllers\ShoutBoxMessageController::class, 'delete'])->name('shoutbox.delete');
 Route::post('/shoutbox/update/{shoutBoxMessage}', [App\Http\Controllers\ShoutBoxMessageController::class, 'update'])->name('shoutbox.update');
