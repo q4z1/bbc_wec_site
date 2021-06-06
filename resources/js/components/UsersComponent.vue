@@ -24,7 +24,7 @@
             <b-button class="mt-3" variant="outline-info" block @click="$refs['delete'].hide()">Cancel</b-button>
             <b-button class="mt-2" variant="outline-danger" block @click="doDelete">Yes, Delete!</b-button>
         </b-modal>
-        <b-modal v-if="user" ref="edit" id="edit" :title="'Edit Role of '+this.user.name" ok-disabled hide-footer>
+        <b-modal v-if="user" ref="edit" id="edit" :title="'Edit '+this.user.name+'\'s role'" ok-disabled hide-footer>
             <b-form-select v-model="role" :options="roleOpts"></b-form-select>
             <b-button class="mt-3" variant="outline-info" block @click="$refs['edit'].hide()">Cancel</b-button>
             <b-button class="mt-2" variant="outline-danger" block @click="doUpdate">Update User!</b-button>
