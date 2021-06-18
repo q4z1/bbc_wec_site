@@ -391,7 +391,7 @@ export default {
                 if(typ.value == this.game.type) this.type = typ.text 
             })
 
-            this.bbcode = '[indent][img]/images/bbc_logo.jpg[/img][/indent]\n'
+            this.bbcode = '[indent][img]/images/bbc_logo.png[/img][/indent]\n'
             this.bbcode += '[hr][b][size=185][color=black]♣ [/color][color=darkred]♥[/color][color=black] ♠[/color][color=darkred] ♦ [/color][/size][size=200][color=goldenrod][font=Palatino Linotype]'
             this.bbcode += 'BBC Step' + this.game.type + ' # ' + this.game.number + ' - ' + this.game.started
             this.bbcode += '[/font][/color][/size][size=185][color=darkred] ♦ [/color][color=black]♠ [/color][color=darkred] ♥[/color]'
