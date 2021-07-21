@@ -107,7 +107,6 @@
                 }
                 // save theme into session
                 axios.get('{{ route('user.theme.set') }}' + '?v=' + theme);
-
                 $('#theme-css').attr('href', href);
             });
         });

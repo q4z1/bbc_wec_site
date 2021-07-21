@@ -22,7 +22,7 @@
                         <span v-html="data.value"></span>
                     </template>
                     <template #cell(action)="data">
-                        <span class="text-danger float-right" @click="deleteReg" :data-id="data.value"><b-icon-trash-fill></b-icon-trash-fill></span>
+                        <span class="text-danger float-right" @click="deleteReg" :data-id="data.value" v-if="parseInt(data.value) > 0"><b-icon-trash-fill></b-icon-trash-fill></span>
                     </template>
                 </b-table>
             </b-col>
@@ -38,7 +38,6 @@
                 <registration-new-component @show-alert="showAlert" @update-dates="updateDates" v-if="s_date && !old" :date="s_date" :fp="fp"></registration-new-component>
             </b-col>
             <b-col sm="2" class="d-flex justify-content-end">
-                <!-- <b-button v-if="!old" variant="warning" @click="editDate" class="mr-1"><b-icon-pencil-fill></b-icon-pencil-fill></b-button> -->
                 <b-button v-if="!old" variant="danger" @click="deleteDate"><b-icon-trash-fill></b-icon-trash-fill></b-button>
             </b-col>
         </b-row>
@@ -70,12 +69,19 @@ export default {
     },
     mounted() {
         this.s_date = this.date
-        if(window.arole === 's' && !this.old){
-            this.fields.push(
-                {key: 'ip', label: 'IP', sortable: true},
-                {key: 'fp', label: 'Fingerprint', sortable: true},
-                {key: 'action', label: ''}
-            )
+        if(['u', 'a', 's'].indexOf(window.arole) !== -1){
+            if(window.arole === 's'){
+                this.fields.push(
+                    {key: 'ip', label: 'IP', sortable: true},
+                    {key: 'fp', label: 'Fingerprint', sortable: true},
+
+                )
+            }
+            if(!this.old){
+                this.fields.push(
+                    {key: 'action', label: ''}
+                )
+            }
         }
         this.regs = this.formatRegs(this.date.regs)
     },
@@ -90,7 +96,7 @@ export default {
                     nickname: reg.player.nickname + ((reg.player.admin) ? ' <sup class="text-danger">Admin</sup>' : ((parseInt(reg.player.new) === 1) ? ' <sup class="text-warning">New</sup>' : '')),
                     ip: (reg.ip) ? reg.ip : 'n/a',
                     fp: (reg.fp) ? reg.fp : 'n/a',
-                    action: reg.id
+                    action: (reg.player.owner) ? reg.id : 0,
                 })
             }
             return new_regs
@@ -182,11 +188,7 @@ export default {
             })
         },
         updateDates(dates){
-            for(let i in dates){
-                if(dates[i].id === this.date.id){
-                    this.regs = this.formatRegs(dates[i].regs)
-                } 
-            }
+            this.$bvModal.hide('modal-date')
             this.$emit('update-dates', dates)
         }
     }

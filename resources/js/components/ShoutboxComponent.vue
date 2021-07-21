@@ -198,10 +198,11 @@ export default {
                         if(!update){
                             this.posts = posts
                         }else{
+                            scroll = false
                             for(let i in posts){
                                 if(posts[i].id > this.posts[this.posts.length - 1].id){
                                     this.posts.push(posts[i])
-                                    scroll = false
+                                    scroll = true
                                 }
                             }
                         }

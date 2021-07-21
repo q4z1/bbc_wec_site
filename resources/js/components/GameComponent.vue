@@ -1,6 +1,6 @@
 <template>
     <div>
-        <b-container v-if="!edit">
+        <b-container v-if="game && !edit">
             <b-row class="mt-3">
                 <b-col>
                     <h3>Basic data</h3>
@@ -118,8 +118,8 @@
                 </small></b-col>
             </b-row>
         </b-container>
-        <b-container v-else><game-edit-component :game="game" @back="back" @update="update"></game-edit-component></b-container>
-        <b-modal id="bbcode" title="Forum BB Code" :cancel-disabled="true" v-model="show_bb">
+        <b-container v-else-if="game"><game-edit-component :game="game" @back="back" @update="update"></game-edit-component></b-container>
+        <b-modal v-if="bbcode" id="bbcode" title="Forum BB Code" :cancel-disabled="true" v-model="show_bb">
             <b-form-textarea
                 id="bbcode_content"
                 v-model="bbcode"

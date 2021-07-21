@@ -15,27 +15,8 @@ class GameDate extends Model
 
     public static function getUpcomingGames(){
         $dates = self::where('date','>=', date("Y-m-01 00:00:00", strtotime('-1 month')))->with('regs.player')->get()->map(function($date){
-            $admin = false;
-            foreach($date->regs as $i => $reg){
-                // if a player gets deleted after registration:
-                if(!$reg->player){
-                    $date->regs[$i]->delete();
-                    unset($date->regs[$i]);
-                    continue;
-                }
-                $p = $reg->player;
-                $u = User::where('name', $p->nickname)->first();
-                if($p && $u && in_array($u->role, ['a', 's'])){
-                    if(!$admin){
-                        $date->regs[$i]->player->admin = true;
-                        $admin = true;
-                    }else{
-                        $date->regs[$i]->player->admin = false;
-                    }
-                }else{
-                    $date->regs[$i]->player->admin = false;
-                }
-            }
+            $date->num = count($date->regs);
+            unset($date->regs);
             return $date;
         });
         return $dates;

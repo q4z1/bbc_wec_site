@@ -11,19 +11,20 @@ class GameDateController extends Controller
     public function get(GameDate $date){
         $gd = GameDate::where('id', $date->id)->with('regs.player')->first();
         $admin = false;
+        $j = 1;
         foreach($gd->regs as $i => $reg){
+            $gd->regs[$i]->player->owner = false;
+            if($j % 10 === 0) $admin = false;
             $p = $reg->player;
             $u = User::where('name', $p->nickname)->first();
-            if($p && $u && in_array($u->role, ['a', 's'])){
-                if(!$admin){
-                    $gd->regs[$i]->player->admin = true;
-                    $admin = true;
-                }else{
-                    $gd->regs[$i]->player->admin = false;
-                }
+            if(!$admin && $p && $u && in_array($u->role, ['a', 's'])){
+                $gd->regs[$i]->player->admin = true;
+                $admin = true;
             }else{
                 $gd->regs[$i]->player->admin = false;
             }
+            if(auth() && $u && auth()->id() == $u->id && (time() < (strtotime($gd->date) - 60 * 60))) $gd->regs[$i]->player->owner = true;
+            $j++;
         }
         return  ['success' => true, 'date' => $gd];
     }

@@ -106,6 +106,7 @@ class GameController extends Controller
                         }
                         break;
                 }
+                $player->new = 0;
                 $player->save();
 
                 $pt = new Point();

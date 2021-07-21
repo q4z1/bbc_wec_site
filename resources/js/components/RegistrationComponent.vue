@@ -135,21 +135,18 @@ export default {
             for(let i in dates){
                 let date = dates[i]
                 let admin = 'n/a'
-                for(let j in date.regs){
-                    let player = date.regs[j].player
-                    if(player.admin && admin == 'n/a') admin = player.nickname
-                }
+                admin = date.admin
                 let colors = { 1: 'primary', 2: 'success', 3: 'warning', 4: 'danger'}
                 let color = 'var(--' + colors[date.step] + ')'
                 
-                let num = date.regs.length
+                let num = date.num
                 new_dates.push(
                     {
                         id: date.id,
                         title: 'Step' + date.step,
                         start: date.date.replace(' ', 'T'),
                         end: date.date.replace(' ', 'T').replace(date.date.substr(date.date.length - 2, 2), '59'),
-                        description: 'Admin: ' + admin + ', Players: ' + num + '/10',
+                        description: 'Players: ' + num + '/10',
                         color: color,
                     }
                 )

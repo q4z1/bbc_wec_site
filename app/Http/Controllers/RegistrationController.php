@@ -24,8 +24,11 @@ class RegistrationController extends Controller
 
     public function delete(Registration $reg)
     {
-        if(!(auth() && in_array(auth()->user()->role, ['s']))) return ['success' => false, 'msg' => 'Not valid.'];
-        Registration::where('id', $reg->id)->first()->delete();
+        $reg = Registration::where('id', $reg->id)->first();
+        $p = Player::where('id', $reg->player_id)->first();
+        $u = User::where('name', $p->nickname)->first();
+        if(!(auth() && (in_array(auth()->user()->role, ['s']) || ($u && $u->id == auth()->id())))) return ['success' => false, 'msg' => 'Not valid.'];
+        $reg->delete();
         return ['success' => true, 'dates' => GameDate::getUpcomingGames()];
     }
 
@@ -33,13 +36,17 @@ class RegistrationController extends Controller
     {
         $nickname = $request->input('nickname', "");
         if($nickname === "") return ['success' => false, 'msg' => 'Username empty!'];
-        if(strtotime("-15 minute") > strtotime($date->date)) return ['success' => false, 'msg' => 'Registration too late!'];
+        if(time() > (strtotime($date->date) - 15 * 60)) return ['success' => false, 'msg' => 'Registration too late (less than 15 minutes before the game)!'];
         $p = Player::where('nickname', $nickname)->first();
-        if(!$p){
+        if(!$p && $date->step === 1){
             $p = new Player();
             $p->nickname = $nickname;
             $p->new = 1;
             $p->save();
+        }else{
+            if($date->step > 1 && $p["s" . $date->step . "_tickets"] < 1){
+                return ['success' => false, 'msg' => 'Not enough tickets!'];
+            }
         }
         if(Registration::where([['game_date_id', $date->id],['player_id', $p->id]])->first()) return ['success' => false, 'msg' => 'Already registered!'];
         $reg = new Registration();
