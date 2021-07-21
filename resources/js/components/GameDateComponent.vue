@@ -188,6 +188,7 @@ export default {
             })
         },
         updateDates(dates){
+            this.showAlert('Successfully registered.', 'success')
             this.$bvModal.hide('modal-date')
             this.$emit('update-dates', dates)
         }

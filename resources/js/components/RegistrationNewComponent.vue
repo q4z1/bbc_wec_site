@@ -60,7 +60,6 @@ export default {
                 if(res.data.success === true){
                     this.alertMgs = 'Successfully registered.'
                     this.alertVar = 'success'
-                    this.showAlert('Successfully registered.', 'success')
                     this.$emit('update-dates', res.data.dates)
                 }
                 else{
