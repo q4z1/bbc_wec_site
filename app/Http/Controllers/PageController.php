@@ -108,7 +108,7 @@ class PageController extends Controller
    */
   public function destroy(Request $request, Page $page)
   {
-    if ($page->slug === "about") return ['success' => false, 'msg' => 'Home cannot be deleted!'];
+    if ($page->slug === "home") return ['success' => false, 'msg' => 'Home cannot be deleted!'];
     $page->delete();
     return ['success' => true];
   }
