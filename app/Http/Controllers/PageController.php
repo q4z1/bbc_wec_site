@@ -110,6 +110,6 @@ class PageController extends Controller
   {
     if ($page->slug === "home") return ['success' => false, 'msg' => 'Home cannot be deleted!'];
     $page->delete();
-    return ['success' => true];
+    return ['status' => true];
   }
 }
