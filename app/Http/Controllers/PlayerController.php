@@ -14,6 +14,11 @@ class PlayerController extends Controller
 {
     private $season = null;
 
+    public function __construct()
+    {
+      $this->middleware('auth', ['only' => ['delete', 'tickets']]);
+    }
+
     /**
      * Display a listing of the resource.
      *

@@ -14,10 +14,10 @@ use App\Models\Season;
 
 class ResultController extends Controller
 {
-    public function __construct()
-    {
-        // $this->middleware('auth');
-    }
+  public function __construct()
+  {
+    $this->middleware('auth', ['only' => ['game_edit']]);
+  }
 
     public function index(Request $request){
         $season = SeasonController::dateRange(Season::orderBy('start', 'DESC')->first()->id);

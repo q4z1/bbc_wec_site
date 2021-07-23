@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    <title>{{ config('app.name', 'BBC') }}</title>
 
     <!-- Scripts -->
     <script src="{{ asset('js/app.js') }}" defer></script>
@@ -24,7 +24,7 @@
     <div id="app">
         <b-navbar toggleable="lg" variant="secondary">
             <b-navbar-brand href="{{ url('/') }}">
-                {{--  <img height="75" src="{{ url('/logo.jpg') }}" alt="{{ config('app.name', 'Laravel') }}" />  --}}
+                <img width="150" src="{{ url('/logo.png') }}" alt="{{ config('app.name', 'Best Brainies Cup') }}" />
             </b-navbar-brand>
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
             <b-collapse id="nav-collapse" is-nav>
@@ -42,6 +42,7 @@
                         <b-dropdown-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-dropdown-item>
                         <b-dropdown-item  href="{{ route('award.view') }}"><b-icon-award></b-icon-award>&nbsp;Awards</b-dropdown-item>
                         <b-dropdown-item  href="{{ route('user.view') }}"><b-icon-person-fill></b-icon-person-fill>&nbsp;Users</b-dropdown-item>
+                        <b-dropdown-item  href="{{ route('pages') }}"><b-icon-file-text></b-icon-file-text>&nbsp;Pages</b-dropdown-item>
                     </b-nav-item-dropdown>
                     @elseif(auth()->user()->role === 'a')
                     <b-nav-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-nav-item>
@@ -51,7 +52,9 @@
                     <b-nav-item href="{{ route('results.ranking') }}"><b-icon-trophy-fill></b-icon-trophy-fill>&nbsp;Ranking</b-nav-item>
                     <b-nav-item href="{{ route('player.all') }}"><b-icon-person-fill></b-icon-person-fill>&nbsp;Players</b-nav-item>
                     <b-nav-item href="{{ route('registration') }}"><b-icon-calendar2-check-fill></b-icon-calendar2-check-fill>&nbsp;Registration</b-nav-item>
-                    {{--  <b-nav-item href="{{ route('results.halloffame') }}">Hall of Fame</b-nav-item>  --}}
+                    @foreach( \App\Models\Page::where([['active', 1], ['slug', '!=', 'home']])->orderBy('order', 'ASC')->get() as $page)
+                    <b-nav-item href="/page/{{ $page->slug }}">{{ $page->title }}</b-nav-item>
+                    @endforeach
                 </b-navbar-nav>
                 <!-- Right aligned nav items -->
                 <b-navbar-nav class="ml-auto">

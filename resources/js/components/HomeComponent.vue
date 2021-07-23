@@ -1,12 +1,15 @@
 <template>
-    <div>
-        <h1>HomeComponent1</h1>
-    </div>
+  <div>
+    <vue-markdown :html="true" :source="markdown"></vue-markdown>
+  </div>
 </template>
 <script>
-    export default {
-        mounted() {
-            console.log('HomeComponent mounted.')
-        }
-    }
+import VueMarkdown from 'vue-markdown'
+export default {
+  components: {
+    VueMarkdown,
+  },
+  props: ['markdown'],
+  mounted() {},
+};
 </script>
