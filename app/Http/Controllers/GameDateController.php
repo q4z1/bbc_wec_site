@@ -29,7 +29,7 @@ class GameDateController extends Controller
       } else {
         $gd->regs[$i]->player->admin = false;
       }
-      if (auth() && auth()->user()->role === 's' || ($u && auth()->id() == $u->id && (time() < (strtotime($gd->date) - 60 * 60)))) $gd->regs[$i]->player->owner = true;
+      if ((auth() && auth()->user() && auth()->user()->role === 's') || ($u && auth() && auth()->id() == $u->id && (time() < (strtotime($gd->date) - 60 * 60)))) $gd->regs[$i]->player->owner = true;
       $j++;
     }
     return  ['success' => true, 'date' => $gd];
