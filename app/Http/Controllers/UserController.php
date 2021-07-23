@@ -9,18 +9,18 @@ class UserController extends Controller
 {
   public function __construct()
   {
-    $this->middleware('auth', ['except' => ['set_theme']]);
+    $this->middleware('auth');
   }
 
   public function index()
   {
-    if (!auth()->user() || auth()->user()->role !== 's') abort(401);
+    if (auth()->user()->role !== 's') abort(401);
     return view('users', ['users' => User::get()]);
   }
 
   public function update(Request $request, User $user)
   {
-    if (!auth()->user() || auth()->user()->role !== 's') return ['success' => false, 'msg' => 'Unauthorized!'];
+    if (auth()->user()->role !== 's') return ['success' => false, 'msg' => 'Unauthorized!'];
     $user->role = $request->input('role', $user->role);
     $user->save();
     return ['success' => true, 'users' => User::get()];
@@ -28,7 +28,7 @@ class UserController extends Controller
 
   public function delete(Request $request, User $user)
   {
-    if (!auth()->user() || auth()->user()->role !== 's') return ['success' => false, 'msg' => 'Unauthorized!'];
+    if (auth()->user()->role !== 's') return ['success' => false, 'msg' => 'Unauthorized!'];
     $user->delete();
     return ['success' => true];
   }

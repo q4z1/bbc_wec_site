@@ -37,7 +37,7 @@ class GameDateController extends Controller
 
   public function add(Request $request)
   {
-    if (!(auth() && in_array(auth()->user()->role, ['a', 's']))) return ['success' => false, 'msg' => 'Not valid.'];
+    if (!in_array(auth()->user()->role, ['a', 's'])) return ['success' => false, 'msg' => 'Not valid.'];
     $date = $request->input('date', null);
     $step = $request->input('step', null);
     if (!$date || !$step) return ['success' => false, 'msg' => 'Missing paramter(s).'];
@@ -53,7 +53,7 @@ class GameDateController extends Controller
 
   public function update(Request $request, $gameDate)
   {
-    if (!(auth() && in_array(auth()->user()->role, ['s']))) return ['success' => false, 'msg' => 'Not valid.'];
+    if (!in_array(auth()->user()->role, ['s'])) return ['success' => false, 'msg' => 'Not valid.'];
     $date = $request->input('date', null);
     $step = $request->input('step', null);
     if (!$date || !$step) return ['success' => false, 'msg' => 'Missing paramter(s).'];
@@ -68,7 +68,7 @@ class GameDateController extends Controller
 
   public function delete(GameDate $date)
   {
-    if (!(auth() && in_array(auth()->user()->role, ['s']))) return ['success' => false, 'msg' => 'Not valid.'];
+    if (!in_array(auth()->user()->role, ['s'])) return ['success' => false, 'msg' => 'Not valid.'];
     GameDate::where('id', $date->id)->first()->delete();
     return ['success' => true, 'dates' => GameDate::getUpcomingGames()];
   }
