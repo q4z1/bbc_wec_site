@@ -4,7 +4,7 @@
       <b-row>
         <b-col>
           <b-row class="mb-2">
-            <b-col sm="4">
+            <b-col sm="4" v-if="pedit.slug !== 'home'">
               <b-form-input
                 id="title"
                 placeholder="Title"
