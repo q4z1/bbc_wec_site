@@ -166,6 +166,7 @@ export default {
         if(this.user !== null){
             this.nickname = this.user.name
         }
+        window.document.getElementsByTagName('footer')[0].style.display = 'none';
         setInterval(() => { 
             this.filter(null, true)
         }, 10000)
