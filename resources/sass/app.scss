@@ -19,3 +19,14 @@ body{
     right: 0px;
     left: 0px;
 }
+
+footer{
+  height: 1.4em;
+  line-height: 1em;
+  font-size: 1em;
+  vertical-align: middle;
+  text-align: center;
+  width: 100vw;
+  padding: 0.4em 0.4em;
+  border-top: 1px solid var(--secondary);
+}
