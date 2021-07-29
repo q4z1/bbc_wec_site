@@ -94,6 +94,11 @@
                 @yield('content')
             </b-container>
         </main>
+        <footer>
+          <b-row>
+            <b-col><a href="https://pokerth.net/app.php/imprint" title="Imprint">Imprint</a></b-col>
+          </b-row>
+        </footer>
     </div>
     <script>
         window.arole = "{!! (auth()->user()) ? auth()->user()->role : '' !!}";
