@@ -62,8 +62,6 @@ class PlayerController extends Controller
                 $query->where('nickname', 'LIKE', $filters['value'] . '%');
             }
             $players = $query->get()->map(function($player){
-                // $player->final_score = number_format((float)($player->final_score / 100), 2, '.', '');
-                // $player->average_score = number_format((float)($player->average_score / 100), 2, '.', '');
                 return $player;
             });
 
