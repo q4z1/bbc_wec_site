@@ -20,13 +20,20 @@ body{
     left: 0px;
 }
 
+div.calender.col{
+  padding-right: 0;
+}
+
 footer{
   height: 1.4em;
   line-height: 1em;
   font-size: 1em;
-  vertical-align: middle;
-  text-align: center;
-  width: 100%;
-  padding: 0.4em 0.4em;
-  border-top: 1px solid var(--secondary);
+  overflow-x: hidden;
+  .row{
+    .col{
+      padding: 0.4em;
+      text-align: center;
+      border-top: 1px solid var(--secondary);
+    }
+  }
 }
