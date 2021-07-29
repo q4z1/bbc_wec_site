@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Game;
 use App\Models\Player;
 use App\Models\PlayerAward;
 use App\Models\Point;
@@ -62,13 +63,13 @@ class PlayerController extends Controller
 
     }
 
-    public function stats(Player $player, $year)
+    public function stats(Player $player, $year, $nocache=false)
     {
-        return Cache::remember('player.' . $player->id . "_" . $year, now()->addHours(24), function () use ($player, $year) {
+        if($nocache) Cache::forget('player.' . $player->id . "_" . $year);
+        return Cache::remember('player.' . $player->id . "_" . $year, now()->addHours(24), function () use ($player, $year, $nocache) {
             $games_alltime = Point::where('player_id', $player->id)->count();
-
             $stat_month = $stat_year = $stat_alltime = ['points' => 0, 'games' => 0];
-            $avg_month = $avg_year = $avg_alltime = $sc_month = $sc_year = $sc_alltime = 0;
+            $avg_games_month = $avg_games_year = $avg_games_alltime = $sc_month = $sc_year = $sc_alltime = 0;
             $sum_player_month = $sum_player_year = $sum_player_alltime = 0;
             $sum_games_month = $sum_games_year = $sum_games_alltime = 0;
             $m = $y = 1;
@@ -79,37 +80,58 @@ class PlayerController extends Controller
                         date($year . '-m-31 23:59:59', time())
                     ])
                     ->get();
+                $games = [];
+                foreach ($stats_month as $stat) {
+                        $stat_month['points'] += $stat->points;
+                        $stat_month['games'] += 1;
+                        $games[] = $stat->game_id;
+                }
+                // => hier nun nur die Points der Spieler, die auch mitgespielt haben => sum_player_month
                 $mp = Point::whereBetween('game_started', [
                     date($year . '-m-01 00:00:00', time()),
                     date($year . '-m-31 23:59:59', time())
-                ])
+                ])->whereIn('game_id', $games)
                 ->get();
                 $p = [];
                 foreach($mp as $pt){
                     if(!in_array($pt->player_id, $p)) $p[] = $pt->player_id;
                 }
                 $sum_player_month = count($p);
-                $sum_games_month = $mp->count();
+                $sum_games_month = $stats_month->count();
                 $stats_year = Point::where('player_id', $player->id)
                     ->whereBetween('game_started', [
                         date($year . '-01-01 00:00:00'),
                         date($year . '-12-31 23:59:59')
                     ])
                     ->get();
+                $games = [];
+                foreach ($stats_year as $stat) {
+                    $stat_year['points'] += $stat->points;
+                    $stat_year['games'] += 1;
+                    $games[] = $stat->game_id;
+                }
+                // => hier nun nur die Points der Spieler, die auch mitgespielt haben => sum_player_year
                 $yp = Point::whereBetween('game_started', [
                     date($year . '-01-01 00:00:00'),
                     date($year . '-12-31 23:59:59')
-                ])->get();
+                ])->whereIn('game_id', $games)
+                ->get();
                 $p = [];
                 foreach($yp as $pt){
                     if(!in_array($pt->player_id, $p)) $p[] = $pt->player_id;
                 }
                 $sum_player_year = count($p);
-                $sum_games_year = $yp->count();
+                $sum_games_year = $stats_year->count();
                 $m = date('m');
                 $y = 12;
-                if($year = 2012) $y -= 2; // @INFO: 2012 9 months only - substracting 3
+                if($year === 2012) $y -= 2;
+
+                $avg_games_month = ($stat_month['games'] > 0) ? round($sum_games_month / $sum_player_month) : 0;
+                $avg_games_year = ($stat_year['games'] > 0) ? round($sum_games_year / $sum_player_year) : 0;
+                $sc_month = number_format($stat_month['points'] / ($m + $stat_month['games'] + max(($avg_games_month - $stat_month['games']), 0)), 2);
+                $sc_year = number_format($stat_year['points'] / ($y + $stat_year['games'] + max(($avg_games_year - $stat_year['games']), 0)), 2);
             } else {
+                // $year = 0 => alltime
                 $ts1 = strtotime('2012-01-01');
                 $ts2 = strtotime(date('Y-m-d'));
                 $y1 = date('Y', $ts1);
@@ -122,43 +144,31 @@ class PlayerController extends Controller
                         date($y2 . '-12-31 23:59:59')
                     ])
                     ->get();
-                $ap = Point::whereBetween('game_started', [
+                $games = [];
+                foreach ($stats_alltime as $stat) {
+                    $stat_alltime['points'] += $stat->points;
+                    $stat_alltime['games'] += 1;
+                    $games[] = $stat->game_id;
+                }
+                // => hier nun nur die Points der Spieler, die auch mitgespielt haben => sum_player_alltime
+                $ap =  Point::whereBetween('game_started', [
                     date($y1 . '-01-01 00:00:00'),
                     date($y2 . '-12-31 23:59:59')
                 ])
-                ->get();
+                ->whereIn('game_id', $games)->get();
                 $p = [];
                 foreach($ap as $pt){
                     if(!in_array($pt->player_id, $p)) $p[] = $pt->player_id;
                 }
                 $sum_player_alltime = count($p);
-                $sum_games_alltime = $ap->count();
+                $sum_games_alltime = $stats_alltime->count();
                 $y = (($y2 - $y1) * 12) + ($month2 - $month1);
                 $y -= 2; // @INFO: 2012 9 months only - substracting 3
-            }
-
-            if(isset($stats_month)){
-                foreach ($stats_month as $stat) {
-                    $stat_month['points'] += $stat->points;
-                    $stat_month['games'] += 1;
-                }
-                foreach ($stats_year as $stat) {
-                    $stat_year['points'] += $stat->points;
-                    $stat_year['games'] += 1;
-                }
-                $avg_month = ($stat_month['games'] > 0) ? round($sum_games_month / $sum_player_month) : 0;
-                $avg_year = ($stat_year['games'] > 0) ? round($sum_games_year / $sum_player_year) : 0;
-                $sc_month = number_format($stat_month['points'] / ($m + $stat_month['games'] + max(($avg_month - $stat_month['games']), 0)), 2);
-                $sc_year = number_format($stat_year['points'] / ($y + $stat_year['games'] + max(($avg_year - $stat_year['games']), 0)), 2);
-            }else if(isset($stats_alltime)){
-                foreach ($stats_alltime as $stat) {
-                    $stat_alltime['points'] += $stat->points;
-                    $stat_alltime['games'] += 1;
-                }
-                $avg_year = $avg_alltime = ($stat_alltime['games'] > 0) ? round($sum_games_alltime / $sum_player_alltime) : 0;
-                $sc_year = $sc_alltime = number_format($stat_alltime['points'] / ($y + $stat_alltime['games'] + max(($avg_alltime - $stat_alltime['games']), 0)), 2);
+                $avg_games_year = $avg_games_alltime = ($stat_alltime['games'] > 0) ? round($sum_games_alltime / $sum_player_alltime) : 0;
+                $sc_year = $sc_alltime = number_format($stat_alltime['points'] / ($y + $stat_alltime['games'] + max(($avg_games_alltime - $stat_alltime['games']), 0)), 2);
                 $stat_year = $stat_alltime;
             }
+
             $stats =
                 [
                     'score_month' => $sc_month,
@@ -167,12 +177,34 @@ class PlayerController extends Controller
                     'month' => $stat_month,
                     'year' => $stat_year,
                     'alltime' => $stat_alltime,
-                    'avg_games_month' => $avg_month,
-                    'avg_games_year' => $avg_year,
-                    'avg_games_alltime' => $avg_alltime,
+                    'avg_games_month' => $avg_games_month,
+                    'avg_games_year' => $avg_games_year,
+                    'avg_games_alltime' => $avg_games_alltime,
                     'games_alltime' => $games_alltime,
                     'player' => $player
                 ];
+            if($nocache){
+                $stats = [
+                    'year' => $year,
+                    'score_month' => $sc_month,
+                    'score_year' => $sc_year,
+                    'score_alltime' => $sc_alltime,
+                    // 'stat_month' => $stat_month,
+                    // 'stat_year' => $stat_year,
+                    // 'stat_alltime' => $stat_alltime,
+                    'games_alltime' => $games_alltime,
+                    'sum_player_month' => $sum_player_month,
+                    'sum_games_month' => $sum_games_month,
+                    'avg_games_month' => $avg_games_month,
+                    'sum_player_year' => $sum_player_year,
+                    'sum_games_year' => $sum_games_year,
+                    'avg_games_year' => $avg_games_year,
+                    'sum_player_alltime' => $sum_player_alltime,
+                    'sum_games_alltime' => $sum_games_alltime,
+                    'avg_games_alltime' => $avg_games_alltime,
+                ];
+                
+            }
             return $stats;
         });
     }
