@@ -90,13 +90,23 @@ export default {
             let new_regs = []
             for(let i in regs){
                 let reg = regs[i]
+                let nick = 'Player deleted'
+                let admin = false
+                let n = 0
+                let owner = false
+                if(reg.player !== null){
+                    nick = reg.player.nickname
+                    admin = reg.player.admin
+                    n = parseInt(reg.player.new)
+                    owner = reg.player.owner
+                }
                 new_regs.push({
                     id: reg.id,
                     pos: parseInt(i) + 1,
-                    nickname: reg.player.nickname + ((reg.player.admin) ? ' <sup class="text-danger">Admin</sup>' : ((parseInt(reg.player.new) === 1) ? ' <sup class="text-warning">New</sup>' : '')),
+                    nickname: nick + ((admin) ? ' <sup class="text-danger">Admin</sup>' : ((n === 1) ? ' <sup class="text-warning">New</sup>' : '')),
                     ip: (reg.ip) ? reg.ip : 'n/a',
                     fp: (reg.fp) ? reg.fp : 'n/a',
-                    action: (reg.player.owner) ? reg.id : 0,
+                    action: (owner) ? reg.id : 0,
                 })
             }
             return new_regs

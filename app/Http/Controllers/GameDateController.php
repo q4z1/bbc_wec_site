@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\GameDate;
+use App\Models\Player;
 use App\Models\User;
 use Illuminate\Http\Request;
 
@@ -18,12 +19,14 @@ class GameDateController extends Controller
     $gd = GameDate::where('id', $date->id)->with('regs.player')->first();
     $admin = false;
     $j = 1;
-    foreach ($gd->regs as $i => $reg) {
-      $gd->regs[$i]->player->owner = false;
+    for ($i=0; $i < count($gd->regs); $i++) {
       if ($j % 10 === 0) $admin = false;
-      $p = $reg->player;
-      $u = User::where('name', $p->nickname)->first();
-      if (!$admin && $p && $u && in_array($u->role, ['a', 's'])) {
+      if(is_null($gd->regs[$i]->player)){
+        $gd->regs[$i]->player = new Player();
+        $gd->regs[$i]->player->nickname = "deleted";
+      }
+      $u = User::where('name', $gd->regs[$i]->player->nickname)->first();
+      if (!$admin && $u && in_array($u->role, ['a', 's'])) {
         $gd->regs[$i]->player->admin = true;
         $admin = true;
       } else {
