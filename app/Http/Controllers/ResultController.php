@@ -81,16 +81,18 @@ class ResultController extends Controller
             ]);
             $results = $results->where('type', 1) // default type
             ->get();
-        return view('results', [
-            "results" => $results,
-            "totals" => $totals,
-            "seasons" => Season::orderBy('id', 'ASC')->get(),
-            "season" => Season::orderBy('start', 'DESC')->first()->id
-        ]);
+        $params = [
+          "results" => $results,
+          "totals" => $totals,
+          "seasons" => Season::orderBy('id', 'ASC')->get(),
+          "season" => Season::orderBy('start', 'DESC')->first()->id
+        ];
+        return view('results', $params);
     }
 
     public function player_games(Request $request, Player $player){
-        $season = $request->input('season', SeasonController::dateRange(Season::orderBy('start', 'DESC')->first()->id));
+        $season = $request->input('season', Season::orderBy('start', 'DESC')->first()->id);
+        $season = SeasonController::dateRange($season);
         $page = $request->input('page', 1);
         $type = $request->input('type', 1);
         $total = DB::table('games')

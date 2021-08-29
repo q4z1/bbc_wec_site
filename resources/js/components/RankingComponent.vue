@@ -12,6 +12,7 @@
             id="results_table"
             :items="result"
             @row-clicked="showPlayer"
+            v-if="show"
         >
             <template #cell(nickname)="data">
                 <span v-html="data.value"></span>
@@ -28,6 +29,7 @@
                 renderTable: true,
                 result: null,
                 player: null,
+                show: true,
             }
         },
         computed: {
@@ -52,7 +54,7 @@
             }
         },
         mounted() {
-            console.log('Ranking mounted.')
+            // console.log('Ranking mounted.')
             this.season_select = this.season
             this.result = this.formatResult(this.results)
         },
@@ -83,7 +85,11 @@
                 })
                 .then(response => {
                     if(response.data.success === true){
-                        this.result = this.formatResult(response.data.result)
+                        this.result = this.formatResult(response.data.stats)
+                        this.show = false
+                        this.$nextTick(() => {
+                            this.show = true
+                        })
                     }
                 }, (error) => {
                     console.log(error)

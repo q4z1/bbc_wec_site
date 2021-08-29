@@ -298,7 +298,7 @@
             },
             filter(){
                 axios.post('/results/games/' + this.player.id, {
-                    season: this.season_selected,
+                    season: this.season_select,
                     page: this.page,
                     type: this.type
                 })

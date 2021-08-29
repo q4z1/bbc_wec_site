@@ -10,10 +10,8 @@ class SeasonController extends Controller
 
     public static function dateRange($season_id){
         $s = Season::where('id', $season_id)->first();
-        $se = Season::where('id', '>', $s->id)->first();
+        $se = Season::where('id', '>', $season_id)->first();
         $end = (!is_null($se)) ? $se->start : date('Y-m-d H:i:s');
-        $end = date('Y-m-d H:i:s');
-
         return ['start' => $s->start, 'end' => $end];
     }
 

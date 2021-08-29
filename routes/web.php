@@ -30,7 +30,7 @@ Route::get('/player/{player?}', [App\Http\Controllers\PlayerController::class, '
 Route::post('/player/tickets/{player?}', [App\Http\Controllers\PlayerController::class, 'tickets'])->name('player.tickets');
 Route::get('/players/delete/{player?}', [App\Http\Controllers\PlayerController::class, 'delete'])->name('player.delete');
 Route::get('/players', [App\Http\Controllers\PlayerController::class, 'all'])->name('player.all');
-Route::post('/players', [App\Http\Controllers\PlayerController::class, 'all'])->name('player.all');
+Route::post('/players', [App\Http\Controllers\PlayerController::class, 'all'])->name('player.filter');
 Route::get('/players/list', [App\Http\Controllers\PlayerController::class, 'playerlist'])->name('player.list');
 
 Route::get('/user/theme', [App\Http\Controllers\UserController::class, 'set_theme'])->name('user.theme.set');
