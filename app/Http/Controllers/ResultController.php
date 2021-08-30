@@ -214,8 +214,8 @@ class ResultController extends Controller
         usort($stats, function($a, $b) {
             return $a['score_season'] <=> $b['score_season'];
         });
-        $stats = array_reverse($stats);
 
+        $stats = array_reverse($stats);
 
         if($request->isMethod('post')) return ['success' => true, 'stats' => $stats];
 

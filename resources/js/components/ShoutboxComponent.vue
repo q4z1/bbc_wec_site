@@ -1,6 +1,18 @@
 <template>
     <div class="shoutbox">
         <h3>Shoutbox</h3>
+        <b-row v-if="alert">
+            <b-col>
+                <b-alert
+                    :show="alert"
+                    dismissible
+                    :variant="alertVar"
+                    @dismissed="alert = false"
+                >
+                {{ alertMsg }}
+                </b-alert>
+            </b-col>
+        </b-row>
         <b-row class="box">
             <b-col v-if="posts">
                 <b-card no-body no-header v-if="show">
@@ -152,6 +164,9 @@ export default {
             offset: 0,
             admin_post: false,
             show: true,
+            alertVar: 'danger',
+            alertMsg: '',
+            alert: false,
         }
     },
     computed: {
@@ -228,6 +243,19 @@ export default {
             })
         },
         post(){
+            if(this.nickname === null){
+                console.log(this.nickname)
+                this.alertMsg = "A nickname is mandatory!"
+                this.alert = true
+                return
+            }
+            if(this.sbmsg === null){
+                console.log(this.nickname)
+                this.alertMsg = "A message is mandatory!"
+                this.alert = true
+                return
+
+            }
             let data = new FormData()
             data.append('message', this.sbmsg)
             data.append('fp', this.fp)

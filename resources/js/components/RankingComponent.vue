@@ -71,8 +71,8 @@
                     stats_formatted.push({
                         'position': i + 1,
                         'nickname': s.player.nickname,
-                        'score': s.score_alltime,
-                        'games': s.games_alltime
+                        'score': s.score_season,
+                        'games': s.games_season
                     })
                 }
                 return stats_formatted
