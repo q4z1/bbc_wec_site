@@ -244,13 +244,11 @@ export default {
         },
         post(){
             if(this.nickname === null){
-                console.log(this.nickname)
                 this.alertMsg = "A nickname is mandatory!"
                 this.alert = true
                 return
             }
             if(this.sbmsg === null){
-                console.log(this.nickname)
                 this.alertMsg = "A message is mandatory!"
                 this.alert = true
                 return
