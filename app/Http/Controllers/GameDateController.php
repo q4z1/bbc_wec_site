@@ -18,9 +18,10 @@ class GameDateController extends Controller
   {
     $gd = GameDate::where('id', $date->id)->with('regs.player')->first();
     $admin = false;
-    $j = 1;
+    $j = 0;
     for ($i=0; $i < count($gd->regs); $i++) {
       if ($j % 10 === 0) $admin = false;
+      $j++;
       if(is_null($gd->regs[$i]->player)){
         $gd->regs[$i]->player = new Player();
         $gd->regs[$i]->player->nickname = "deleted";
