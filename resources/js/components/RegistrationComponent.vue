@@ -99,12 +99,12 @@ export default {
         },
         events: this.game_dates,
         eventDidMount: function (info) {
-          $(info.el)
-            .data("powertip", info.event.extendedProps.description)
-            .powerTip({
-              placement: "n",
-              smartPlacement: true,
-            });
+          // $(info.el)
+          //   .data("powertip", info.event.extendedProps.description)
+          //   .powerTip({
+          //     placement: "n",
+          //     smartPlacement: true,
+          //   });
         },
         eventClick: (info) => {
           this.showDate(info.event.id);

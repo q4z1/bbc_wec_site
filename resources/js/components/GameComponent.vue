@@ -673,4 +673,8 @@ table {
 #delete footer {
   display: none;
 }
+#bbcode footer{
+  height: auto;
+}
+
 </style>
