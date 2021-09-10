@@ -241,10 +241,7 @@ export default {
             })
             .then(response => {
                 if(response.data.success === true){
-                    this.posts = response.data.posts
-                    this.$nextTick(() => {
-                        $( ".shoutbox .box .card" ).prop('scrollTop', $( ".shoutbox .box .card" ).prop('scrollHeight'))
-                    })
+                    window.location.href = window.location.href
                 }
             }, (error) => {
                 console.log(error)
