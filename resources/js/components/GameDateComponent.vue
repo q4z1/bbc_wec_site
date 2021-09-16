@@ -88,7 +88,7 @@ export default {
             }
         }
         this.tables = Math.ceil(this.date.regs.length/10);
-        console.log("num tables="+ this.tables)
+        // console.log("num tables="+ this.tables)
         let i, j, k, temporary, chunk = 10;
         for (k=1, i=0,j=this.date.regs.length; i < j; i += chunk) {
             temporary = this.date.regs.slice(i, i + chunk);
