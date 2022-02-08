@@ -120,12 +120,13 @@ class GameController extends Controller
                 $pt->player_id = $player->id;
                 $pt->save();
 
-                if($g->type == 4){
-                    $season = new Season();
-                    $season->start = date("Y-m-d H:i:s");
-                    $season->save();
-                }
+
             }
+        }
+        if($g->type == 4){
+            $season = new Season();
+            $season->start = date("Y-m-d H:i:s");
+            $season->save();
         }
         Cache::flush();
         return ["status" => true, 'msg' => $g];
