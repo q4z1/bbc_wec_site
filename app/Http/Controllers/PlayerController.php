@@ -63,10 +63,10 @@ class PlayerController extends Controller
 
     }
 
-    public function stats(Player $player, $year, $nocache=false)
+    public function stats(Player $player, $year, $month, $nocache=false)
     {
         if($nocache) Cache::forget('player.' . $player->id . "_" . $year);
-        return Cache::remember('player.' . $player->id . "_" . $year, now()->addHours(24), function () use ($player, $year, $nocache) {
+        return Cache::remember('player.' . $player->id . "_" . $year, now()->addHours(24), function () use ($player, $year, $month, $nocache) {
             $games_alltime = Point::where('player_id', $player->id)->count();
             $stat_month = $stat_year = $stat_alltime = ['points' => 0, 'games' => 0];
             $avg_games_month = $avg_games_year = $avg_games_alltime = $sc_month = $sc_year = $sc_alltime = 0;
