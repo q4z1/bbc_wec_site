@@ -101,9 +101,7 @@ class GameController extends Controller
                         if($player->s4_tickets > 10) $player->s4_tickets = 10;
                         break;
                     case(4):
-                        if($i != 3){
-                            $player->s4_tickets -= 1;
-                        }
+                        $player->s4_tickets -= 1;
                         break;
                 }
                 $player->new = 0;
