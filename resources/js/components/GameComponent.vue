@@ -527,4 +527,7 @@ export default {
     #delete footer{
         display: none;
     }
+    .modal-footer{
+        height: auto;
+    }
 </style>
