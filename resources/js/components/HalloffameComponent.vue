@@ -50,7 +50,7 @@
         },
         methods:{
             showPlayer(item, index, event) {
-                window.location.href = '/player/' + item.nickname
+                window.location.href = '/player/' + encodeURIComponent(item.nickname)
             },
             filter(){
                 axios.post('/results/halloffame', {

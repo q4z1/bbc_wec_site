@@ -93,7 +93,7 @@
             handleSelectionChange(val) {},
             handleRowClick(row){
                 console.log("handleRowClick", row.nickname)
-                window.location.href = window.location.origin + '/player/' + row.nickname
+                window.location.href = window.location.origin + '/player/' + encodeURIComponent(row.nickname)
             },
         }
     }
