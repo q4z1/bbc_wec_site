@@ -15,7 +15,7 @@
                         <h5>Current Season</h5>
                         <b-row>
                             <b-col md="4"><strong>Place:</strong></b-col>
-                            <b-col>to come</b-col>
+                            <b-col>{{ pos_season }}</b-col>
                         </b-row>
                         <b-row>
                             <b-col md="4"><strong>Games:</strong></b-col>
@@ -34,10 +34,10 @@
                 <b-row class="mt-3">
                     <b-col>
                         <h5>All-Time</h5>
-                        <b-row>
+                        <!-- <b-row>
                             <b-col md="4"><strong>Place:</strong></b-col>
-                            <b-col>to come</b-col>
-                        </b-row>
+                            <b-col>{{ pos_alltime }}</b-col>
+                        </b-row> -->
                         <b-row>
                             <b-col md="4"><strong>Games:</strong></b-col>
                             <b-col>{{ stats.games_alltime }}</b-col>
@@ -212,7 +212,7 @@
 </template>
 <script>
     export default {
-        props: ['player', 'season', 'stats', 'awards'],
+        props: ['player', 'season', 'stats', 'awards', 'pos_season', 'pos_alltime'],
         data() {
             return {
                 ticket_fail: false,
@@ -270,6 +270,8 @@
             this.s3 = this.player.s3_tickets
             this.s4 = this.player.s4_tickets
             this.filter()
+
+            console.log("stats=", this.stats)
         },
         methods: {
             formatResult(result){
