@@ -853,7 +853,7 @@ class LogFileController extends Controller
 						$player_list[6][$seat_ctr] = 0;
 						if(!is_null($row['WinnerPlayer'])) {
 							if(is_numeric($row['Eliminated']) & $row['Eliminated']==1) {
-								$player_list[7][$seat_ctr][] = $this->replace_spec_char($row['WinnerPlayer']);
+								$player_list[7][$seat_ctr][] = html_entity_decode($this->replace_spec_char($row['WinnerPlayer']));
 							} else {
 								// -1 for player left game and wasn't eliminated
 								$player_list[7][$seat_ctr] = -1;
@@ -907,7 +907,7 @@ class LogFileController extends Controller
 							$hand_text = $row_1['Hand_text'];
 							$end_text = strpos($row_1['Hand_text'],',');
 							if(!$end_text) $end_text = strlen($hand_text);
-							$player_list[7][$row['Seat']-1][0] = "[".$this->int2string($row_1['Card_1']).",".$this->int2string($row_1['Card_2'])."] ".substr($hand_text,0,$end_text);
+							$player_list[7][$row['Seat']-1][0] = html_entity_decode("[".$this->int2string($row_1['Card_1']).",".$this->int2string($row_1['Card_2'])."] ".substr($hand_text,0,$end_text));
 						} else $player_list[7][$row['Seat']-1] = array();
 					} else $player_list[7][$row['Seat']-1] = array();
 				}

@@ -12,9 +12,11 @@
                 </b-alert>
             </b-col>
         </b-row>
+        <div v-for="table in tables" :key="table">
+        <strong class="text-success"><u>Table {{ table }}</u></strong>
         <b-row>
             <b-col class="col" v-if="showT">
-                <b-table responsive v-if="regs" :fields="fields" :items="regs" borderless striped>
+                <b-table responsive v-if="regs" :fields="fields" :items="regs[table]" borderless striped>
                     <template #cell(pos)="data">
                         <span class="del" v-html="data.value"></span>
                     </template>
@@ -27,6 +29,7 @@
                 </b-table>
             </b-col>
         </b-row>
+        </div>
         <hr />
         <b-row v-if="arole !== 's'">
             <b-col>
@@ -50,7 +53,7 @@ export default {
     props: ['date', 'fp'],
     data() {
         return {
-            regs: null,
+            regs: [],
             fields: [{key: 'pos'},{key: 'nickname'}],
             s_date: null,
             old: (Date.now() - 15 * 60 * 60) > new Date(this.date.date).valueOf(),
@@ -59,6 +62,7 @@ export default {
             alertMsg: '',
             alert: false,
             showT: true,
+            tables: 1,
         }
     },
     computed: {
@@ -83,7 +87,15 @@ export default {
                 )
             }
         }
-        this.regs = this.formatRegs(this.date.regs)
+        this.tables = Math.ceil(this.date.regs.length/10);
+        // console.log("num tables="+ this.tables)
+        let i, j, k, temporary, chunk = 10;
+        for (k=1, i=0,j=this.date.regs.length; i < j; i += chunk) {
+            temporary = this.date.regs.slice(i, i + chunk);
+            this.regs[k] = this.formatRegs(temporary);
+            k++;
+        }
+        // this.regs = this.formatRegs(this.date.regs)
     },
     methods:{
         formatRegs(regs){

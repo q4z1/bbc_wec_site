@@ -539,7 +539,7 @@ export default {
               "\n";
           } else if (i === 2) {
             this.bbcode +=
-              "[color=darkred]3. " +
+              "[color=#cd7f32]3. " +
               this.game.stats["player_list"][1][i] +
               "  " +
               this.game.stats["player_list"][3][i] +

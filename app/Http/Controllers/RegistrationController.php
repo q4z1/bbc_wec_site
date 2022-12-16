@@ -41,7 +41,7 @@ class RegistrationController extends Controller
   {
     $nickname = $request->input('nickname', "");
     if ($nickname === "") return ['success' => false, 'msg' => 'Username empty!'];
-    if (time() > (strtotime($date->date) - 15 * 60)) return ['success' => false, 'msg' => 'Registration too late (less than 15 minutes before the game)!'];
+    if (time() > (strtotime($date->date) - 20 * 60)) return ['success' => false, 'msg' => 'Registration too late (less than 20 minutes before the game)!'];
     $p = Player::where('nickname', $nickname)->first();
     if (!$p && $date->step === 1) {
       $p = new Player();

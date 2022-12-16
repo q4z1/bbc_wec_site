@@ -101,9 +101,7 @@ class GameController extends Controller
                         if($player->s4_tickets > 10) $player->s4_tickets = 10;
                         break;
                     case(4):
-                        if($i != 3){
-                            $player->s4_tickets -= 1;
-                        }
+                        $player->s4_tickets -= 1;
                         break;
                 }
                 $player->new = 0;
@@ -120,12 +118,13 @@ class GameController extends Controller
                 $pt->player_id = $player->id;
                 $pt->save();
 
-                if($g->type == 4){
-                    $season = new Season();
-                    $season->start = date("Y-m-d H:i:s");
-                    $season->save();
-                }
+
             }
+        }
+        if($g->type == 4){
+            $season = new Season();
+            $season->start = date("Y-m-d H:i:s");
+            $season->save();
         }
         Cache::flush();
         return ["status" => true, 'msg' => $g];
