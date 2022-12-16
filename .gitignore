@@ -1,3 +1,8 @@
 etc/config.php
 www/.htaccess
-
+vendor
+node_modules
+.vscode
+bootstrap/*
+storage/*
+public/*
