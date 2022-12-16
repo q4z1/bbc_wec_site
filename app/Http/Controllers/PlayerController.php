@@ -63,7 +63,7 @@ class PlayerController extends Controller
 
     }
 
-    public function stats(Player $player, $year, $month, $nocache=false)
+    public function stats(Player $player, $year, $month=null, $nocache=false)
     {
         if($nocache) Cache::forget('player.' . $player->id . "_" . $year);
         return Cache::remember('player.' . $player->id . "_" . $year, now()->addHours(24), function () use ($player, $year, $month, $nocache) {
