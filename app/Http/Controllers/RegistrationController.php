@@ -49,8 +49,22 @@ class RegistrationController extends Controller
       $p->new = 1;
       $p->save();
     } else {
-      if ($date->step > 1 && $p["s" . $date->step . "_tickets"] < 1) {
-        return ['success' => false, 'msg' => 'Not enough tickets!'];
+      if($date->step > 1){
+        // check if player registered other $date->step games substracting tickets then
+        $open = 0;
+        $ndates = GameDate::getNextGamesByStep($date->step); 
+        if(!is_null($ndates)){
+          foreach($ndates as $ndate){
+            if(!is_null($ndate->regs)){
+              foreach($ndate->regs as $reg){
+                if($reg->player_id == $p->id) $open++;
+              }
+            }
+          }
+        }
+        if(($p["s" . $date->step . "_tickets"] - $open) < 1){
+          return ['success' => false, 'msg' => 'Not enough tickets!'];
+        }
       }
     }
     if (Registration::where([['game_date_id', $date->id], ['player_id', $p->id]])->first()) return ['success' => false, 'msg' => 'Already registered!'];

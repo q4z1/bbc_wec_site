@@ -21,4 +21,9 @@ class GameDate extends Model
         });
         return $dates;
     }
+
+    public static function getNextGamesByStep($step){
+      $dates = self::where('date','>=', date("Y-m-d H:i:s"))->where('step', '=', $step)->with('regs.player')->get();
+      return $dates;
+  }
 }
