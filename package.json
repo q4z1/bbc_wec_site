@@ -10,24 +10,35 @@
         "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --no-progress --config=node_modules/laravel-mix/setup/webpack.config.js"
     },
     "devDependencies": {
-        "axios": "^0.21",
-        "bootstrap": "^4.5.3",
-        "cross-env": "^7.0",
-        "jquery": "^3.2",
+        "axios": "^0.21.4",
+        "bootstrap": "^4.6.2",
+        "cross-env": "^7.0.3",
+        "jquery": "^3.6.2",
         "laravel-mix": "^5.0.1",
         "lodash": "^4.17.19",
         "popper.js": "^1.12",
         "resolve-url-loader": "^2.3.1",
-        "sass": "^1.20.1",
+        "sass": "^1.56.2",
         "sass-loader": "^8.0.0",
-        "vue": "^2.6.12",
-        "vue-template-compiler": "^2.6.10"
+        "vue": "^2.7.14",
+        "vue-template-compiler": "^2.7.14"
     },
     "dependencies": {
-        "bootstrap-vue": "^2.19.0",
+        "@fingerprintjs/fingerprintjs": "^3.3.6",
+        "@fullcalendar/daygrid": "^5.11.3",
+        "@fullcalendar/interaction": "^5.11.3",
+        "@fullcalendar/vue": "^5.11.3",
+        "bootstrap-vue": "^2.23.1",
         "chart.js": "^2.9.4",
-        "i": "^0.3.6",
-        "npm": "^6.14.9",
-        "vue-chartjs": "^3.5.1"
+        "i": "^0.3.7",
+        "jquery-powertip": "^1.3.2",
+        "marked": "^2.1.3",
+        "npm": "^6.14.17",
+        "remove": "^0.1.5",
+        "tooltipster": "^4.2.8",
+        "vue-chartjs": "^3.5.1",
+        "vue-data-tables": "^3.4.5",
+        "vue-infinite-loading": "^2.4.5",
+        "vue-markdown": "^2.2.4"
     }
 }
