@@ -14,7 +14,18 @@
                     <b-form-select :disabled="loading" v-model="year" @change="filter" :options="yearRange"></b-form-select>
                 </b-overlay>
             </b-col>
-            <b-col></b-col>
+            <b-col>
+                <b-overlay
+                :show="loading"
+                rounded
+                opacity="0.6"
+                spinner-small
+                spinner-variant="primary"
+                class="d-inline-block"
+                >
+                    <b-form-select :disabled="loading" v-model="month" @change="filter" :options="monthRange"></b-form-select>
+                </b-overlay>
+            </b-col>
             <b-col></b-col>
         </b-row>
 
@@ -38,6 +49,7 @@
                 result: null,
                 current_year: 0,
                 year: 0,
+                month: 0,
                 loading: false,
             }
         },
@@ -52,9 +64,17 @@
                 }
                 return years
             },
+            monthRange: function(){
+                let months = []
+                for(let i=1;i<=12;i++){
+                    months.push({value: i, text: i})
+                }
+                return months
+            },
         },
         mounted() {
             this.current_year = this.year = new Date().getFullYear()
+            this.current_month = new Date().getMonth() + 1
             this.result = this.formatResult(this.stats)
         },
         methods:{

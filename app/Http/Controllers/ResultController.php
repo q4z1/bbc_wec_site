@@ -100,11 +100,13 @@ class ResultController extends Controller
 
     public function ranking(Request $request){
         $year = $request->input('year', date("Y"));
+        $month = $request->input('month', date("m"));
 
         $payload = json_decode($request->getContent(), true);
         if(!is_null($payload) && isset($payload['year'])) $year = $payload['year'];
+        if(!is_null($payload) && isset($payload['month'])) $year = $payload['month'];
 
-        $stats = $this->all_player_stats($year);
+        $stats = $this->all_player_stats($year, $month);
 
         usort($stats, function($a, $b) {
             return $a['score_year'] <=> $b['score_year'];
@@ -119,13 +121,18 @@ class ResultController extends Controller
         ]);
     }
 
-    public function all_player_stats($year){
-        return Cache::remember('all_player_stats_'.$year, now()->addHours(24), function() use($year){
+    public function all_player_stats($year, $month){
+        // Cache::flush();
+        return Cache::remember('all_player_stats_'.$year.'_'.$month, now()->addHours(24), function() use($year, $month){
             $all_stats = [];
             $pc = new PlayerController();
             $players = Player::get();
             foreach($players as $player){
-                $all_stats[$player->id] = $pc->stats($player, $year);
+                $stat = $pc->stats($player, $year, $month);
+                if($stat['year']['games'] > 0){
+                    $all_stats[$player->id] = $stat;
+                }
+                    
             }
             return $all_stats;
         });

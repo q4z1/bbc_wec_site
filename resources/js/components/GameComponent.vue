@@ -414,7 +414,7 @@ export default {
                     }else if(i === 1){
                         this.bbcode += '[color=silver]2. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + ' [/color]' + "\n"
                     }else if(i === 2){
-                        this.bbcode += '[color=darkred]3. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + ' [/color]' + "\n"
+                        this.bbcode += '[color=#cd7f32]3. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + ' [/color]' + "\n"
                     }else if(i === 3){
                         this.bbcode += '4. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + "\n"
                     }else if(typeof this.game.stats.player_list[7][i-1] !== 'undefined'){
@@ -526,5 +526,8 @@ export default {
     }
     #delete footer{
         display: none;
+    }
+    .modal-footer{
+        height: auto;
     }
 </style>
