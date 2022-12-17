@@ -204,7 +204,7 @@ export default {
                 method: "post",
                 url: "/shoutbox",
                 data: data,
-                headers: { "Content-Type": "multipart/form-data" },
+                headers: { "Content-Type": "application/json" },
             })
             .then(response => {
                 if(response.data.success === true){
@@ -263,7 +263,7 @@ export default {
                 method: "post",
                 url: "/shoutbox/new",
                 data: data,
-                headers: { "Content-Type": "multipart/form-data" },
+                headers: { "Content-Type": "application/json" },
             })
             .then(response => {
                 if(response.data.success === true){
@@ -298,7 +298,7 @@ export default {
                 method: "post",
                 url: "/shoutbox/update/" + this.sbid,
                 data: data,
-                headers: { "Content-Type": "multipart/form-data" },
+                headers: { "Content-Type": "application/json" },
             })
             .then(response => {
                 if(response.data.success === true){

@@ -86,7 +86,7 @@
                     method: "post",
                     url: "/user/update/" + this.user_id,
                     data: data,
-                    headers: { "Content-Type": "multipart/form-data" },
+                    headers: { "Content-Type": "application/json" },
                 })
                 .then(response => {
                     if(response.data.success === true){

@@ -54,7 +54,7 @@ export default {
                 method: "post",
                 url: "/registration/register/" + this.date.id,
                 data: data,
-                headers: { "Content-Type": "multipart/form-data" },
+                headers: { "Content-Type": "application/json" },
             })
             .then( (res) => {
                 if(res.data.success === true){
