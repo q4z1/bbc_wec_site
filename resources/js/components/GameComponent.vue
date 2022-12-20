@@ -210,7 +210,7 @@ export default {
                         data.push(Number(hand[j]));
                     }
                     let set = {
-                        label: this.game.stats.player_list[1][this.game.stats.player_list[0].indexOf((parseInt(index) + 1).toString())],
+                        label: this.game.stats.player_list[1][this.game.stats.player_list[0].indexOf((parseInt(index) + 1))],
                         borderColor: colors[parseInt(index)],
                         data: data
                     }
