@@ -304,7 +304,7 @@ export default {
         {
           borderColor: colors[0],
           data: data2,
-          label: "Poz Size",
+          label: "Pot Size",
         },
       ];
       (this.datacollection2 = {
