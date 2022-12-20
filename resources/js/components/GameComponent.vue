@@ -233,7 +233,7 @@ export default {
             let set2 =[{
                 borderColor: colors[0],
                 data: data2,
-                label: 'Poz Size'
+                label: 'Pot Size'
             }]
             this.datacollection2 = {
                 labels: labels2,
