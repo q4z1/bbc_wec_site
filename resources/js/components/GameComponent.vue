@@ -210,7 +210,7 @@ export default {
                         data.push(Number(hand[j]));
                     }
                     let set = {
-                        label: this.game.stats.player_list[1][this.game.stats.player_list[0].indexOf((parseInt(index) + 1).toString())],
+                        label: this.game.stats.player_list[1][this.game.stats.player_list[0].indexOf((parseInt(index) + 1))],
                         borderColor: colors[parseInt(index)],
                         data: data
                     }
@@ -233,7 +233,7 @@ export default {
             let set2 =[{
                 borderColor: colors[0],
                 data: data2,
-                label: 'Poz Size'
+                label: 'Pot Size'
             }]
             this.datacollection2 = {
                 labels: labels2,
