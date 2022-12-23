@@ -278,7 +278,7 @@ export default {
           let set = {
             label: this.game.stats.player_list[1][
               this.game.stats.player_list[0].indexOf(
-                (parseInt(index) + 1).toString()
+                (parseInt(index) + 1)
               )
             ],
             borderColor: colors[parseInt(index)],
