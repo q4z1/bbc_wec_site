@@ -102,18 +102,6 @@ class PlayerController extends Controller
                     $avg_games_month = ($stat_month['games'] > 0) ? round($sum_games_month / $sum_players_month) : 0;
                     $sc_month = number_format($stat_month['points'] / (1 + $stat_month['games'] + max(($avg_games_month - $stat_month['games']), 0)), 2);
                 }
-                // => hier nun nur die Points der Spieler, die auch mitgespielt haben => sum_players_month
-                $mp = Point::whereBetween('game_started', [
-                    date($year . '-m-01 00:00:00', time()),
-                    date($year . '-m-31 23:59:59', time())
-                ])
-                ->get();
-                $pm = [];   // players active in month
-                foreach($mp as $pt){
-                    if(!in_array($pt->player_id, $pm)) $pm[] = $pt->player_id;
-                }
-                $sum_players_month = count($pm);    // this was swapped or max(a-n;0) would always return zero
-                $sum_games_month = count($mp);      // for avg we should use total games from *all* players
                 $stats_year = Point::where('player_id', $player->id)
                     ->whereBetween('game_started', [
                         date($year . '-01-01 00:00:00'),
@@ -144,9 +132,7 @@ class PlayerController extends Controller
                     $months = 12;
                 }
 
-                $avg_games_month = ($stat_month['games'] > 0) ? round($sum_games_month / $sum_players_month) : 0;
                 $avg_games_year = ($stat_year['games'] > 0) ? round($sum_games_year / $sum_players_year) : 0;
-                $sc_month = number_format($stat_month['points'] / (1 + $stat_month['games'] + max(($avg_games_month - $stat_month['games']), 0)), 2);
                 $sc_year = number_format($stat_year['points'] / ($months + $stat_year['games'] + max(($avg_games_year - $stat_year['games']), 0)), 2);
             } else {
                 // $year = 0 => alltime
