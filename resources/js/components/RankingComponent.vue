@@ -141,8 +141,8 @@
             filter(){
                 this.loading = true
                 axios.post('/results/ranking', {
-                    year: !this.alltime ? $this.year : 0,
-                    month: !this.alltime && !this.allyear ? $this.month : 0
+                    year: !this.alltime ? this.year : 0,
+                    month: !this.alltime && !this.allyear ? this.month : 0
                 })
                 .then(response => {
                     if(response.data.success === true){
