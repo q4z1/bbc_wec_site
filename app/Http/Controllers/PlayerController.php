@@ -144,13 +144,9 @@ class PlayerController extends Controller
                     $months = 12;
                 }
 
-<<<<<<< HEAD
-                $avg_games_year = ($stat_year['games'] > 0) ? round($sum_games_year / $sum_players_year) : 0;
-=======
                 $avg_games_month = ($stat_month['games'] > 0) ? round($sum_games_month / $sum_players_month) : 0;
                 $avg_games_year = ($stat_year['games'] > 0) ? round($sum_games_year / $sum_players_year) : 0;
                 $sc_month = number_format($stat_month['points'] / (1 + $stat_month['games'] + max(($avg_games_month - $stat_month['games']), 0)), 2);
->>>>>>> upstream/master
                 $sc_year = number_format($stat_year['points'] / ($months + $stat_year['games'] + max(($avg_games_year - $stat_year['games']), 0)), 2);
             } else {
                 // $year = 0 => alltime
