@@ -13,7 +13,7 @@ class RankingTest extends Command
      *
      * @var string
      */
-    protected $signature = 'ranking:test {player : nickname} {--year=0 : 0 = alltime}';
+    protected $signature = 'ranking:test {player : nickname} {--year=0 : 0 = alltime} {--month=0 : 0 = allyear}';
 
     /**
      * The console command description.
@@ -41,13 +41,14 @@ class RankingTest extends Command
     {
         $nickname = $this->argument('player');
         $year = $this->option('year');
+        $month = $this->option('month');
         $player = Player::where('nickname', $nickname)->first();
         if(!$player){
             echo "Error: player $nickname not found.\n";
             return -1;
         }
         $pc = new PlayerController();
-        $stats = $pc->stats($player, $year, 0, true);
+        $stats = $pc->stats($player, $year, $month, true);
         dd(json_encode($stats, JSON_PRETTY_PRINT) . "\n");
         return 0;
     }

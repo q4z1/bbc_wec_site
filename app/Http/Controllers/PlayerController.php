@@ -28,7 +28,7 @@ class PlayerController extends Controller
 
         return view('player', [
             "player" => $player,
-            "stats" => $this->stats($player, date('Y')),
+            "stats" => $this->stats($player, date('Y'), date('m')),
             'awards' => $awards
         ]);
     }
@@ -63,10 +63,10 @@ class PlayerController extends Controller
 
     }
 
-    public function stats(Player $player, $year, $month=null, $nocache=false)
+    public function stats(Player $player, $year=0, $month=0, $nocache=false)
     {
-        if($nocache) Cache::forget('player.' . $player->id . "_" . $year);
-        return Cache::remember('player.' . $player->id . "_" . $year, now()->addHours(24), function () use ($player, $year, $month, $nocache) {
+        if($nocache) Cache::forget('player.' . $player->id . "_" . $year . "_" . $month);
+        return Cache::remember('player.' . $player->id . "_" . $year . "_" . $month, now()->addHours(24), function () use ($player, $year, $month, $nocache) {
             $games_alltime = Point::where('player_id', $player->id)->count();
             $stat_month = $stat_year = $stat_alltime = ['points' => 0, 'games' => 0];
             $avg_games_month = $avg_games_year = $avg_games_alltime = $sc_month = $sc_year = $sc_alltime = 0;
@@ -74,18 +74,36 @@ class PlayerController extends Controller
             $sum_games_month = $sum_games_year = $sum_games_alltime = 0;
             $m = $y = 1;
             if ($year > 0) {
-                $stats_month = Point::where('player_id', $player->id)
-                    ->whereBetween('game_started', [
-                        date($year . '-m-01 00:00:00', time()),
-                        date($year . '-m-31 23:59:59', time())
+                if ($month > 0) {
+                    $stats_month = Point::where('player_id', $player->id)
+                        ->whereBetween('game_started', [
+                            date($year . '-' . $month. '-01 00:00:00', time()),
+                            date($year . '-' . $month. '-31 23:59:59', time())
+                        ])
+                        ->get();
+                    $games = [];
+                    foreach ($stats_month as $stat) {
+                            $stat_month['points'] += $stat->points;
+                            $stat_month['games'] += 1;
+                            $games[] = $stat->game_id;
+                    }
+                    // => hier nun nur die Points der Spieler, die auch mitgespielt haben => sum_players_month
+                    $mp = Point::whereBetween('game_started', [
+                        date($year . '-' . $month. '-01 00:00:00', time()),
+                        date($year . '-' . $month. '-31 23:59:59', time())
                     ])
                     ->get();
-                $games = [];
-                foreach ($stats_month as $stat) {
-                        $stat_month['points'] += $stat->points;
-                        $stat_month['games'] += 1;
-                        $games[] = $stat->game_id;
+                    $pm = [];   // players active in month
+                    foreach($mp as $pt){
+                        if(!in_array($pt->player_id, $pm)) $pm[] = $pt->player_id;
+                    }
+                    $sum_players_month = count($pm);
+                    $sum_games_month = count($mp);
+                    $avg_games_month = ($stat_month['games'] > 0) ? round($sum_games_month / $sum_players_month) : 0;
+                    $sc_month = number_format($stat_month['points'] / (1 + $stat_month['games'] + max(($avg_games_month - $stat_month['games']), 0)), 2);
                 }
+<<<<<<< HEAD
+=======
                 // => hier nun nur die Points der Spieler, die auch mitgespielt haben => sum_players_month
                 $mp = Point::whereBetween('game_started', [
                     date($year . '-m-01 00:00:00', time()),
@@ -98,6 +116,7 @@ class PlayerController extends Controller
                 }
                 $sum_players_month = count($pm);    // this was swapped or max(a-n;0) would always return zero
                 $sum_games_month = count($mp);      // for avg we should use total games from *all* players
+>>>>>>> upstream/master
                 $stats_year = Point::where('player_id', $player->id)
                     ->whereBetween('game_started', [
                         date($year . '-01-01 00:00:00'),
@@ -128,9 +147,13 @@ class PlayerController extends Controller
                     $months = 12;
                 }
 
+<<<<<<< HEAD
+                $avg_games_year = ($stat_year['games'] > 0) ? round($sum_games_year / $sum_players_year) : 0;
+=======
                 $avg_games_month = ($stat_month['games'] > 0) ? round($sum_games_month / $sum_players_month) : 0;
                 $avg_games_year = ($stat_year['games'] > 0) ? round($sum_games_year / $sum_players_year) : 0;
                 $sc_month = number_format($stat_month['points'] / (1 + $stat_month['games'] + max(($avg_games_month - $stat_month['games']), 0)), 2);
+>>>>>>> upstream/master
                 $sc_year = number_format($stat_year['points'] / ($months + $stat_year['games'] + max(($avg_games_year - $stat_year['games']), 0)), 2);
             } else {
                 // $year = 0 => alltime
