@@ -126,7 +126,7 @@ class ResultController extends Controller
             $players = Player::get();
             foreach($players as $player){
                 $stat = $pc->stats($player, $year, $month);
-                if($stat['year']['games'] > 0){
+                if($stat['month']['games'] > 0 || (!$month && $stat['year']['games'] > 0)){
                     $all_stats[$player->id] = $stat;
                 }
                     
