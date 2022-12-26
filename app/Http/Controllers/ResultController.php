@@ -102,13 +102,10 @@ class ResultController extends Controller
         $year = $request->input('year', date("Y"));
         $month = $request->input('month', date("m"));
 
-        $payload = json_decode($request->getContent(), true);
-        if(!is_null($payload) && isset($payload['year'])) $year = $payload['year'];
-        if(!is_null($payload) && isset($payload['month'])) $year = $payload['month'];
-
         $stats = $this->all_player_stats($year, $month);
 
         usort($stats, function($a, $b) {
+            if ($month) return $a['score_month'] <=> $b['score_month'];
             return $a['score_year'] <=> $b['score_year'];
         });
         $stats = array_reverse($stats);
