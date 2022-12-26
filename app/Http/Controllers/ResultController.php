@@ -104,8 +104,7 @@ class ResultController extends Controller
 
         $stats = $this->all_player_stats($year, $month);
 
-        usort($stats, function($a, $b) {
-            global $month;
+        usort($stats, function($a, $b) use($month) {
             if ($month) return $a['score_month'] <=> $b['score_month'];
             return $a['score_year'] <=> $b['score_year'];
         });
