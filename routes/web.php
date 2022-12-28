@@ -42,7 +42,7 @@ Route::post('/awards/assign/{award}', [App\Http\Controllers\AwardController::cla
 Route::get('/awards/assignments/{award}', [App\Http\Controllers\AwardController::class, 'assignments'])->name('award.assignments');
 
 Route::get('/results', [App\Http\Controllers\ResultController::class, 'index'])->name('results');
-Route::post('/results', [App\Http\Controllers\ResultController::class, 'filter'])->name('results.filter');
+Route::post('/results/{player?}', [App\Http\Controllers\ResultController::class, 'filter'])->name('results.filter');
 Route::get('/results/game/{game}', [App\Http\Controllers\ResultController::class, 'game'])->name('results.game');
 Route::get('/results/game/edit/{game}', [App\Http\Controllers\ResultController::class, 'game_edit'])->name('results.game.edit');
 Route::get('/results/halloffame', [App\Http\Controllers\ResultController::class, 'halloffame'])->name('results.halloffame');
