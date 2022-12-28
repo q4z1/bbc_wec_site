@@ -18,7 +18,7 @@
                     </b-row>
                     <b-row>
                         <b-col><strong>Winner:</strong></b-col>
-                        <b-col><a :href="'/player/' + game.stats['player_list'][1][0]" :title="game.stats['player_list'][1][0]">{{ game.stats['player_list'][1][0] }}</a></b-col>
+                        <b-col><a :href="'/player/' + encodeURIComponent(game.stats['player_list'][1][0])" :title="game.stats['player_list'][1][0]">{{ game.stats['player_list'][1][0] }}</a></b-col>
                     </b-row>
                     <b-row>
                         <b-col><strong>Number of Players:</strong></b-col>
@@ -454,7 +454,7 @@ export default {
             return { "data-player": item.player }
         },
         rowClick(item, index, event){
-            window.location.href = window.location.origin + '/player/' + item.player
+            window.location.href = window.location.origin + '/player/' + encodeURIComponent(item.player)
         },
         update(game){
             this.eGame = game

@@ -6,9 +6,9 @@ use App\Models\Game;
 use App\Models\Player;
 use App\Models\PlayerAward;
 use App\Models\Point;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
 
 class PlayerController extends Controller
 {
@@ -20,6 +20,7 @@ class PlayerController extends Controller
     public function index(Request $request, $player)
     {
         $player = Player::where('nickname', $player)->first();
+        if(!$player) return abort(404);
 
         $awards = PlayerAward::where('player_id', $player->id)->with('award')->get()
         ->map(function ($a) {
