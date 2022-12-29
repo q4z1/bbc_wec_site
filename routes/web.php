@@ -27,7 +27,7 @@ Route::get('/upload/game', [App\Http\Controllers\GameController::class, 'upload_
 Route::get('/delete/game/{game}', [App\Http\Controllers\GameController::class, 'delete_game'])->name('delete.game');
 Route::post('/upload/game', [App\Http\Controllers\GameController::class, 'upload'])->name('upload.game.ajax');
 Route::post('/update/game/{game}', [App\Http\Controllers\GameController::class, 'update_game'])->name('update.game');
-Route::get('/player/{player?}', [App\Http\Controllers\PlayerController::class, 'index'])->name('player');
+Route::get('/player/{player}', [App\Http\Controllers\PlayerController::class, 'index'])->name('player');
 Route::get('/players', [App\Http\Controllers\PlayerController::class, 'all'])->name('players');
 Route::post('/players', [App\Http\Controllers\PlayerController::class, 'all'])->name('players.filter');
 Route::get('/user/theme', [App\Http\Controllers\UserController::class, 'set_theme'])->name('user.theme.set');
@@ -42,7 +42,7 @@ Route::post('/awards/assign/{award}', [App\Http\Controllers\AwardController::cla
 Route::get('/awards/assignments/{award}', [App\Http\Controllers\AwardController::class, 'assignments'])->name('award.assignments');
 
 Route::get('/results', [App\Http\Controllers\ResultController::class, 'index'])->name('results');
-Route::post('/results', [App\Http\Controllers\ResultController::class, 'filter'])->name('results.filter');
+Route::post('/results/{player?}', [App\Http\Controllers\ResultController::class, 'filter'])->name('results.filter');
 Route::get('/results/game/{game}', [App\Http\Controllers\ResultController::class, 'game'])->name('results.game');
 Route::get('/results/game/edit/{game}', [App\Http\Controllers\ResultController::class, 'game_edit'])->name('results.game.edit');
 Route::get('/results/halloffame', [App\Http\Controllers\ResultController::class, 'halloffame'])->name('results.halloffame');

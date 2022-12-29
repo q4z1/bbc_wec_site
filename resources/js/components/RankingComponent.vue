@@ -136,7 +136,7 @@
                 return stats_formatted
             },
             showPlayer(item, index, event) {
-                window.location.href = '/player/' + item.nickname
+                window.location.href = '/player/' + encodeURIComponent(item.nickname)
             },
             filter(){
                 this.loading = true

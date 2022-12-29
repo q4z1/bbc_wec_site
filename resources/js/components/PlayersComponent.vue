@@ -110,7 +110,7 @@
                 this.filter()
             },
             showPlayer(item, index, event){
-                window.open(window.location.origin + '/player/' + item.nickname, '_blank')
+                window.open(window.location.origin + '/player/' + encodeURIComponent(item.nickname), '_blank')
             },
         }
     }
