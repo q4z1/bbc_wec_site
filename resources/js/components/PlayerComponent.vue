@@ -57,7 +57,7 @@
             </b-col>
         </b-row>
         <hr />
-        <b-row>
+        <b-row class="mb-3">
             <b-col>
                 <h3>Games:</h3>
             </b-col>
@@ -78,7 +78,7 @@
                 </b-form-checkbox>
             </b-col>
             <b-col class="text-right">
-                <b-button variant="warning" @click="reset">Reset</b-button>
+                <b-button variant="primary" @click="reset">Reset</b-button>
             </b-col>
         </b-row>
         <b-row>
@@ -183,7 +183,7 @@
                     for(let i=1;i<=10;i++){
                         if(entry['p'+i] !== null){
                             if(entry['p'+i] == this.player.nickname){
-                                newEntry['p'+i] = '<strong class="text-default">' + entry['p'+i] + '</span>'
+                                newEntry['p'+i] = '<strong class="text-primary">' + entry['p'+i] + '</span>'
                             }else{
                                 newEntry['p'+i] = entry['p'+i]
                             }
