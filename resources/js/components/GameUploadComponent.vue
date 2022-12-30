@@ -150,6 +150,7 @@ export default {
                                 appendToast: true,
                                 variant: 'success',
                             })
+                            setTimeout(() => { window.location.href = '/results/game/' + this.form.gameno }, 2000)
                         } 
                         this.form.preview = !this.form.preview                      
                     }else{
