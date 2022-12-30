@@ -3,34 +3,21 @@
         <h3>Results</h3>
         <b-row class="mb-3">
             <b-col>
-                <b-form-select v-model="year" @change="filter" :options="yearRange" id="year"></b-form-select>
+                <b-form-select :disabled="alltime" v-model="year" @change="filter" :options="yearRange"></b-form-select>
             </b-col>
             <b-col>
-                <b-form-select v-model="month" @change="filter" id="month">                   
-                    <option value="1">January</option>
-                    <option value="2">February</option>
-                    <option value="3">March</option>
-                    <option value="4">April</option>
-                    <option value="5">May</option>
-                    <option value="6">Jun</option>
-                    <option value="7">July</option>
-                    <option value="8">August</option>
-                    <option value="9">September</option>
-                    <option value="10">October</option>
-                    <option value="11">November</option>
-                    <option value="12">December</option>
-                </b-form-select>
+                <b-form-select :disabled="alltime" v-model="month" @change="filter" :options="monthRange"></b-form-select>
             </b-col>
             <b-col>
                 <b-form-select v-model="type" @change="filter" :options="gameTypes"></b-form-select>
             </b-col>
             <b-col>
-                <b-form-checkbox class="mt-2" @change="allTime" v-model="alltime" name="alltime" switch>
+                <b-form-checkbox class="mt-2" @change="filter" v-model="alltime" switch>
                     All-Time
                 </b-form-checkbox>
             </b-col>
             <b-col class="text-right">
-                <b-button variant="warning" @click="reset">Reset</b-button>
+                <b-button variant="primary" @click="reset">Reset</b-button>
             </b-col>
         </b-row>
         <b-pagination
@@ -47,7 +34,7 @@
             :items="result"
             @row-clicked="showGame"
         ></b-table>
-        <p v-else class="mt-4">No games found.</p>
+        <p v-else class="mt-4">No games found for this period.</p>
         <b-pagination
             v-if="result"
             v-model="page"
@@ -66,35 +53,50 @@
                 alltime: false,
                 renderTable: true,
                 result: null,
+                current_year: null,
+                current_month: null,
                 year: null,
                 month: null,
                 type: 1, // regular games
                 page: 1, // we always start with page 1
                 total: null,
-                types: [{ text: 'Regular', value: 1 }, { text: 'Monthly', value: 5 }, { text: 'Yearly', value: 6 }],
+                gameTypes: [{value: 1, text:'regular'}, {value: 5, text:'monthly'}, {value: 6, text:'yearly'}],
             }
         },
         computed: {
             yearRange: function(){
                 let years = []
-                let now = new Date().getFullYear()
+                let now = this.current_year
                 let past = 2012
                 for(let i=now;i>=past;i--){
                     years.push({value: i, text: i})
                 }
                 return years
             },
-            gameTypes: function(){
-                return [
-                    { value: 1, text:'regular' },
-                    { value: 5, text:'monthly' },
-                    { value: 6, text:'yearly' },
-                ]
+            monthRange: function(){
+                let months = []
+                let monthText = []
+                monthText[1] = "January"
+                monthText[2] = "February"
+                monthText[3] = "March"
+                monthText[4] = "April"
+                monthText[5] = "May"
+                monthText[6] = "June"
+                monthText[7] = "July"
+                monthText[8] = "August"
+                monthText[9] = "September"
+                monthText[10] = "October"
+                monthText[11] = "November"
+                monthText[12] = "December"
+                for(let i=1;i<=12;i++){
+                    months.push({value: i, text: monthText[i]})
+                }
+                return months
             },
         },
         mounted() {
-            this.year = new Date().getFullYear() // initially current year
-            this.month = new Date().getMonth() + 1 // initially current month
+            this.current_year = this.year = new Date().getFullYear()
+            this.current_month = this.month = new Date().getMonth() + 1
 
             // ajax call => result.data into this.results
 
@@ -107,7 +109,6 @@
                         if(type.value ==  this.results[i].type) this.results[i].type = type.text
                     }
                 )
-                
             }
         },
         methods:{
@@ -130,16 +131,6 @@
             },
             showGame(item, index, event) {
                 window.location.href = '/results/game/' + item.number
-            },
-            allTime() {
-                if(this.alltime){
-                    window.document.getElementById('month').setAttribute('disabled', true)
-                    window.document.getElementById('year').setAttribute('disabled', true)
-                }else{
-                    window.document.getElementById('month').removeAttribute('disabled')
-                    window.document.getElementById('year').removeAttribute('disabled')
-                }
-                this.filter()
             },
             filter(){
                 axios.post('/results', {
@@ -164,8 +155,9 @@
                 this.filter()
             },
             reset(){
-                this.year = new Date().getFullYear() // current year
-                this.month = new Date().getMonth() + 1 // current month
+                this.year = this.current_year
+                this.month = this.current_month
+                this.alltime = false
                 this.type = 1
                 this.filter()
             }
