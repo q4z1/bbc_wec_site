@@ -201,7 +201,7 @@
                 window.open(window.location.origin + '/results/game/' + item.number, '_blank')
             },
             filter(){
-                axios.post('/results/' + this.player.id, {
+                axios.post('/results/player/' + this.player.id, {
                     year: this.year,
                     month: this.month,
                     page: this.page,
