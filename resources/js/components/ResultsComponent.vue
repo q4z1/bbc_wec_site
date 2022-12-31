@@ -132,7 +132,8 @@
             showGame(item, index, event) {
                 window.location.href = '/results/game/' + item.number
             },
-            filter(){
+            filter(newFilter=true){
+                if(newFilter) this.page = 1
                 axios.post('/results', {
                     year: this.year,
                     month: this.month,
@@ -152,7 +153,7 @@
             paginate(bvEvt, page){
                 bvEvt.preventDefault()
                 this.page = page
-                this.filter()
+                this.filter(false)
             },
             reset(){
                 this.year = this.current_year

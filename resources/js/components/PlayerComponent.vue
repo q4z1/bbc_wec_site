@@ -200,7 +200,8 @@
             showGame(item, index, event) {
                 window.open(window.location.origin + '/results/game/' + item.number, '_blank')
             },
-            filter(){
+            filter(newFilter=true){
+                if(newFilter) this.page = 1
                 axios.post('/results/player/' + this.player.id, {
                     year: this.year,
                     month: this.month,
@@ -220,7 +221,7 @@
             paginate(bvEvt, page){
                 bvEvt.preventDefault()
                 this.page = page
-                this.filter()
+                this.filter(false)
             },
             reset(){
                 this.year = this.current_year
