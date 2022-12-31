@@ -42,12 +42,12 @@ class ResultController extends Controller
             'p8.nickname as p8',
             'p9.nickname as p9',
             'p10.nickname as p10'
-        )->orderBy('number', 'DESC');
-        $totals = $query->count();
-        $results = $query->limit(10)
+        )->orderBy('number', 'DESC')
             ->whereYear('started','=', date("Y"))
             ->whereMonth('started','=', date("m"))
-            ->where('type', 1) // default type
+            ->where('type', 1); // default type
+        $totals = $query->count();
+        $results = $query->limit(10)
             ->get();
         return view('results', [
             "results" => $results,

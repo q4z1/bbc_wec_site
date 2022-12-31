@@ -138,7 +138,7 @@ class PlayerController extends Controller
 
                 if ($stat_year['games'] > 0) {
                     $avg_games_year = round($sum_year['games'] / $sum_year['players']);
-                    $sc_year = number_format($stat_year['points'] / ($months + $stat_year['games'] + max(($avg_games_year - $stat_year['games']), 0)), 2);
+                    $sc_year = number_format($stat_year['points'] / ($months + $stat_year['games'] + max(($avg_games_year - $stat_year['games']), 0)), 3);
                 }
             } else {
                 // $year = 0 => alltime
