@@ -77,7 +77,7 @@ class ResultController extends Controller
         $year = $request->input('year', date("Y"));
         $month = $request->input('month', date("m"));
 
-        $stats = $this->all_player_stats($year, $month, true);
+        $stats = $this->all_player_stats($year, $month);
 
         if($request->isMethod('post')) return ['success' => true, 'stats' => $stats];
 
@@ -86,7 +86,7 @@ class ResultController extends Controller
         ]);
     }
 
-    public function all_player_stats($year, $month, $sort=false){
+    public function all_player_stats($year=0, $month=0, $sort=true){
         $sort = $sort ? 1 : 0;
         // Cache::flush();
         return Cache::remember('all_player_stats_'.$year.'_'.$month.'_'.$sort, now()->addHours(24), function() use($year, $month, $sort){
@@ -95,14 +95,13 @@ class ResultController extends Controller
             $players = Player::get();
             foreach($players as $player){
                 $stat = $pc->stats($player, $year, $month);
-                if($stat['month']['games'] > 0 || (!$month && $stat['year']['games'] > 0)){
+                if($stat['games'] > 0){
                     $all_stats[$player->id] = $stat;
                 }
             }
             if($sort){
-                usort($all_stats, function($a, $b) use($month) {
-                    if ($month) return $a['score_month'] <=> $b['score_month'];
-                    return $a['score_year'] <=> $b['score_year'];
+                usort($all_stats, function($a, $b) {
+                    return $a['score'] <=> $b['score'];
                 });
                 $all_stats = array_reverse($all_stats);
             }

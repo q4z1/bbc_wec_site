@@ -129,8 +129,8 @@
                         'position': i + 1,
                         // 'player_id': s.player.id,
                         'nickname': s.player.nickname,
-                        'score': !this.alltime && !this.allyear ? s.score_month : s.score_year,
-                        'games': !this.alltime && !this.allyear ? s.month.games : s.year.games
+                        'score': s.score,
+                        'games': s.games
                     })
                 }
                 return stats_formatted

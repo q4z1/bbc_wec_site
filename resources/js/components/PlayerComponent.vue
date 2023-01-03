@@ -12,7 +12,7 @@
                         <h5>Current Month</h5>
                         <b-row>
                             <b-col><strong>Place:</strong></b-col>
-                            <b-col></b-col>
+                            <b-col>{{ stats.month.pos }}</b-col>
                         </b-row>
                         <b-row>
                             <b-col><strong>Games:</strong></b-col>
@@ -20,7 +20,7 @@
                         </b-row>
                         <b-row>
                             <b-col><strong>Score:</strong></b-col>
-                            <b-col>{{ stats.score_month }}</b-col>
+                            <b-col>{{ stats.month.score }}</b-col>
                         </b-row>
                     </b-col>
                 </b-row>
@@ -29,7 +29,7 @@
                         <h5>Current Year</h5>
                         <b-row>
                             <b-col><strong>Place:</strong></b-col>
-                            <b-col></b-col>
+                            <b-col>{{ stats.year.pos }}</b-col>
                         </b-row>
                         <b-row>
                             <b-col><strong>Games:</strong></b-col>
@@ -37,7 +37,7 @@
                         </b-row>
                         <b-row>
                             <b-col><strong>Score:</strong></b-col>
-                            <b-col>{{ stats.score_year }}</b-col>
+                            <b-col>{{ stats.year.score }}</b-col>
                         </b-row>
                     </b-col>
                 </b-row>
