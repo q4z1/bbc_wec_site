@@ -55,9 +55,9 @@ class PlayerController extends Controller
         });
 
         $stats_month = $this->stats($player, date('Y'), date('m'));
-        // $stats_month['pos'] = $stats_extra['pos_month'];
+        $stats_month['pos'] = $stats_extra['pos_month'];
         $stats_year = $this->stats($player, date('Y'));
-        // $stats_year['pos'] = $stats_extra['pos_year'];
+        $stats_year['pos'] = $stats_extra['pos_year'];
 
         return view('player', [
             "player" => $player,
