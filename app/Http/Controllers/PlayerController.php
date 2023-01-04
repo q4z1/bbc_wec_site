@@ -41,13 +41,13 @@ class PlayerController extends Controller
                 if($one['player']->id == $player->id) break;
                 $pos_month++;
             }
-            if($pos_month > $all_month.length) $pos_month = '';
+            if($pos_month > count($all_month)) $pos_month = '';
 
             foreach($all_year as $one){
                 if($one['player']->id == $player->id) break;
                 $pos_year++;
             }
-            if($pos_year > $all_year.length) $pos_year = '';
+            if($pos_year > count($all_year)) $pos_year = '';
 
             $games_alltime = Point::where('player_id', $player->id)->count();
 
