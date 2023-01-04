@@ -34,9 +34,6 @@ class PlayerController extends Controller
         $all_month = $res->all_player_stats(date('Y'), date('m'));
         $all_year = $res->all_player_stats(date('Y'));
 
-        $stats_month = $this->stats($player, date('Y'), date('m'));
-        $stats_year = $this->stats($player, date('Y'));
-
         $stats_extra = Cache::remember('player.' . $player->id, now()->addHours(24), function () use ($player, $all_month, $all_year) {
             $pos_month = $pos_year = 1;
 
@@ -44,18 +41,23 @@ class PlayerController extends Controller
                 if($one['player']->id == $player->id) break;
                 $pos_month++;
             }
+            if($pos_month > $all_month.length) $pos_month = '';
+
             foreach($all_year as $one){
                 if($one['player']->id == $player->id) break;
                 $pos_year++;
             }
+            if($pos_year > $all_year.length) $pos_year = '';
 
             $games_alltime = Point::where('player_id', $player->id)->count();
 
             return ['pos_month' => $pos_month, 'pos_year' => $pos_year, 'games_alltime' => $games_alltime];
         });
 
-        $stats_month['pos'] = $stats_extra['pos_month'];
-        $stats_year['pos'] = $stats_extra['pos_year'];
+        $stats_month = $this->stats($player, date('Y'), date('m'));
+        // $stats_month['pos'] = $stats_extra['pos_month'];
+        $stats_year = $this->stats($player, date('Y'));
+        // $stats_year['pos'] = $stats_extra['pos_year'];
 
         return view('player', [
             "player" => $player,
@@ -221,6 +223,7 @@ class PlayerController extends Controller
                     'games' => $total['games'],
                     'avg_games' => $avg_games,
                     'player' => $player,
+                    'pos' => 0, // placeholder
                 ];
             if($nocache){
                 $stats = [
