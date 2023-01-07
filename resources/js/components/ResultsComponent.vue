@@ -4,20 +4,26 @@
     <b-row class="mb-3">
       <b-col>
         <b-form-select
+          :disabled="alltime"
           v-model="season_select"
-          @change="filter"
+          @change="filter()"
           :options="seasons"
         ></b-form-select>
       </b-col>
       <b-col>
         <b-form-select
           v-model="type"
-          @change="filter"
+          @change="filter()"
           :options="gameTypes"
         ></b-form-select>
       </b-col>
+      <b-col>
+        <b-form-checkbox class="mt-2" @change="filter()" v-model="alltime" switch>
+          All-Time
+        </b-form-checkbox>
+      </b-col>
       <b-col class="text-right">
-        <b-button variant="warning" @click="reset">Reset</b-button>
+        <b-button variant="primary" @click="reset">Reset</b-button>
       </b-col>
     </b-row>
     <b-pagination
@@ -36,7 +42,7 @@
       :items="result"
       @row-clicked="showGame"
     ></b-table>
-    <p v-else class="mt-4">No games found.</p>
+    <p v-else class="mt-4">No games found for this period.</p>
     <b-pagination
       v-if="result"
       v-model="page"
@@ -52,13 +58,14 @@ export default {
   props: ["results", "totals", "season", "allseasons"],
   data() {
     return {
+      alltime: false,
       renderTable: true,
       result: null,
       season_select: null,
       type: 1, // regular games
       page: 1, // we always start with page 1
       total: null,
-      types: [
+      gameTypes: [
         { text: "Step 1", value: 1 },
         { text: "Step 2", value: 2 },
         { text: "Step 3", value: 3 },
@@ -67,21 +74,13 @@ export default {
     };
   },
   computed: {
-    gameTypes: function () {
-      return [
-        { value: 1, text: "Step 1" },
-        { value: 2, text: "Step 2" },
-        { value: 3, text: "Step 3" },
-        { value: 4, text: "Step 4" },
-      ];
-    },
     seasons: function () {
       let l = this.allseasons.length;
       let s = [];
       for (let i = 0; i < l; i++) {
         s.push({
-          value: this.allseasons[i].id,
-          text: "Season " + this.allseasons[i].id,
+          value: this.allseasons[i],
+          text: "Season " + this.allseasons[i],
         });
       }
       return s;
@@ -120,12 +119,14 @@ export default {
     showGame(item, index, event) {
       window.location.href = "/results/game/" + item.number;
     },
-    filter() {
+    filter(page=1) {
+      this.page = page;
       axios
         .post("/results", {
           season: this.season_select,
           page: this.page,
           type: this.type,
+          alltime: this.alltime
         })
         .then(
           (response) => {
@@ -141,11 +142,11 @@ export default {
     },
     paginate(bvEvt, page) {
       bvEvt.preventDefault();
-      this.page = page;
-      this.filter();
+      this.filter(page);
     },
     reset() {
       this.type = 1;
+      this.alltime = false;
       this.season_select = this.season;
       this.filter();
     },

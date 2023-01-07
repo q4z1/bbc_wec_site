@@ -26,7 +26,7 @@ Route::get('/delete/award/{award}', [App\Http\Controllers\AwardController::class
 Route::post('/upload/game', [App\Http\Controllers\GameController::class, 'upload'])->name('upload.game.ajax');
 Route::post('/update/game/{game}', [App\Http\Controllers\GameController::class, 'update_game'])->name('update.game');
 
-Route::get('/player/{player?}', [App\Http\Controllers\PlayerController::class, 'index'])->name('player');
+Route::get('/player/{player}', [App\Http\Controllers\PlayerController::class, 'index'])->name('player');
 Route::post('/player/tickets/{player?}', [App\Http\Controllers\PlayerController::class, 'tickets'])->name('player.tickets');
 Route::get('/players/delete/{player?}', [App\Http\Controllers\PlayerController::class, 'delete'])->name('player.delete');
 Route::get('/players', [App\Http\Controllers\PlayerController::class, 'all'])->name('player.all');
@@ -56,8 +56,8 @@ Route::get('/registration/delete/{reg?}', [App\Http\Controllers\RegistrationCont
 
 Route::get('/results', [App\Http\Controllers\ResultController::class, 'index'])->name('results');
 Route::post('/results', [App\Http\Controllers\ResultController::class, 'filter'])->name('results.filter');
+Route::post('/results/player/{player}', [App\Http\Controllers\ResultController::class, 'filter'])->name('player.results.filter');
 Route::get('/results/game/{game}', [App\Http\Controllers\ResultController::class, 'game'])->name('results.game');
-Route::post('/results/games/{player}', [App\Http\Controllers\ResultController::class, 'player_games'])->name('results.games.player');
 Route::get('/results/game/edit/{game}', [App\Http\Controllers\ResultController::class, 'game_edit'])->name('results.game.edit');
 Route::get('/results/halloffame', [App\Http\Controllers\ResultController::class, 'halloffame'])->name('results.halloffame');
 Route::get('/results/ranking', [App\Http\Controllers\ResultController::class, 'ranking'])->name('results.ranking');

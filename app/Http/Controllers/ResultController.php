@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\LogFileController;
 use App\Http\Controllers\SeasonController;
 use App\Models\Game;
 use App\Models\Player;
 use App\Models\Point;
 use App\Models\Season;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class ResultController extends Controller
 {
@@ -20,8 +20,9 @@ class ResultController extends Controller
   }
 
     public function index(Request $request){
-        $season = SeasonController::dateRange(Season::orderBy('start', 'DESC')->first()->id);
-        $totals = DB::table('games')
+        $season = Season::orderBy('start', 'DESC')->first()->id;
+        $sr = SeasonController::dateRange($season);
+        $query = DB::table('games')
         ->leftJoin('players as p1', 'games.pos1', '=', 'p1.id')
         ->leftJoin('players as p2', 'games.pos2', '=', 'p2.id')
         ->leftJoin('players as p3', 'games.pos3', '=', 'p3.id')
@@ -44,146 +45,22 @@ class ResultController extends Controller
             'p8.nickname as p8',
             'p9.nickname as p9',
             'p10.nickname as p10'
-        )->orderBy('number', 'DESC');
-        $totals = $totals->whereBetween('started', [
-            $season['start'],
-            $season['end']
-        ]);
-        $totals = $totals->count();
-        $results = DB::table('games')
-            ->leftJoin('players as p1', 'games.pos1', '=', 'p1.id')
-            ->leftJoin('players as p2', 'games.pos2', '=', 'p2.id')
-            ->leftJoin('players as p3', 'games.pos3', '=', 'p3.id')
-            ->leftJoin('players as p4', 'games.pos4', '=', 'p4.id')
-            ->leftJoin('players as p5', 'games.pos5', '=', 'p5.id')
-            ->leftJoin('players as p6', 'games.pos6', '=', 'p6.id')
-            ->leftJoin('players as p7', 'games.pos7', '=', 'p7.id')
-            ->leftJoin('players as p8', 'games.pos8', '=', 'p8.id')
-            ->leftJoin('players as p9', 'games.pos9', '=', 'p9.id')
-            ->leftJoin('players as p10', 'games.pos10', '=', 'p10.id')
-            ->select(
-                'games.id', 'games.type', 'games.number', 'games.started',
-                'p1.nickname as p1',
-                'p2.nickname as p2',
-                'p3.nickname as p3',
-                'p4.nickname as p4',
-                'p5.nickname as p5',
-                'p6.nickname as p6',
-                'p7.nickname as p7',
-                'p8.nickname as p8',
-                'p9.nickname as p9',
-                'p10.nickname as p10'
-            )->orderBy('number', 'DESC')
-            ->limit(10);
-            $results = $results->whereBetween('started', [
-                $season['start'],
-                $season['end']
-            ]);
-            $results = $results->where('type', 1) // default type
+        )->orderBy('number', 'DESC')
+        ->whereBetween('started', [
+            $sr['start'],
+            $sr['end']
+        ])->where('type', 1); // default type
+        $totals = $query->count();
+        $results = $query->limit(10)
             ->get();
         $params = [
           "results" => $results,
           "totals" => $totals,
-          "seasons" => Season::orderBy('id', 'ASC')->get(),
-          "season" => Season::orderBy('start', 'DESC')->first()->id
+          "seasons" => Season::orderBy('id', 'ASC')->pluck('id'),
+          "season" => $season
         ];
         return view('results', $params);
     }
-
-    public function player_games(Request $request, Player $player){
-        $season = $request->input('season', Season::orderBy('start', 'DESC')->first()->id);
-        $season = SeasonController::dateRange($season);
-        $page = $request->input('page', 1);
-        $type = $request->input('type', 1);
-        $total = DB::table('games')
-        ->leftJoin('players as p1', 'games.pos1', '=', 'p1.id')
-        ->leftJoin('players as p2', 'games.pos2', '=', 'p2.id')
-        ->leftJoin('players as p3', 'games.pos3', '=', 'p3.id')
-        ->leftJoin('players as p4', 'games.pos4', '=', 'p4.id')
-        ->leftJoin('players as p5', 'games.pos5', '=', 'p5.id')
-        ->leftJoin('players as p6', 'games.pos6', '=', 'p6.id')
-        ->leftJoin('players as p7', 'games.pos7', '=', 'p7.id')
-        ->leftJoin('players as p8', 'games.pos8', '=', 'p8.id')
-        ->leftJoin('players as p9', 'games.pos9', '=', 'p9.id')
-        ->leftJoin('players as p10', 'games.pos10', '=', 'p10.id')
-        ->select(
-            'games.id', 'games.type', 'games.number', 'games.started',
-            'p1.nickname as p1',
-            'p2.nickname as p2',
-            'p3.nickname as p3',
-            'p4.nickname as p4',
-            'p5.nickname as p5',
-            'p6.nickname as p6',
-            'p7.nickname as p7',
-            'p8.nickname as p8',
-            'p9.nickname as p9',
-            'p10.nickname as p10'
-        )->orderBy('number', 'DESC');
-        $total = $total->whereBetween('started', [
-            $season['start'],
-            $season['end']
-        ]);
-        $total = $total->where('type', $type)
-        ->where(function($q) use ($player) {
-                $q->where('pos1', '=', $player->id)
-                ->orWhere('pos2', '=', $player->id)
-                ->orWhere('pos3', '=', $player->id)
-                ->orWhere('pos4', '=', $player->id)
-                ->orWhere('pos5', '=', $player->id)
-                ->orWhere('pos6', '=', $player->id)
-                ->orWhere('pos7', '=', $player->id)
-                ->orWhere('pos8', '=', $player->id)
-                ->orWhere('pos9', '=', $player->id)
-                ->orWhere('pos10', '=', $player->id);
-        })
-        ->count();
-        $results = DB::table('games')
-        ->leftJoin('players as p1', 'games.pos1', '=', 'p1.id')
-        ->leftJoin('players as p2', 'games.pos2', '=', 'p2.id')
-        ->leftJoin('players as p3', 'games.pos3', '=', 'p3.id')
-        ->leftJoin('players as p4', 'games.pos4', '=', 'p4.id')
-        ->leftJoin('players as p5', 'games.pos5', '=', 'p5.id')
-        ->leftJoin('players as p6', 'games.pos6', '=', 'p6.id')
-        ->leftJoin('players as p7', 'games.pos7', '=', 'p7.id')
-        ->leftJoin('players as p8', 'games.pos8', '=', 'p8.id')
-        ->leftJoin('players as p9', 'games.pos9', '=', 'p9.id')
-        ->leftJoin('players as p10', 'games.pos10', '=', 'p10.id')
-        ->select(
-            'games.id', 'games.type', 'games.number', 'games.started',
-            'p1.nickname as p1',
-            'p2.nickname as p2',
-            'p3.nickname as p3',
-            'p4.nickname as p4',
-            'p5.nickname as p5',
-            'p6.nickname as p6',
-            'p7.nickname as p7',
-            'p8.nickname as p8',
-            'p9.nickname as p9',
-            'p10.nickname as p10'
-        )->orderBy('number', 'DESC');
-        $results = $results->whereBetween('started', [
-            $season['start'],
-            $season['end']
-        ]);
-        $results = $results->where('type', $type)
-        ->where(function($q) use ($player) {
-                $q->where('pos1', '=', $player->id)
-                ->orWhere('pos2', '=', $player->id)
-                ->orWhere('pos3', '=', $player->id)
-                ->orWhere('pos4', '=', $player->id)
-                ->orWhere('pos5', '=', $player->id)
-                ->orWhere('pos6', '=', $player->id)
-                ->orWhere('pos7', '=', $player->id)
-                ->orWhere('pos8', '=', $player->id)
-                ->orWhere('pos9', '=', $player->id)
-                ->orWhere('pos10', '=', $player->id);
-        })
-        ->offset(($page-1)*10)
-        ->take(10)
-        ->get();
-        return ['success' => true, 'result' => $results, 'total' => $total];
-    }
-
 
     public function halloffame(Request $request){
         $totals = DB::table('players')
@@ -206,34 +83,34 @@ class ResultController extends Controller
     public function ranking(Request $request){
         $season = $request->input('season', Season::orderBy('start', 'DESC')->first()->id);
 
-        $payload = json_decode($request->getContent(), true);
-        if(!is_null($payload) && isset($payload['season'])) $season = $payload['season'];
-
         $stats = $this->all_player_stats($season);
-
-        usort($stats, function($a, $b) {
-            return $a['score_season'] <=> $b['score_season'];
-        });
-
-        $stats = array_reverse($stats);
 
         if($request->isMethod('post')) return ['success' => true, 'stats' => $stats];
 
         return view('ranking', [
             "stats" => $stats,
             "season" => $season,
-            "seasons" => Season::orderBy('id', 'ASC')->get()
+            "seasons" => Season::orderBy('id', 'ASC')->pluck('id')
         ]);
     }
 
-
-    public function all_player_stats($season){
-        return Cache::remember('all_player_stats_'.$season, now()->addHours(24), function() use($season){
+    public function all_player_stats($season=0, $sort=true){
+        $sort = $sort ? 1 : 0;
+        return Cache::remember('all_player_stats_'.$season.'_'.$sort, now()->addHours(24), function() use($season, $sort){
             $all_stats = [];
             $pc = new PlayerController();
             $players = Player::get();
             foreach($players as $player){
-                $all_stats[$player->id] = $pc->stats($player, $season);
+                $stat = $pc->stats($player, $season);
+                if($stat['games'] > 0){
+                    $all_stats[$player->id] = $stat;
+                }
+            }
+            if($sort){
+                usort($all_stats, function($a, $b) {
+                    return $a['score'] <=> $b['score'];
+                });
+                $all_stats = array_reverse($all_stats);
             }
             return $all_stats;
         });
@@ -271,12 +148,13 @@ class ResultController extends Controller
         ]);
     }
 
-    public function filter(Request $request){
+    public function filter(Request $request, Player $player=null){
+        $alltime = $request->input('alltime', false);
         $season = $request->input('season', Season::orderBy('start', 'DESC')->first()->id);
         $sr = SeasonController::dateRange($season);
         $page = $request->input('page', 1);
         $type = $request->input('type', 1);
-        $total = DB::table('games')
+        $query = DB::table('games')
         ->leftJoin('players as p1', 'games.pos1', '=', 'p1.id')
         ->leftJoin('players as p2', 'games.pos2', '=', 'p2.id')
         ->leftJoin('players as p3', 'games.pos3', '=', 'p3.id')
@@ -300,42 +178,29 @@ class ResultController extends Controller
             'p9.nickname as p9',
             'p10.nickname as p10'
         )->orderBy('number', 'DESC');
-        $total = $total->whereBetween('started', [
-            $sr['start'],
-            $sr['end']
-        ]);
-        $total = $total->where('type', $type)
-        ->count();
-        $results = DB::table('games')
-        ->leftJoin('players as p1', 'games.pos1', '=', 'p1.id')
-        ->leftJoin('players as p2', 'games.pos2', '=', 'p2.id')
-        ->leftJoin('players as p3', 'games.pos3', '=', 'p3.id')
-        ->leftJoin('players as p4', 'games.pos4', '=', 'p4.id')
-        ->leftJoin('players as p5', 'games.pos5', '=', 'p5.id')
-        ->leftJoin('players as p6', 'games.pos6', '=', 'p6.id')
-        ->leftJoin('players as p7', 'games.pos7', '=', 'p7.id')
-        ->leftJoin('players as p8', 'games.pos8', '=', 'p8.id')
-        ->leftJoin('players as p9', 'games.pos9', '=', 'p9.id')
-        ->leftJoin('players as p10', 'games.pos10', '=', 'p10.id')
-        ->select(
-            'games.id', 'games.type', 'games.number', 'games.started',
-            'p1.nickname as p1',
-            'p2.nickname as p2',
-            'p3.nickname as p3',
-            'p4.nickname as p4',
-            'p5.nickname as p5',
-            'p6.nickname as p6',
-            'p7.nickname as p7',
-            'p8.nickname as p8',
-            'p9.nickname as p9',
-            'p10.nickname as p10'
-        )->orderBy('number', 'DESC');
-        $results = $results->whereBetween('started', [
-            $sr['start'],
-            $sr['end']
-        ]);
-        $results = $results->where('type', $type)
-        ->offset(($page-1)*10)
+        if(!$alltime){
+            $query = $query->whereBetween('started', [
+                $sr['start'],
+                $sr['end']
+            ]);
+        }
+        $query = $query->where('type', $type);
+        if($player){
+            $query = $query->where(function($q) use ($player) {
+                $q->where('pos1', '=', $player->id)
+                ->orWhere('pos2', '=', $player->id)
+                ->orWhere('pos3', '=', $player->id)
+                ->orWhere('pos4', '=', $player->id)
+                ->orWhere('pos5', '=', $player->id)
+                ->orWhere('pos6', '=', $player->id)
+                ->orWhere('pos7', '=', $player->id)
+                ->orWhere('pos8', '=', $player->id)
+                ->orWhere('pos9', '=', $player->id)
+                ->orWhere('pos10', '=', $player->id);
+            });
+        }
+        $total = $query->count();
+        $results = $query->offset(($page-1)*10)
         ->take(10)
         ->get();
         return ['success' => true, 'result' => $results, 'total' => $total];
