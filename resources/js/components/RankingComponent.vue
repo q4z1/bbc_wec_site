@@ -55,16 +55,19 @@
                 </b-overlay>
             </b-col>
         </b-row>
-
         <b-table striped hover 
             id="results_table"
             :items="result"
+            :fields="fields"
             @row-clicked="showPlayer"
         >
             <template #cell(nickname)="data">
                 <span v-html="data.value"></span>
             </template>
         </b-table>
+        <b-row class="mb-3" v-if="avg_games">
+          <b-col class="text-center font-italic">a={{ avg_games }}</b-col>
+        </b-row>
     </div>
 </template>
 <script>
@@ -80,6 +83,22 @@
                 loading: false,
                 allyear: false,
                 alltime: false,
+                avg_games: 0,
+                fields: [{
+                    key: 'position'
+                  },
+                  {
+                    key: 'nickname'
+                  },
+                  {
+                    key: 'score',
+                    sortable: true
+                  },
+                  {
+                    key: 'games',
+                    sortable: true
+                  }
+                ],
             }
         },
         computed: {
@@ -120,19 +139,19 @@
         },
         methods:{
             formatResult(stats){
-                // console.log('formatResult')
                 let stats_formatted = []
                 let l = stats.length
-                for(let i=0; i<l; i++){
+                let i = 0
+                for(i; i<l; i++){
                     let s = stats[i]
                     stats_formatted.push({
                         'position': i + 1,
-                        // 'player_id': s.player.id,
                         'nickname': s.player.nickname,
                         'score': s.score,
                         'games': s.games
                     })
                 }
+                this.avg_games = (i > 0) ? stats[0].avg_games : 0
                 return stats_formatted
             },
             showPlayer(item, index, event) {

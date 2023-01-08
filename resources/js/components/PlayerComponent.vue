@@ -64,16 +64,16 @@
         </b-row>
         <b-row class="mb-3">
             <b-col>
-                <b-form-select :disabled="alltime" v-model="year" @change="filter" :options="yearRange"></b-form-select>
+                <b-form-select :disabled="alltime" v-model="year" @change="filter()" :options="yearRange"></b-form-select>
             </b-col>
             <b-col>
-                <b-form-select :disabled="alltime" v-model="month" @change="filter" :options="monthRange"></b-form-select>
+                <b-form-select :disabled="alltime" v-model="month" @change="filter()" :options="monthRange"></b-form-select>
             </b-col>
             <b-col>
-                <b-form-select v-model="type" @change="filter" :options="gameTypes"></b-form-select>
+                <b-form-select v-model="type" @change="filter()" :options="gameTypes"></b-form-select>
             </b-col>
             <b-col>
-                <b-form-checkbox class="mt-2" @change="filter" v-model="alltime" switch>
+                <b-form-checkbox class="mt-2" @change="filter()" v-model="alltime" switch>
                     All-Time
                 </b-form-checkbox>
             </b-col>
@@ -200,8 +200,8 @@
             showGame(item, index, event) {
                 window.open(window.location.origin + '/results/game/' + item.number, '_blank')
             },
-            filter(newFilter=true){
-                if(newFilter) this.page = 1
+            filter(page=1){
+                this.page = page
                 axios.post('/results/player/' + this.player.id, {
                     year: this.year,
                     month: this.month,
@@ -220,8 +220,7 @@
             },
             paginate(bvEvt, page){
                 bvEvt.preventDefault()
-                this.page = page
-                this.filter(false)
+                this.filter(page)
             },
             reset(){
                 this.year = this.current_year
