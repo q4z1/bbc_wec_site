@@ -130,20 +130,18 @@ class PlayerController extends Controller
   public function stats(Player $player, $season=0) // 0 => alltime
   {
     return Cache::remember('player.' . $player->id . "_" . $season, now()->addHours(24), function () use ($player, $season) {
-      $stats_col = Point::where('player_id', $player->id);
+      $points = Point::where('player_id', $player->id);
       if ($season > 0) {
         $date_range = SeasonController::dateRange($season);
-        $stats_col = $stats_col->whereBetween('game_started', [
+        $points = $points->whereBetween('game_started', [
           $date_range['start'],
           $date_range['end']
         ]);
       }
-      $stats_col = $stats_col->get();
+      $points = $points->pluck('points');
       $total = ['points' => 0, 'games' => 0];
-      foreach ($stats_col as $stat) {
-        $total['points'] += $stat->points;
-        $total['games'] += 1;
-      }
+      $total['points'] = $points->sum();
+      $total['games'] = $points->count();
 
       $stats =
         [
