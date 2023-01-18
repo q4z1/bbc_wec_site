@@ -109,30 +109,26 @@ class PlayerController extends Controller
             $sum = ['players' => 0, 'games' => 0];
             $m = $y = 1;
             if ($year > 0 && $month > 0) {
-                $stats_month = Point::where('player_id', $player->id)
+                $points = Point::where('player_id', $player->id)
                     ->whereBetween('game_started', [
                         date($year . '-' . $month. '-01 00:00:00', time()),
                         date($year . '-' . $month. '-31 23:59:59', time())
                     ])
-                    ->get();
-                // $games = [];
-                foreach ($stats_month as $stat) {
-                    $total['points'] += $stat->points;
-                    $total['games'] += 1;
-                    // $games[] = $stat->game_id;
-                }
+                    ->pluck('points');
+                $total['points'] = $points->sum();
+                $total['games'] = $points->count();
                 if($nocache) Cache::forget('sum_month' . "_" . $year . "_" . $month);
                 $sum = Cache::remember('sum_month' . "_" . $year . "_" . $month, now()->addHours(24), function () use ($year, $month) {
-                    $mp = Point::whereBetween('game_started', [
+                    $ids = Point::whereBetween('game_started', [
                         date($year . '-' . $month. '-01 00:00:00', time()),
                         date($year . '-' . $month. '-31 23:59:59', time())
                     ])
-                    ->get();
-                    $pm = [];
-                    foreach($mp as $pt){
-                        if(!in_array($pt->player_id, $pm)) $pm[] = $pt->player_id;
+                    ->pluck('player_id');
+                    $players = [];
+                    foreach($ids as $player_id){
+                        if(!in_array($player_id, $players)) $players[] = $player_id;
                     }
-                    return ['players' => count($pm), 'games' => count($mp)];
+                    return ['players' => count($players), 'games' => count($ids)];
                 });
                 if ($total['games'] > 0) {
                     $avg_games = round($sum['games'] / $sum['players']);
@@ -141,30 +137,26 @@ class PlayerController extends Controller
             }
             else if ($year > 0) {
                 // $month = 0 => allyear
-                $stats_year = Point::where('player_id', $player->id)
+                $points = Point::where('player_id', $player->id)
                     ->whereBetween('game_started', [
                         date($year . '-01-01 00:00:00'),
                         date($year . '-12-31 23:59:59')
                     ])
-                    ->get();
-                // $games = [];
-                foreach ($stats_year as $stat) {
-                    $total['points'] += $stat->points;
-                    $total['games'] += 1;
-                    // $games[] = $stat->game_id;
-                }
+                    ->pluck('points');
+                $total['points'] = $points->sum();
+                $total['games'] = $points->count();
                 if($nocache) Cache::forget('sum_year' . "_" . $year);
                 $sum = Cache::remember('sum_year' . "_" . $year, now()->addHours(24), function () use ($year) {
-                    $yp = Point::whereBetween('game_started', [
+                    $ids = Point::whereBetween('game_started', [
                         date($year . '-01-01 00:00:00'),
                         date($year . '-12-31 23:59:59')
                     ])
-                    ->get();
-                    $py = [];
-                    foreach($yp as $pt){
-                        if(!in_array($pt->player_id, $py)) $py[] = $pt->player_id;
+                    ->pluck('player_id');
+                    $players = [];
+                    foreach($ids as $player_id){
+                        if(!in_array($player_id, $players)) $players[] = $player_id;
                     }
-                    return ['players' => count($py), 'games' => count($yp)];
+                    return ['players' => count($players), 'games' => count($ids)];
                 });
                 $months = date('m');
                 if($year === 2012) $months = 10; // WeC started 2012 March 9th
@@ -184,30 +176,26 @@ class PlayerController extends Controller
                 $y2 = date('Y', $ts2);
                 // $month1 = date('m', $ts1);
                 $month2 = date('m', $ts2);
-                $stats_alltime = Point::where('player_id', $player->id)
+                $points = Point::where('player_id', $player->id)
                     ->whereBetween('game_started', [
                         date($y1 . '-01-01 00:00:00'),
                         date($y2 . '-12-31 23:59:59')
                     ])
-                    ->get();
-                // $games = [];
-                foreach ($stats_alltime as $stat) {
-                    $total['points'] += $stat->points;
-                    $total['games'] += 1;
-                    // $games[] = $stat->game_id;
-                }
+                    ->pluck('points');
+                $total['points'] = $points->sum();
+                $total['games'] = $points->count();
                 if($nocache) Cache::forget('sum_alltime');
                 $sum = Cache::remember('sum_alltime', now()->addHours(24), function () use ($y1, $y2) {
-                    $ap =  Point::whereBetween('game_started', [
+                    $ids =  Point::whereBetween('game_started', [
                         date($y1 . '-01-01 00:00:00'),
                         date($y2 . '-12-31 23:59:59')
                     ])
-                    ->get();
-                    $pa = [];
-                    foreach($ap as $pt){
-                        if(!in_array($pt->player_id, $pa)) $pa[] = $pt->player_id;
+                    ->pluck('player_id');
+                    $players = [];
+                    foreach($ids as $player_id){
+                        if(!in_array($player_id, $players)) $players[] = $player_id;
                     }
-                    return ['players' => count($pa), 'games' => count($ap)];
+                    return ['players' => count($players), 'games' => count($ids)];
                 });
                 $y = (($y2 - $y1) * 12) + ($month2/* - $month1*/);
                 $y -= 2; // @INFO: 2012 10 months only - substracting 2 (WeC started 2012 March 9th)

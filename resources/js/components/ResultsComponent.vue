@@ -3,16 +3,16 @@
         <h3>Results</h3>
         <b-row class="mb-3">
             <b-col>
-                <b-form-select :disabled="alltime" v-model="year" @change="filter" :options="yearRange"></b-form-select>
+                <b-form-select :disabled="alltime" v-model="year" @change="filter()" :options="yearRange"></b-form-select>
             </b-col>
             <b-col>
-                <b-form-select :disabled="alltime" v-model="month" @change="filter" :options="monthRange"></b-form-select>
+                <b-form-select :disabled="alltime" v-model="month" @change="filter()" :options="monthRange"></b-form-select>
             </b-col>
             <b-col>
-                <b-form-select v-model="type" @change="filter" :options="gameTypes"></b-form-select>
+                <b-form-select v-model="type" @change="filter()" :options="gameTypes"></b-form-select>
             </b-col>
             <b-col>
-                <b-form-checkbox class="mt-2" @change="filter" v-model="alltime" switch>
+                <b-form-checkbox class="mt-2" @change="filter()" v-model="alltime" switch>
                     All-Time
                 </b-form-checkbox>
             </b-col>
@@ -97,9 +97,6 @@
         mounted() {
             this.current_year = this.year = new Date().getFullYear()
             this.current_month = this.month = new Date().getMonth() + 1
-
-            // ajax call => result.data into this.results
-
             this.result = this.formatResult(this.results)
             this.total = this.totals
         },
@@ -132,8 +129,8 @@
             showGame(item, index, event) {
                 window.location.href = '/results/game/' + item.number
             },
-            filter(newFilter=true){
-                if(newFilter) this.page = 1
+            filter(page=1){
+                this.page = page
                 axios.post('/results', {
                     year: this.year,
                     month: this.month,
@@ -152,8 +149,7 @@
             },
             paginate(bvEvt, page){
                 bvEvt.preventDefault()
-                this.page = page
-                this.filter(false)
+                this.filter(page)
             },
             reset(){
                 this.year = this.current_year
