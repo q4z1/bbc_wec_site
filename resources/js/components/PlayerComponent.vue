@@ -8,47 +8,47 @@
                 <h1>{{ player.nickname }}</h1>
                 <b-row>
                     <b-col md="4"><strong>Total games:</strong></b-col>
-                    <b-col>{{ stats.games_alltime }}</b-col>
+                    <b-col>{{ stats.alltime.games }}</b-col>
                 </b-row>
                 <b-row class="mt-3">
                     <b-col>
                         <h5>Current Season</h5>
                         <b-row>
                             <b-col md="4"><strong>Place:</strong></b-col>
-                            <b-col>{{ pos_season }}</b-col>
+                            <b-col>{{ stats.season.pos }}</b-col>
                         </b-row>
                         <b-row>
                             <b-col md="4"><strong>Games:</strong></b-col>
-                            <b-col>{{ stats.games_season }}</b-col>
+                            <b-col>{{ stats.season.games }}</b-col>
                         </b-row>
                         <b-row>
                             <b-col md="4"><strong>Points:</strong></b-col>
-                            <b-col>{{ stats.points_season }}</b-col>
+                            <b-col>{{ stats.season.points }}</b-col>
                         </b-row>
                         <b-row>
                             <b-col md="4"><strong>Score:</strong></b-col>
-                            <b-col>{{ stats.score_season }}</b-col>
+                            <b-col>{{ stats.season.score }}</b-col>
                         </b-row>
                     </b-col>
                 </b-row>
                 <b-row class="mt-3">
                     <b-col>
                         <h5>All-Time</h5>
-                        <!-- <b-row>
+                        <b-row>
                             <b-col md="4"><strong>Place:</strong></b-col>
-                            <b-col>{{ pos_alltime }}</b-col>
-                        </b-row> -->
+                            <b-col>{{ stats.alltime.pos }}</b-col>
+                        </b-row>
                         <b-row>
                             <b-col md="4"><strong>Games:</strong></b-col>
-                            <b-col>{{ stats.games_alltime }}</b-col>
+                            <b-col>{{ stats.alltime.games }}</b-col>
                         </b-row>
                         <b-row>
                             <b-col md="4"><strong>Points:</strong></b-col>
-                            <b-col>{{ stats.points_alltime }}</b-col>
+                            <b-col>{{ stats.alltime.points }}</b-col>
                         </b-row>
                         <b-row>
                             <b-col md="4"><strong>Score:</strong></b-col>
-                            <b-col>{{ stats.score_alltime }}</b-col>
+                            <b-col>{{ stats.alltime.score }}</b-col>
                         </b-row>
                     </b-col>
                 </b-row>
@@ -94,7 +94,6 @@
                         <b-row class="text-center">
                             <b-col>{{ award.title }}</b-col>
                         </b-row>
-                        
                     </b-col>
                 </b-row>
             </b-col>
@@ -107,13 +106,18 @@
         </b-row>
         <b-row class="mb-3">
             <b-col>
-                <b-form-select v-model="season_select" @change="filter" :options="seasons"></b-form-select>
+                <b-form-select :disabled="alltime" v-model="season_select" @change="filter()" :options="seasons"></b-form-select>
             </b-col>
             <b-col>
-                <b-form-select v-model="type" @change="filter" :options="gameTypes"></b-form-select>
+                <b-form-select v-model="type" @change="filter()" :options="gameTypes"></b-form-select>
+            </b-col>
+            <b-col>
+                <b-form-checkbox class="mt-2" @change="filter()" v-model="alltime" switch>
+                    All-Time
+                </b-form-checkbox>
             </b-col>
             <b-col class="text-right">
-                <b-button variant="warning" @click="reset">Reset</b-button>
+                <b-button variant="primary" @click="reset">Reset</b-button>
             </b-col>
         </b-row>
         <b-row>
@@ -155,7 +159,7 @@
                         <span v-html="data.value"></span>
                     </template>
                 </b-table>
-                <p v-else class="mt-4">No games found.</p>
+                <p v-else class="mt-4">No games found for this period.</p>
                 <b-pagination
                     v-if="games"
                     v-model="page"
@@ -207,12 +211,11 @@
                 </b-col>
             </b-row>
         </b-modal>
-
     </div>
 </template>
 <script>
     export default {
-        props: ['player', 'season', 'stats', 'awards', 'pos_season', 'pos_alltime'],
+        props: ['player', 'season', 'stats', 'awards'],
         data() {
             return {
                 ticket_fail: false,
@@ -221,7 +224,13 @@
                 s2: 0,
                 s3: 0,
                 s4: 0,
-                types: [{ text: 'Step 1', value: 1 }, { text: 'Step 2', value: 2 }, { text: 'Step 3', value: 3 }, { text: 'Step 4', value: 4 }],
+                gameTypes: [
+                  { text: 'Step 1', value: 1 },
+                  { text: 'Step 2', value: 2 },
+                  { text: 'Step 3', value: 3 },
+                  { text: 'Step 4', value: 4 }
+                ],
+                alltime: false,
                 renderTable: true,
                 result: null,
                 season_select: null,
@@ -233,31 +242,12 @@
             }
         },
         computed: {
-            yearRange: function(){
-                let years = []
-                let now = this.year
-                let past = 2012
-                for(let i=now;i>=past;i--){
-                    years.push({value: i, text: i})
-                }
-                return years
-            },
-            gameTypes: function(){
-                return [
-                    { value: 1, text:'Step 1' },
-                    { value: 2, text:'Step 2' },
-                    { value: 3, text:'Step 3' },
-                    { value: 4, text:'Step 4' },
-                ]
-            },
             seasons: function(){
                 let l = this.stats.seasons.length
-                console.log(this.stats.seasons)
                 let s = []
                 for(let i=0;i<l;i++){
-                    console.log(this.stats.seasons[i].id)
                     s.push(
-                        { value: this.stats.seasons[i].id, text:'Season ' + this.stats.seasons[i].id }
+                        { value: this.stats.seasons[i], text:'Season ' + this.stats.seasons[i] }
                     )
                 }
                 return s
@@ -265,13 +255,10 @@
         },
         mounted() {
             this.season_select = this.season
-            this.type = 1
             this.s2 = this.player.s2_tickets
             this.s3 = this.player.s3_tickets
             this.s4 = this.player.s4_tickets
             this.filter()
-
-            console.log("stats=", this.stats)
         },
         methods: {
             formatResult(result){
@@ -280,11 +267,10 @@
                     for(let i=1;i<=10;i++){
                         if(entry['p'+i] !== null){
                             if(entry['p'+i] == this.player.nickname){
-                                newEntry['p'+i] = '<strong class="text-success">' + entry['p'+i] + '</span>'
+                                newEntry['p'+i] = '<strong class="text-primary">' + entry['p'+i] + '</span>'
                             }else{
                                 newEntry['p'+i] = entry['p'+i]
                             }
-                            
                         } 
                     }
                     this.gameTypes.map(type => {
@@ -298,9 +284,11 @@
             showGame(item, index, event) {
                 window.open(window.location.origin + '/results/game/' + item.number, '_blank');
             },
-            filter(){
-                axios.post('/results/games/' + this.player.id, {
+            filter(page=1){
+                this.page = page
+                axios.post('/results/player/' + this.player.id, {
                     season: this.season_select,
+                    alltime: this.alltime,
                     page: this.page,
                     type: this.type
                 })
@@ -315,12 +303,11 @@
             },
             paginate(bvEvt, page){
                 bvEvt.preventDefault()
-                this.page = page
-                this.filter()
+                this.filter(page)
             },
             reset(){
-                this.year = new Date().getFullYear() // current year
-                this.month = new Date().getMonth() + 1 // current month
+                this.season_select = this.season
+                this.alltime = false
                 this.type = 1
                 this.filter()
             },

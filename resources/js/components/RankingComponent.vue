@@ -3,12 +3,34 @@
     <h3>Ranking</h3>
     <b-row class="mb-3">
       <b-col>
-        <b-form-select v-model="season_select" @change="filter" :options="seasons"></b-form-select>
+        <b-overlay
+        :show="loading"
+        rounded
+        opacity="0.6"
+        spinner-small
+        spinner-variant="primary"
+        class="d-inline-block"
+        >
+          <b-form-select :disabled="loading||alltime" v-model="season_select" @change="filter" :options="seasons"></b-form-select>
+        </b-overlay>
       </b-col>
       <b-col></b-col>
-      <b-col></b-col>
+      <b-col class="text-right">
+        <b-overlay
+        :show="loading"
+        rounded
+        opacity="0.6"
+        spinner-small
+        spinner-variant="primary"
+        class="d-inline-block"
+        >
+          <b-form-checkbox :disabled="loading" class="mt-2" @change="filter" v-model="alltime" switch>
+            All-Time
+          </b-form-checkbox>
+        </b-overlay>
+      </b-col>
     </b-row>
-    <b-table striped hover id="results_table" :items="result" :fields="fields" @row-clicked="showPlayer" v-if="show">
+    <b-table striped hover id="results_table" :items="result" :fields="fields" @row-clicked="showPlayer">
       <template #cell(nickname)="data">
         <span v-html="data.value"></span>
       </template>
@@ -23,8 +45,8 @@ export default {
       season_select: null,
       renderTable: true,
       result: null,
-      player: null,
-      show: true,
+      loading: false,
+      alltime: false,
       fields: [{
           key: 'position',
           sortable: true
@@ -45,28 +67,18 @@ export default {
     }
   },
   computed: {
-    gameTypes: function () {
-      return [
-        { value: 1, text: 'Step 1' },
-        { value: 2, text: 'Step 2' },
-        { value: 3, text: 'Step 3' },
-        { value: 4, text: 'Step 4' },
-      ]
-    },
     seasons: function () {
       let l = this.allseasons.length
       let s = []
-      // s.push({ value: 0, text: 'All-Time'})
       for (let i = 0; i < l; i++) {
         s.push(
-          { value: this.allseasons[i].id, text: 'Season ' + this.allseasons[i].id }
+          { value: this.allseasons[i], text: 'Season ' + this.allseasons[i] }
         )
       }
       return s
     }
   },
   mounted() {
-    // console.log('Ranking mounted.')
     this.season_select = this.season
     this.result = this.formatResult(this.results)
   },
@@ -75,7 +87,6 @@ export default {
       window.location.href = '/player/' + encodeURIComponent(item.nickname)
     },
     formatResult(stats) {
-      // console.log('formatResult')
       let stats_formatted = []
       let l = stats.length
       for (let i = 0; i < l; i++) {
@@ -83,28 +94,25 @@ export default {
         stats_formatted.push({
           'position': i + 1,
           'nickname': s.player.nickname,
-          'score': s.score_season,
-          'games': s.games_season
+          'score': s.score,
+          'games': s.games
         })
       }
       return stats_formatted
     },
     filter() {
+      this.loading = true
       axios.post('/results/ranking', {
-        season: this.season_select,
-        page: this.page,
-        type: this.type
+        season: !this.alltime ? this.season_select : 0
       })
         .then(response => {
           if (response.data.success === true) {
             this.result = this.formatResult(response.data.stats)
-            this.show = false
-            this.$nextTick(() => {
-              this.show = true
-            })
+            this.loading = false
           }
         }, (error) => {
           console.log(error)
+          this.loading = true
         });
     },
   }
