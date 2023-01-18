@@ -60,7 +60,12 @@
                 type: 1, // regular games
                 page: 1, // we always start with page 1
                 total: null,
-                gameTypes: [{value: 1, text:'regular'}, {value: 5, text:'monthly'}, {value: 6, text:'yearly'}],
+                gameTypes: [
+                    { value: 1, text:'regular' },
+                    { value: 5, text:'monthly' },
+                    { value: 6, text:'yearly' },
+                    { value: 0, text:'all' }
+                ],
             }
         },
         computed: {

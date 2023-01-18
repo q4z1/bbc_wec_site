@@ -30,12 +30,12 @@ class PlayerController extends Controller
 
         $awards = $awards->sortBy('title', SORT_NATURAL)->values();
 
-        $res = new ResultController();
-        $all_month = $res->all_player_stats(date('Y'), date('m'));
-        $all_year = $res->all_player_stats(date('Y'));
-
-        $stats_extra = Cache::remember('player.' . $player->id, now()->addHours(24), function () use ($player, $all_month, $all_year) {
+        $stats_extra = Cache::remember('player.' . $player->id, now()->addHours(24), function () use ($player) {
             $pos_month = $pos_year = 1;
+
+            $res = new ResultController();
+            $all_month = $res->all_player_stats(date('Y'), date('m'));
+            $all_year = $res->all_player_stats(date('Y'));
 
             foreach($all_month as $one){
                 if($one['player']->id == $player->id) break;
@@ -123,11 +123,8 @@ class PlayerController extends Controller
                         date($year . '-' . $month. '-01 00:00:00', time()),
                         date($year . '-' . $month. '-31 23:59:59', time())
                     ])
-                    ->pluck('player_id');
-                    $players = [];
-                    foreach($ids as $player_id){
-                        if(!in_array($player_id, $players)) $players[] = $player_id;
-                    }
+                    ->pluck('player_id')->all();
+                    $players = array_flip($ids); // unique players (drop duplicate ids)
                     return ['players' => count($players), 'games' => count($ids)];
                 });
                 if ($total['games'] > 0) {
@@ -151,11 +148,8 @@ class PlayerController extends Controller
                         date($year . '-01-01 00:00:00'),
                         date($year . '-12-31 23:59:59')
                     ])
-                    ->pluck('player_id');
-                    $players = [];
-                    foreach($ids as $player_id){
-                        if(!in_array($player_id, $players)) $players[] = $player_id;
-                    }
+                    ->pluck('player_id')->all();
+                    $players = array_flip($ids); // unique players (drop duplicate ids)
                     return ['players' => count($players), 'games' => count($ids)];
                 });
                 $months = date('m');
@@ -190,11 +184,8 @@ class PlayerController extends Controller
                         date($y1 . '-01-01 00:00:00'),
                         date($y2 . '-12-31 23:59:59')
                     ])
-                    ->pluck('player_id');
-                    $players = [];
-                    foreach($ids as $player_id){
-                        if(!in_array($player_id, $players)) $players[] = $player_id;
-                    }
+                    ->pluck('player_id')->all();
+                    $players = array_flip($ids); // unique players (drop duplicate ids)
                     return ['players' => count($players), 'games' => count($ids)];
                 });
                 $y = (($y2 - $y1) * 12) + ($month2/* - $month1*/);

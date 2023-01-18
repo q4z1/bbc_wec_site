@@ -88,7 +88,8 @@
                     key: 'position'
                   },
                   {
-                    key: 'nickname'
+                    key: 'nickname',
+                    sortable: true
                   },
                   {
                     key: 'score',
