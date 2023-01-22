@@ -55,7 +55,7 @@
                 </b-overlay>
             </b-col>
         </b-row>
-        <b-table striped hover 
+        <b-table responsive striped hover
             id="results_table"
             :items="result"
             :fields="fields"

@@ -28,7 +28,7 @@
             aria-controls="results_table"
             @page-click="paginate"
         ></b-pagination>
-        <b-table striped hover 
+        <b-table responsive striped hover
             v-if="result"
             id="results_table"
             :items="result"

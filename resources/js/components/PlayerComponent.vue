@@ -24,6 +24,25 @@
                         </b-row>
                     </b-col>
                 </b-row>
+                <b-row v-if="stats.month.games">
+                    <b-col>
+                        <div class="mb-3"><strong>Results:</strong></div>
+                        <b-row>
+                            <b-col lg="2" class="mb-3" v-show="monthBar">
+                                <BarChart :chartData="stats.month.places" :height="100"/>
+                            </b-col>
+                            <b-col lg="2" class="mb-3" v-show="monthPie">
+                                <PieChart :chartData="stats.month.places" :height="100"/>
+                            </b-col>
+                            <b-col lg="10" class="mb-3">
+                                <b-table fixed responsive striped hover borderless small
+                                    :items="getPlacesFormatted(stats.month)"
+                                    @row-clicked="switchMonthChart">
+                                </b-table>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
                 <b-row class="mt-3">
                     <b-col>
                         <h5>Current Year</h5>
@@ -38,6 +57,25 @@
                         <b-row>
                             <b-col><strong>Score:</strong></b-col>
                             <b-col>{{ stats.year.score }}</b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row v-if="stats.year.games">
+                    <b-col>
+                        <div class="mb-3"><strong>Results:</strong></div>
+                        <b-row>
+                            <b-col lg="2" class="mb-3" v-show="yearBar">
+                                <BarChart :chartData="stats.year.places" :height="100"/>
+                            </b-col>
+                            <b-col lg="2" class="mb-3" v-show="yearPie">
+                                <PieChart :chartData="stats.year.places" :height="100"/>
+                            </b-col>
+                            <b-col lg="10" class="mb-3">
+                                <b-table fixed responsive striped hover borderless small
+                                    :items="getPlacesFormatted(stats.year)"
+                                    @row-clicked="switchYearChart">
+                                </b-table>
+                            </b-col>
                         </b-row>
                     </b-col>
                 </b-row>
@@ -83,7 +121,12 @@
         </b-row>
         <b-row>
             <b-col>
-                <b-table striped hover v-if="games" id="games_table" :items="games" @row-clicked="showGame">
+                <b-table responsive striped hover
+                    v-if="games"
+                    id="games_table"
+                    :items="games"
+                    @row-clicked="showGame"
+                >
                     <template #cell(p1)="data">
                         <span v-html="data.value"></span>
                     </template>
@@ -116,7 +159,14 @@
                     </template>
                 </b-table>
                 <p v-else class="mt-4">No games found for this period.</p>
-                <b-pagination v-if="games" v-model="page" :total-rows="total" :per-page="10" aria-controls="games_table" @page-click="paginate"></b-pagination>
+                <b-pagination
+                    v-if="games"
+                    v-model="page"
+                    :total-rows="total"
+                    :per-page="10"
+                    aria-controls="games_table"
+                    @page-click="paginate"
+                ></b-pagination>
             </b-col>
         </b-row>
     </div>
@@ -137,6 +187,10 @@
                 games: null,
                 type: 1,
                 page: 1,
+                monthBar: true,
+                monthPie: true,
+                yearBar: true,
+                yearPie: true,
                 gameTypes: [
                     { value: 1, text:'regular' },
                     { value: 5, text:'monthly' },
@@ -177,11 +231,40 @@
             },
         },
         mounted() {
+            this.monthPie = this.yearPie = false
             this.current_year = this.year = new Date().getFullYear()
             this.current_month = this.month = new Date().getMonth() + 1
             this.filter()
         },
         methods: {
+            switchMonthChart(item, index, event) {
+                if(index == 0){
+                    this.monthBar = true
+                    this.monthPie = false
+                }else{
+                    this.monthBar = false
+                    this.monthPie = true
+                }
+            },
+            switchYearChart(item, index, event) {
+                if(index == 0){
+                    this.yearBar = true
+                    this.yearPie = false
+                }else{
+                    this.yearBar = false
+                    this.yearPie = true
+                }
+            },
+            getPlacesFormatted(stats){
+                let places = []
+                let percentages = []
+                for(let i=1;i<=10;i++){
+                    places[i] = stats.places[i-1]
+                    // approximate percentages (hiding decimals for 'optimal' display on all devices)
+                    percentages[i] = ((places[i] / stats.games) * 100).toFixed(/*1*/) + "%"
+                }
+                return [places, percentages]
+            },
             formatResult(result){
                 let results = result.map(entry => {
                     let newEntry = entry
@@ -237,15 +320,6 @@
         }
     }
 </script>
-<style lang="scss">
-    table#games_table{
-        tbody{
-            tr{
-                cursor: pointer;
-            }
-        }
-    }
-</style>
 <style lang="scss" scoped>
 .awards img{
     width: 120px;
