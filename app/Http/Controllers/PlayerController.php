@@ -8,6 +8,7 @@ use App\Models\Player;
 use App\Models\PlayerAward;
 use App\Models\Point;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -30,12 +31,12 @@ class PlayerController extends Controller
 
         $awards = $awards->sortBy('title', SORT_NATURAL)->values();
 
-        $res = new ResultController();
-        $all_month = $res->all_player_stats(date('Y'), date('m'));
-        $all_year = $res->all_player_stats(date('Y'));
-
-        $stats_extra = Cache::remember('player.' . $player->id, now()->addHours(24), function () use ($player, $all_month, $all_year) {
+        $stats_extra = Cache::remember('player.' . $player->id, now()->addHours(24), function () use ($player) {
             $pos_month = $pos_year = 1;
+
+            $res = new ResultController();
+            $all_month = $res->all_player_stats(date('Y'), date('m'));
+            $all_year = $res->all_player_stats(date('Y'));
 
             foreach($all_month as $one){
                 if($one['player']->id == $player->id) break;
@@ -100,11 +101,26 @@ class PlayerController extends Controller
 
     }
 
+    private function calculateTotals(Collection $collection)
+    {
+        $plucked = $collection->pluck('points');
+        $points = $plucked->sum();
+        $games = $plucked->count();
+        $places = [];
+        if($games){
+            $plucked = $collection->pluck('pos')->countBy()->all();
+            for($i=1;$i<=10;$i++){
+                $places[] = array_key_exists($i, $plucked) ? $plucked[$i] : 0;
+            }
+        }
+        return ['points' => $points, 'games' => $games, 'places' => $places ];
+    }
+
     public function stats(Player $player, $year=0, $month=0, $nocache=false)
     {
         if($nocache) Cache::forget('player.' . $player->id . "_" . $year . "_" . $month);
         return Cache::remember('player.' . $player->id . "_" . $year . "_" . $month, now()->addHours(24), function () use ($player, $year, $month, $nocache) {
-            $total = ['points' => 0, 'games' => 0];
+            $total = ['points' => 0, 'games' => 0, 'places' => [] ];
             $avg_games = $score = 0;
             $sum = ['players' => 0, 'games' => 0];
             $m = $y = 1;
@@ -114,20 +130,17 @@ class PlayerController extends Controller
                         date($year . '-' . $month. '-01 00:00:00', time()),
                         date($year . '-' . $month. '-31 23:59:59', time())
                     ])
-                    ->pluck('points');
-                $total['points'] = $points->sum();
-                $total['games'] = $points->count();
+                    ->select('points', 'pos')
+                    ->get();
+                $total = $this->calculateTotals($points);
                 if($nocache) Cache::forget('sum_month' . "_" . $year . "_" . $month);
                 $sum = Cache::remember('sum_month' . "_" . $year . "_" . $month, now()->addHours(24), function () use ($year, $month) {
                     $ids = Point::whereBetween('game_started', [
                         date($year . '-' . $month. '-01 00:00:00', time()),
                         date($year . '-' . $month. '-31 23:59:59', time())
                     ])
-                    ->pluck('player_id');
-                    $players = [];
-                    foreach($ids as $player_id){
-                        if(!in_array($player_id, $players)) $players[] = $player_id;
-                    }
+                    ->pluck('player_id')->all();
+                    $players = array_flip($ids); // unique players (drop duplicate ids)
                     return ['players' => count($players), 'games' => count($ids)];
                 });
                 if ($total['games'] > 0) {
@@ -142,20 +155,17 @@ class PlayerController extends Controller
                         date($year . '-01-01 00:00:00'),
                         date($year . '-12-31 23:59:59')
                     ])
-                    ->pluck('points');
-                $total['points'] = $points->sum();
-                $total['games'] = $points->count();
+                    ->select('points', 'pos')
+                    ->get();
+                $total = $this->calculateTotals($points);
                 if($nocache) Cache::forget('sum_year' . "_" . $year);
                 $sum = Cache::remember('sum_year' . "_" . $year, now()->addHours(24), function () use ($year) {
                     $ids = Point::whereBetween('game_started', [
                         date($year . '-01-01 00:00:00'),
                         date($year . '-12-31 23:59:59')
                     ])
-                    ->pluck('player_id');
-                    $players = [];
-                    foreach($ids as $player_id){
-                        if(!in_array($player_id, $players)) $players[] = $player_id;
-                    }
+                    ->pluck('player_id')->all();
+                    $players = array_flip($ids); // unique players (drop duplicate ids)
                     return ['players' => count($players), 'games' => count($ids)];
                 });
                 $months = date('m');
@@ -181,20 +191,17 @@ class PlayerController extends Controller
                         date($y1 . '-01-01 00:00:00'),
                         date($y2 . '-12-31 23:59:59')
                     ])
-                    ->pluck('points');
-                $total['points'] = $points->sum();
-                $total['games'] = $points->count();
+                    ->select('points', 'pos')
+                    ->get();
+                $total = $this->calculateTotals($points);
                 if($nocache) Cache::forget('sum_alltime');
                 $sum = Cache::remember('sum_alltime', now()->addHours(24), function () use ($y1, $y2) {
                     $ids =  Point::whereBetween('game_started', [
                         date($y1 . '-01-01 00:00:00'),
                         date($y2 . '-12-31 23:59:59')
                     ])
-                    ->pluck('player_id');
-                    $players = [];
-                    foreach($ids as $player_id){
-                        if(!in_array($player_id, $players)) $players[] = $player_id;
-                    }
+                    ->pluck('player_id')->all();
+                    $players = array_flip($ids); // unique players (drop duplicate ids)
                     return ['players' => count($players), 'games' => count($ids)];
                 });
                 $y = (($y2 - $y1) * 12) + ($month2/* - $month1*/);
@@ -209,6 +216,7 @@ class PlayerController extends Controller
                 [
                     'score' => $score,
                     'games' => $total['games'],
+                    'places' => $total['places'],
                     'avg_games' => $avg_games,
                     'player' => $player,
                     'pos' => 0, // placeholder
@@ -219,6 +227,7 @@ class PlayerController extends Controller
                     'month' => $month,
                     'score' => $score,
                     'games' => $total['games'],
+                    'places' => $total['places'],
                     'sum_games' => $sum['games'],
                     'avg_games' => $avg_games,
                     'sum_players' => $sum['players'],

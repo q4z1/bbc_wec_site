@@ -175,7 +175,9 @@ class ResultController extends Controller
             $query = $query->whereYear('started','=', $year)
             ->whereMonth('started','=', $month);
         }
-        $query = $query->where('type', $type);
+        if($type){
+            $query = $query->where('type', $type);
+        }
         if($player){
             $query = $query->where(function($q) use ($player) {
                 $q->where('pos1', '=', $player->id)

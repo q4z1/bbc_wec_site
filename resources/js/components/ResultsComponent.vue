@@ -28,7 +28,7 @@
             aria-controls="results_table"
             @page-click="paginate"
         ></b-pagination>
-        <b-table striped hover 
+        <b-table responsive striped hover
             v-if="result"
             id="results_table"
             :items="result"
@@ -60,7 +60,12 @@
                 type: 1, // regular games
                 page: 1, // we always start with page 1
                 total: null,
-                gameTypes: [{value: 1, text:'regular'}, {value: 5, text:'monthly'}, {value: 6, text:'yearly'}],
+                gameTypes: [
+                    { value: 1, text:'regular' },
+                    { value: 5, text:'monthly' },
+                    { value: 6, text:'yearly' },
+                    { value: 0, text:'all' }
+                ],
             }
         },
         computed: {

@@ -55,7 +55,7 @@
                 </b-overlay>
             </b-col>
         </b-row>
-        <b-table striped hover 
+        <b-table responsive striped hover
             id="results_table"
             :items="result"
             :fields="fields"
@@ -88,7 +88,8 @@
                     key: 'position'
                   },
                   {
-                    key: 'nickname'
+                    key: 'nickname',
+                    sortable: true
                   },
                   {
                     key: 'score',
