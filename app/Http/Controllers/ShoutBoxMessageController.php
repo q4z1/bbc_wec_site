@@ -194,7 +194,7 @@ class ShoutBoxMessageController extends Controller
         $sbp->active = $post_active;
         $sbp->save();
 
-        $posts = ShoutBoxMessage::where('active', '>=', $active)->limit(25)->orderBy('created_at', 'ASC')->with('player')->get();
+        $posts = ShoutBoxMessage::where('active', '>=', $active)->limit(200)->orderBy('created_at', 'ASC')->with('player')->get();
 
         return ['success' => true, 'msg' => 'Message posted.', 'posts' => $this->map($posts)];
     }
@@ -219,7 +219,7 @@ class ShoutBoxMessageController extends Controller
             return ['success' => true, 'posts' => $posts];
         }
 
-        $posts = ShoutBoxMessage::whereBetween('active', [1, $post_active])->orderBy('id', 'DESC')->limit(25)->offset($offset)->with('player')->get();
+        $posts = ShoutBoxMessage::whereBetween('active', [1, $post_active])->orderBy('id', 'DESC')->limit(200)->offset($offset)->with('player')->get();
 
         return ['success' => true, 'posts' => $this->map($posts)];
     }

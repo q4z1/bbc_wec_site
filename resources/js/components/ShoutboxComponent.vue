@@ -230,7 +230,7 @@ export default {
                     }
                     else{
                         if(response.data.posts.length !== 0){
-                            this.offset += 25;
+                            this.offset += 200;
                             this.posts.unshift(...response.data.posts.reverse())
                             state.loaded()
                         }else{
