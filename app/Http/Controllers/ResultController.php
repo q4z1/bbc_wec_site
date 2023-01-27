@@ -184,7 +184,9 @@ class ResultController extends Controller
                 $sr['end']
             ]);
         }
-        $query = $query->where('type', $type);
+        if($type){
+            $query = $query->where('type', $type);
+        }
         if($player){
             $query = $query->where(function($q) use ($player) {
                 $q->where('pos1', '=', $player->id)

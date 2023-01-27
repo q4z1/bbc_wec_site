@@ -9,6 +9,7 @@ use App\Models\PlayerAward;
 use App\Models\Point;
 use App\Models\Season;
 use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
@@ -36,12 +37,12 @@ class PlayerController extends Controller
 
     $season = Season::orderBy('start', 'DESC')->first()->id;
 
-    $res = new ResultController();
-    $all_season = $res->all_player_stats($season);
-    $all_alltime = $res->all_player_stats(); // default => alltime
-
-    $stats_extra = Cache::remember('player.' . $player->id, now()->addHours(24), function () use ($player, $all_season, $all_alltime) {
+    $stats_extra = Cache::remember('player.' . $player->id, now()->addHours(24), function () use ($player, $season) {
         $pos_season = $pos_alltime = 1;
+
+        $res = new ResultController();
+        $all_season = $res->all_player_stats($season);
+        $all_alltime = $res->all_player_stats(); // default => alltime
 
         foreach($all_season as $one){
           if($one['player']->id == $player->id) break;
@@ -60,9 +61,9 @@ class PlayerController extends Controller
         return ['pos_season' => $pos_season, 'pos_alltime' => $pos_alltime, 'seasons' => $seasons];
     });
 
-    $stats_season = $this->stats($player, $season);
+    $stats_season = $this->stats($player, $season, true);
     $stats_season['pos'] = $stats_extra['pos_season'];
-    $stats_alltime = $this->stats($player); // default => alltime
+    $stats_alltime = $this->stats($player, 0, true); // 0 => alltime
     $stats_alltime['pos'] = $stats_extra['pos_alltime'];
 
     return view('player', [
@@ -127,27 +128,57 @@ class PlayerController extends Controller
     return ['success' => $success];
   }
 
-  public function stats(Player $player, $season=0) // 0 => alltime
+  private function calculateTotals(Collection $collection)
   {
-    return Cache::remember('player.' . $player->id . "_" . $season, now()->addHours(24), function () use ($player, $season) {
+    $plucked = $collection->pluck('points');
+    $points = $plucked->sum();
+    $games = $plucked->count();
+    $places = [];
+    if($games){
+      $collection = $collection->groupBy('type');
+      for($i=1;$i<=4;$i++){
+        $step = $collection->get($i);
+        if($step){
+          $plucked = $step->pluck('pos')->countBy()->all();
+          $step = [];
+          for($j=1;$j<=10;$j++){
+            $step[] = array_key_exists($j, $plucked) ? $plucked[$j] : 0;
+          }
+        }
+        $places[] = $step;
+      }
+    }
+    return ['points' => $points, 'games' => $games, 'places' => $places ];
+  }
+
+  public function stats(Player $player, $season=0, $places=false)
+  {
+    $places = $places ? 1 : 0;
+    return Cache::remember('player.' . $player->id . '_' . $season . '_' . $places, now()->addHours(24), function () use ($player, $season, $places) {
       $points = Point::where('player_id', $player->id);
-      if ($season > 0) {
+      if ($season > 0) { // 0 => alltime
         $date_range = SeasonController::dateRange($season);
         $points = $points->whereBetween('game_started', [
           $date_range['start'],
           $date_range['end']
         ]);
       }
-      $points = $points->pluck('points');
-      $total = ['points' => 0, 'games' => 0];
-      $total['points'] = $points->sum();
-      $total['games'] = $points->count();
+      $total = ['points' => 0, 'games' => 0, 'places' => [] ];
+      if($places){
+        $points = $points->select('points', 'pos', 'type')->get();
+        $total = $this->calculateTotals($points);
+      }else{
+        $points = $points->pluck('points');
+        $total['points'] = $points->sum();
+        $total['games'] = $points->count();
+      }
 
       $stats =
         [
           'score' => number_format($this->calc_score($total['points'], $total['games']) / 1000, 2),
           'points' => $total['points'],
           'games' => $total['games'],
+          'places' => $total['places'],
           'player' => $player,
           'season' => $season,
           'pos' => 0, // placeholder

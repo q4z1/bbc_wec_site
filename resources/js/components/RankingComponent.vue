@@ -30,7 +30,12 @@
         </b-overlay>
       </b-col>
     </b-row>
-    <b-table striped hover id="results_table" :items="result" :fields="fields" @row-clicked="showPlayer">
+    <b-table responsive striped hover
+      id="results_table"
+      :items="result"
+      :fields="fields"
+      @row-clicked="showPlayer"
+    >
       <template #cell(nickname)="data">
         <span v-html="data.value"></span>
       </template>
@@ -48,8 +53,7 @@ export default {
       loading: false,
       alltime: false,
       fields: [{
-          key: 'position',
-          sortable: true
+          key: 'position'
         },
         {
           key: 'nickname',

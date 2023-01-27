@@ -34,9 +34,7 @@
       aria-controls="results_table"
       @page-click="paginate"
     ></b-pagination>
-    <b-table
-      striped
-      hover
+    <b-table responsive striped hover
       v-if="result"
       id="results_table"
       :items="result"
@@ -70,6 +68,7 @@ export default {
         { text: "Step 2", value: 2 },
         { text: "Step 3", value: 3 },
         { text: "Step 4", value: 4 },
+        { text: 'All', value: 0 }
       ],
     };
   },
