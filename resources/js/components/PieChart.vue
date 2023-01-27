@@ -32,6 +32,16 @@ export default {
                 legend: {
                     display: false
                 },
+                tooltips: {
+                    callbacks: {
+                        label: function(tooltipItem, data) {
+                            let values = data.datasets[tooltipItem.datasetIndex].data
+                            let sum = values.reduce((sum, num) => { return sum + num }, 0)
+                            let percent = ((values[tooltipItem.index] / sum) * 100).toFixed(1) + '%'
+                            return data.labels[tooltipItem.index] + ': ' + percent
+                        }
+                    }
+                }
             }
         );
     }

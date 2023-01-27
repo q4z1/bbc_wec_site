@@ -238,22 +238,12 @@
         },
         methods: {
             switchMonthChart(item, index, event) {
-                if(index == 0){
-                    this.monthBar = true
-                    this.monthPie = false
-                }else{
-                    this.monthBar = false
-                    this.monthPie = true
-                }
+                this.monthBar = (index == 0) ? true : false
+                this.monthPie = (index == 0) ? false : true
             },
             switchYearChart(item, index, event) {
-                if(index == 0){
-                    this.yearBar = true
-                    this.yearPie = false
-                }else{
-                    this.yearBar = false
-                    this.yearPie = true
-                }
+                this.yearBar = (index == 0) ? true : false
+                this.yearPie = (index == 0) ? false : true
             },
             getPlacesFormatted(stats){
                 let places = []
