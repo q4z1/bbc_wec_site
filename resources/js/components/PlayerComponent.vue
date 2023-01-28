@@ -28,13 +28,13 @@
                     <b-col>
                         <div class="mb-3"><strong>Results:</strong></div>
                         <b-row>
-                            <b-col lg="2" class="mb-3" v-show="monthBar">
+                            <b-col lg="3" class="mb-3" v-show="monthBar">
                                 <BarChart :chartData="stats.month.places" :height="100"/>
                             </b-col>
-                            <b-col lg="2" class="mb-3" v-show="monthPie">
+                            <b-col lg="3" class="mb-3" v-show="monthPie">
                                 <PieChart :chartData="stats.month.places" :height="100"/>
                             </b-col>
-                            <b-col lg="10" class="mb-3">
+                            <b-col lg="9" class="mb-3">
                                 <b-table fixed responsive striped hover borderless small
                                     :items="getPlacesFormatted(stats.month)"
                                     @row-clicked="switchMonthChart">
@@ -64,13 +64,13 @@
                     <b-col>
                         <div class="mb-3"><strong>Results:</strong></div>
                         <b-row>
-                            <b-col lg="2" class="mb-3" v-show="yearBar">
+                            <b-col lg="3" class="mb-3" v-show="yearBar">
                                 <BarChart :chartData="stats.year.places" :height="100"/>
                             </b-col>
-                            <b-col lg="2" class="mb-3" v-show="yearPie">
+                            <b-col lg="3" class="mb-3" v-show="yearPie">
                                 <PieChart :chartData="stats.year.places" :height="100"/>
                             </b-col>
-                            <b-col lg="10" class="mb-3">
+                            <b-col lg="9" class="mb-3">
                                 <b-table fixed responsive striped hover borderless small
                                     :items="getPlacesFormatted(stats.year)"
                                     @row-clicked="switchYearChart">
