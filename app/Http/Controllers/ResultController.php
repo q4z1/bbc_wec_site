@@ -108,9 +108,9 @@ class ResultController extends Controller
             }
             if($sort){
                 usort($all_stats, function($a, $b) {
-                    return $a['score'] <=> $b['score'];
+                    return  [ $b['score'], strtolower($a['player']->nickname) ] <=>
+                            [ $a['score'], strtolower($b['player']->nickname) ];
                 });
-                $all_stats = array_reverse($all_stats);
             }
             return $all_stats;
         });

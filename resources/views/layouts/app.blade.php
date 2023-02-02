@@ -10,15 +10,15 @@
     <title>{{ config('app.name', 'BBC') }}</title>
 
     <!-- Scripts -->
-    <script src="{{ asset('js/app.js') }}" defer></script>
+    <script src="{{ asset(mix('js/app.js')) }}" defer></script>
 
     <!-- Fonts -->
     <link rel="dns-prefetch" href="//fonts.gstatic.com">
     <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
 
     <!-- Styles -->
-    <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    <link id="theme-css" href="{{ asset('css/theme.'.((auth()->user()) ? auth()->user()->theme : 'light').'.css') }}" rel="stylesheet">
+    <link href="{{ asset(mix('css/app.css')) }}" rel="stylesheet">
+    <link id="theme-css" href="{{ asset(mix('css/theme.'.((auth()->user()) ? auth()->user()->theme : 'light').'.css')) }}" rel="stylesheet">
 </head>
 <body>
     <div id="app">
@@ -108,10 +108,10 @@
                 let href = $('#theme-css').attr('href');
                 let theme = 'dark';
                 if(href.indexOf('dark') !== -1){
-                    href = href.replace('dark', 'light');
+                    href = "{{ asset(mix('css/theme.light.css')) }}";
                     theme = 'light'
                 }else if(href.indexOf('light') !== -1){
-                    href = href.replace('light', 'dark');
+                    href = "{{ asset(mix('css/theme.dark.css')) }}";
                 }
                 // save theme into session
                 axios.get('{{ route('user.theme.set') }}' + '?v=' + theme);

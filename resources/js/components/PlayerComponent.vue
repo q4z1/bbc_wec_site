@@ -13,7 +13,7 @@
                             <b-col>{{ stats.alltime.games }}</b-col>
                         </b-row>
                     </b-col>
-                    <b-col><!-- empty col --></b-col>
+                    <b-col class="d-none d-sm-block"></b-col>
                 </b-row>
                 <b-row class="mt-3">
                     <b-col>
@@ -35,7 +35,7 @@
                             <b-col>{{ stats.season.score }}</b-col>
                         </b-row>
                     </b-col>
-                    <b-col><!-- empty col --></b-col>
+                    <b-col class="d-none d-sm-block"></b-col>
                 </b-row>
                 <b-row v-if="stats.season.games">
                     <b-col>
@@ -49,13 +49,13 @@
                             <div class="mt-2 text-center" v-show="seasonS3"><strong>Step 3</strong></div>
                         </div>
                         <b-row v-if="stats.season.places[0]" v-show="seasonS1">
-                            <b-col lg="2" class="mb-3" v-show="seasonBarS1">
+                            <b-col lg="3" class="mb-3" v-show="seasonBarS1">
                                 <BarChart :chartData="stats.season.places[0]" :height="100"/>
                             </b-col>
-                            <b-col lg="2" class="mb-3" v-show="seasonPieS1">
+                            <b-col lg="3" class="mb-3" v-show="seasonPieS1">
                                 <PieChart :chartData="stats.season.places[0]" :height="100"/>
                             </b-col>
-                            <b-col lg="10" class="mb-3">
+                            <b-col lg="9" class="mb-3">
                                 <b-table fixed responsive striped hover borderless small
                                     :items="getPlacesFormatted(stats.season.places[0])"
                                     @row-clicked="switchSeasonChartS1">
@@ -63,13 +63,13 @@
                             </b-col>
                         </b-row>
                         <b-row v-if="stats.season.places[1]" v-show="seasonS2">
-                            <b-col lg="2" class="mb-3" v-show="seasonBarS2">
+                            <b-col lg="3" class="mb-3" v-show="seasonBarS2">
                                 <BarChart :chartData="stats.season.places[1]" :height="100"/>
                             </b-col>
-                            <b-col lg="2" class="mb-3" v-show="seasonPieS2">
+                            <b-col lg="3" class="mb-3" v-show="seasonPieS2">
                                 <PieChart :chartData="stats.season.places[1]" :height="100"/>
                             </b-col>
-                            <b-col lg="10" class="mb-3">
+                            <b-col lg="9" class="mb-3">
                                 <b-table fixed responsive striped hover borderless small
                                     :items="getPlacesFormatted(stats.season.places[1])"
                                     @row-clicked="switchSeasonChartS2">
@@ -77,13 +77,13 @@
                             </b-col>
                         </b-row>
                         <b-row v-if="stats.season.places[2]" v-show="seasonS3">
-                            <b-col lg="2" class="mb-3" v-show="seasonBarS3">
+                            <b-col lg="3" class="mb-3" v-show="seasonBarS3">
                                 <BarChart :chartData="stats.season.places[2]" :height="100"/>
                             </b-col>
-                            <b-col lg="2" class="mb-3" v-show="seasonPieS3">
+                            <b-col lg="3" class="mb-3" v-show="seasonPieS3">
                                 <PieChart :chartData="stats.season.places[2]" :height="100"/>
                             </b-col>
-                            <b-col lg="10" class="mb-3">
+                            <b-col lg="9" class="mb-3">
                                 <b-table fixed responsive striped hover borderless small
                                     :items="getPlacesFormatted(stats.season.places[2])"
                                     @row-clicked="switchSeasonChartS3">
@@ -91,7 +91,7 @@
                             </b-col>
                         </b-row>
                     </b-col>
-                    <b-col><!-- empty col --></b-col>
+                    <b-col class="d-none d-sm-block"></b-col>
                 </b-row>
                 <b-row class="mt-3">
                     <b-col>
@@ -113,7 +113,7 @@
                             <b-col>{{ stats.alltime.score }}</b-col>
                         </b-row>
                     </b-col>
-                    <b-col><!-- empty col --></b-col>
+                    <b-col class="d-none d-sm-block"></b-col>
                 </b-row>
                 <b-row v-if="stats.alltime.games">
                     <b-col>
@@ -129,13 +129,13 @@
                             <div class="mt-2 text-center" v-show="alltimeS4"><strong>Step 4</strong></div>
                         </div>
                         <b-row v-if="stats.alltime.places[0]" v-show="alltimeS1">
-                            <b-col lg="2" class="mb-3" v-show="alltimeBarS1">
+                            <b-col lg="3" class="mb-3" v-show="alltimeBarS1">
                                 <BarChart :chartData="stats.alltime.places[0]" :height="100"/>
                             </b-col>
-                            <b-col lg="2" class="mb-3" v-show="alltimePieS1">
+                            <b-col lg="3" class="mb-3" v-show="alltimePieS1">
                                 <PieChart :chartData="stats.alltime.places[0]" :height="100"/>
                             </b-col>
-                            <b-col lg="10" class="mb-3">
+                            <b-col lg="9" class="mb-3">
                                 <b-table fixed responsive striped hover borderless small
                                     :items="getPlacesFormatted(stats.alltime.places[0])"
                                     @row-clicked="switchAlltimeChartS1">
@@ -143,13 +143,13 @@
                             </b-col>
                         </b-row>
                         <b-row v-if="stats.alltime.places[1]" v-show="alltimeS2">
-                            <b-col lg="2" class="mb-3" v-show="alltimeBarS2">
+                            <b-col lg="3" class="mb-3" v-show="alltimeBarS2">
                                 <BarChart :chartData="stats.alltime.places[1]" :height="100"/>
                             </b-col>
-                            <b-col lg="2" class="mb-3" v-show="alltimePieS2">
+                            <b-col lg="3" class="mb-3" v-show="alltimePieS2">
                                 <PieChart :chartData="stats.alltime.places[1]" :height="100"/>
                             </b-col>
-                            <b-col lg="10" class="mb-3">
+                            <b-col lg="9" class="mb-3">
                                 <b-table fixed responsive striped hover borderless small
                                     :items="getPlacesFormatted(stats.alltime.places[1])"
                                     @row-clicked="switchAlltimeChartS2">
@@ -157,13 +157,13 @@
                             </b-col>
                         </b-row>
                         <b-row v-if="stats.alltime.places[2]" v-show="alltimeS3">
-                            <b-col lg="2" class="mb-3" v-show="alltimeBarS3">
+                            <b-col lg="3" class="mb-3" v-show="alltimeBarS3">
                                 <BarChart :chartData="stats.alltime.places[2]" :height="100"/>
                             </b-col>
-                            <b-col lg="2" class="mb-3" v-show="alltimePieS3">
+                            <b-col lg="3" class="mb-3" v-show="alltimePieS3">
                                 <PieChart :chartData="stats.alltime.places[2]" :height="100"/>
                             </b-col>
-                            <b-col lg="10" class="mb-3">
+                            <b-col lg="9" class="mb-3">
                                 <b-table fixed responsive striped hover borderless small
                                     :items="getPlacesFormatted(stats.alltime.places[2])"
                                     @row-clicked="switchAlltimeChartS3">
@@ -171,13 +171,13 @@
                             </b-col>
                         </b-row>
                         <b-row v-if="stats.alltime.places[3]" v-show="alltimeS4">
-                            <b-col lg="2" class="mb-3" v-show="alltimeBarS4">
+                            <b-col lg="3" class="mb-3" v-show="alltimeBarS4">
                                 <BarChart :chartData="stats.alltime.places[3]" :height="100"/>
                             </b-col>
-                            <b-col lg="2" class="mb-3" v-show="alltimePieS4">
+                            <b-col lg="3" class="mb-3" v-show="alltimePieS4">
                                 <PieChart :chartData="stats.alltime.places[3]" :height="100"/>
                             </b-col>
-                            <b-col lg="10" class="mb-3">
+                            <b-col lg="9" class="mb-3">
                                 <b-table fixed responsive striped hover borderless small
                                     :items="getPlacesFormatted(stats.alltime.places[3])"
                                     @row-clicked="switchAlltimeChartS4">
@@ -185,7 +185,7 @@
                             </b-col>
                         </b-row>
                     </b-col>
-                    <b-col><!-- empty col --></b-col>
+                    <b-col class="d-none d-sm-block"></b-col>
                 </b-row>
                 <b-row class="pb-2">
                     <b-col md="4">
