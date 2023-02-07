@@ -67,7 +67,12 @@ class RegistrationController extends Controller
         }
       }
     }
-    if (Registration::where([['game_date_id', $date->id], ['player_id', $p->id]])->first()) return ['success' => false, 'msg' => 'Already registered!'];
+    if (Registration::where('game_date_id', $date->id)
+                    ->where(function($q) use ($p, $request) {
+                        $q->where('player_id', $p->id)
+                        ->orWhere('ip', $request->ip())
+                        ->orWhere('fp', $request->input('fp'));
+                    })->first()) return ['success' => false, 'msg' => 'Already registered!'];
     $reg = new Registration();
     $reg->game_date_id = $date->id;
     $reg->player_id = $p->id;
