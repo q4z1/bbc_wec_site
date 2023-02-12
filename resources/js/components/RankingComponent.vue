@@ -39,6 +39,14 @@
       <template #cell(nickname)="data">
         <span v-html="data.value"></span>
       </template>
+      <template #cell(games)="data" v-if="step1_visible">
+        <span v-if="data.value < 40" class="text-danger" v-html="data.value"></span>
+        <span v-else class="text-success" v-html="data.value"></span>
+      </template>
+      <template #cell(step1)="data" v-if="step1_visible">
+        <span v-if="data.value < 20" class="text-danger" v-html="data.value"></span>
+        <span v-else class="text-success" v-html="data.value"></span>
+      </template>
     </b-table>
   </div>
 </template>
@@ -52,6 +60,7 @@ export default {
       result: null,
       loading: false,
       alltime: false,
+      step1_visible: false,
       fields: [{
           key: 'position'
         },
@@ -93,13 +102,21 @@ export default {
     formatResult(stats) {
       let stats_formatted = []
       let l = stats.length
+      if((this.season_select > 8 && !this.alltime) && !this.step1_visible){
+        this.fields.push({key: 'step1', label: 'Step 1', sortable: true})
+        this.step1_visible = true
+      }else if((this.season_select <= 8 || this.alltime) && this.step1_visible){
+        this.fields.pop()
+        this.step1_visible = false
+      }
       for (let i = 0; i < l; i++) {
         let s = stats[i]
         stats_formatted.push({
           'position': i + 1,
-          'nickname': s.player.nickname,
+          'nickname': s.nickname,
           'score': s.score,
-          'games': s.games
+          'games': s.games,
+          'step1': s.step1
         })
       }
       return stats_formatted
@@ -107,7 +124,7 @@ export default {
     filter() {
       this.loading = true
       axios.post('/results/ranking', {
-        season: !this.alltime ? this.season_select : 0
+        season: (!this.alltime) ? this.season_select : 0
       })
         .then(response => {
           if (response.data.success === true) {

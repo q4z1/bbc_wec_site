@@ -585,4 +585,7 @@
 .awards img{
     width: 120px;
 }
+.table-responsive{
+    cursor: pointer;
+}
 </style>

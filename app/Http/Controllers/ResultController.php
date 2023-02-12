@@ -95,7 +95,7 @@ class ResultController extends Controller
     }
 
     public function all_player_stats($season=0, $sort=true){
-        $sort = $sort ? 1 : 0;
+        $sort = ($sort) ? 1 : 0;
         return Cache::remember('all_player_stats_'.$season.'_'.$sort, now()->addHours(24), function() use($season, $sort){
             $all_stats = [];
             $pc = new PlayerController();
@@ -107,9 +107,15 @@ class ResultController extends Controller
                 }
             }
             if($sort){
-                usort($all_stats, function($a, $b) {
-                    return  [ $b['score'], strtolower($a['player']->nickname) ] <=>
-                            [ $a['score'], strtolower($b['player']->nickname) ];
+                usort($all_stats, function($a, $b) use ($season) {
+                    if($season > 8){
+                        // sort 1st by min games check (S1 > 20 & games > 40)
+                        $acheck = ($a['step1'] > 20 && $a['games'] > 40);
+                        $bcheck = ($b['step1'] > 20 && $b['games'] > 40);
+                        if($acheck != $bcheck) return ($acheck) ? -1 : 1;
+                    }
+                    return  [ $b['score'], strtolower($a['nickname']) ] <=>
+                            [ $a['score'], strtolower($b['nickname']) ];
                 });
             }
             return $all_stats;
