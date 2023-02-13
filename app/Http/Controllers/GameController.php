@@ -104,6 +104,7 @@ class GameController extends Controller
         if(!$game) return ["status" => false, 'msg' => "Game not found!"];
         Point::where('game_id', $game->id)->delete();
         $game->delete();
+        Cache::flush();
         return ["status" => true, 'msg' => "Game deleted!"];
     }
 

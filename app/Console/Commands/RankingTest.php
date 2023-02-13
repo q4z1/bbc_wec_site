@@ -48,7 +48,7 @@ class RankingTest extends Command
             return -1;
         }
         $pc = new PlayerController();
-        $stats = $pc->stats($player, $year, $month, true);
+        $stats = $pc->stats($player, $year, $month, true, true);
         dd(json_encode($stats, JSON_PRETTY_PRINT) . "\n");
         return 0;
     }

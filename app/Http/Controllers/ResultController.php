@@ -87,7 +87,7 @@ class ResultController extends Controller
     }
 
     public function all_player_stats($year=0, $month=0, $sort=true){
-        $sort = $sort ? 1 : 0;
+        $sort = ($sort) ? 1 : 0;
         // Cache::flush();
         return Cache::remember('all_player_stats_'.$year.'_'.$month.'_'.$sort, now()->addHours(24), function() use($year, $month, $sort){
             $all_stats = [];
@@ -101,8 +101,8 @@ class ResultController extends Controller
             }
             if($sort){
                 usort($all_stats, function($a, $b) {
-                    return  [ $b['score'], strtolower($a['player']->nickname) ] <=>
-                            [ $a['score'], strtolower($b['player']->nickname) ];
+                    return  [ $b['score'], strtolower($a['nickname']) ] <=>
+                            [ $a['score'], strtolower($b['nickname']) ];
                 });
             }
             return $all_stats;

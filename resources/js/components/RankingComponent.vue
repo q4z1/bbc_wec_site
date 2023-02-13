@@ -147,7 +147,7 @@
                     let s = stats[i]
                     stats_formatted.push({
                         'position': i + 1,
-                        'nickname': s.player.nickname,
+                        'nickname': s.nickname,
                         'score': s.score,
                         'games': s.games
                     })
@@ -161,8 +161,8 @@
             filter(){
                 this.loading = true
                 axios.post('/results/ranking', {
-                    year: !this.alltime ? this.year : 0,
-                    month: !this.alltime && !this.allyear ? this.month : 0
+                    year: (!this.alltime) ? this.year : 0,
+                    month: (!this.alltime && !this.allyear) ? this.month : 0
                 })
                 .then(response => {
                     if(response.data.success === true){
