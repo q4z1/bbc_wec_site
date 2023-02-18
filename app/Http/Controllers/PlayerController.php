@@ -39,22 +39,21 @@ class PlayerController extends Controller
 
     $stats_extra = Cache::remember('player.' . $player->id, now()->addHours(24), function () use ($player, $season) {
         $pos_season = $pos_alltime = 1;
-
         $res = new ResultController();
-        $all_season = $res->all_player_stats($season);
-        $all_alltime = $res->all_player_stats(); // default => alltime
 
-        foreach($all_season as $one){
-          if($one['player']->id == $player->id) break;
+        $all = $res->all_player_stats($season);
+        foreach($all as $one){
+          if($one['player_id'] == $player->id) break;
           $pos_season++;
         }
-        if($pos_season > count($all_season)) $pos_season = '';
+        if($pos_season > count($all)) $pos_season = '';
 
-        foreach($all_alltime as $one){
-            if($one['player']->id == $player->id) break;
+        $all = $res->all_player_stats(); // default => alltime
+        foreach($all as $one){
+            if($one['player_id'] == $player->id) break;
             $pos_alltime++;
         }
-        if($pos_alltime > count($all_alltime)) $pos_alltime = '';
+        if($pos_alltime > count($all)) $pos_alltime = '';
 
         $seasons = Season::orderBy('id', 'ASC')->pluck('id');
 
@@ -63,7 +62,7 @@ class PlayerController extends Controller
 
     $stats_season = $this->stats($player, $season, true);
     $stats_season['pos'] = $stats_extra['pos_season'];
-    $stats_alltime = $this->stats($player, 0, true); // 0 => alltime
+    $stats_alltime = $this->stats($player, 0, true);
     $stats_alltime['pos'] = $stats_extra['pos_alltime'];
 
     return view('player', [
@@ -88,14 +87,14 @@ class PlayerController extends Controller
       $pagesize = $request->input('pageSize', 50);
       $sort = $request->input('sort');
 
-      $total = Player::where('new', 0)->get()->count();
-
+      $total = Player::where('new', 0)->count();
 
       $query = Player::where('new', 0)->orderBy($sort['prop'], (($sort['order'] == 'descending') ? 'DESC' : 'ASC'))
         ->offset(($page - 1) * $pagesize)->limit($pagesize);
       if (!empty($filters)) {
         $query->where('nickname', 'LIKE', $filters['value'] . '%');
       }
+
       $players = $query->get()->map(function ($player) {
         return $player;
       });
@@ -148,12 +147,12 @@ class PlayerController extends Controller
         $places[] = $step;
       }
     }
-    return ['points' => $points, 'games' => $games, 'places' => $places ];
+    return ['points' => $points, 'games' => $games, 'step1' => 0, 'places' => $places ];
   }
 
   public function stats(Player $player, $season=0, $places=false)
   {
-    $places = $places ? 1 : 0;
+    $places = ($places) ? 1 : 0;
     return Cache::remember('player.' . $player->id . '_' . $season . '_' . $places, now()->addHours(24), function () use ($player, $season, $places) {
       $points = Point::where('player_id', $player->id);
       if ($season > 0) { // 0 => alltime
@@ -163,24 +162,27 @@ class PlayerController extends Controller
           $date_range['end']
         ]);
       }
-      $total = ['points' => 0, 'games' => 0, 'places' => [] ];
+      $total = ['points' => 0, 'games' => 0, 'step1' => 0, 'places' => [] ];
       if($places){
         $points = $points->select('points', 'pos', 'type')->get();
         $total = $this->calculateTotals($points);
       }else{
-        $points = $points->pluck('points');
-        $total['points'] = $points->sum();
-        $total['games'] = $points->count();
+        if($season > 8) $points = $points->select('points', 'type')->get();
+        $plucked = $points->pluck('points');
+        $total['points'] = $plucked->sum();
+        $total['games'] = $plucked->count();
+        if($season > 8) $total['step1'] = $points->where('type', 1)->count();
       }
 
       $stats =
         [
+          'player_id' => $player->id,
+          'nickname' => $player->nickname,
           'score' => number_format($this->calc_score($total['points'], $total['games']) / 1000, 2),
           'points' => $total['points'],
           'games' => $total['games'],
+          'step1' => $total['step1'],
           'places' => $total['places'],
-          'player' => $player,
-          'season' => $season,
           'pos' => 0, // placeholder
         ];
       return $stats;
