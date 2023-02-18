@@ -313,7 +313,7 @@
                 return results
             },
             showGame(item, index, event) {
-                window.open(window.location.origin + '/results/game/' + item.number, '_blank')
+                window.open(window.location.origin + '/results/game/' + item.wec, '_blank')
             },
             filter(page=1){
                 this.page = page
