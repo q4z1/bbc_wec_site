@@ -5,7 +5,7 @@
                 <h2>{{ player.nickname }}</h2>
                 <b-row>
                     <b-col><strong>Total games:</strong></b-col>
-                    <b-col>{{ stats.games_alltime }}</b-col>
+                    <b-col>{{ stats.alltime.games }}</b-col>
                 </b-row>
                 <b-row class="mt-3">
                     <b-col>
@@ -45,22 +45,26 @@
                 </b-row>
                 <b-row class="mt-3">
                     <b-col>
-                        <h5>Current Year</h5>
+                        <h5 v-show="statsYear">Current Year<span class="ml-2 mr-2">/</span><b-link @click="showStats(0)">All-Time</b-link></h5>
+                        <h5 v-show="statsAlltime">All-Time<span class="ml-2 mr-2">/</span><b-link @click="showStats(1)">Current Year</b-link></h5>
                         <b-row>
                             <b-col><strong>Place:</strong></b-col>
-                            <b-col>{{ stats.year.pos }}</b-col>
+                            <b-col v-show="statsYear">{{ stats.year.pos }}</b-col>
+                            <b-col v-show="statsAlltime">{{ stats.alltime.pos }}</b-col>
                         </b-row>
                         <b-row>
                             <b-col><strong>Games:</strong></b-col>
-                            <b-col>{{ stats.year.games }}</b-col>
+                            <b-col v-show="statsYear">{{ stats.year.games }}</b-col>
+                            <b-col v-show="statsAlltime">{{ stats.alltime.games }}</b-col>
                         </b-row>
                         <b-row>
                             <b-col><strong>Score:</strong></b-col>
-                            <b-col>{{ stats.year.score }}</b-col>
+                            <b-col v-show="statsYear">{{ stats.year.score }}</b-col>
+                            <b-col v-show="statsAlltime">{{ stats.alltime.score }}</b-col>
                         </b-row>
                     </b-col>
                 </b-row>
-                <b-row v-if="stats.year.games">
+                <b-row v-if="stats.year.games" v-show="statsYear">
                     <b-col>
                         <div class="mb-3"><strong>Results:</strong></div>
                         <b-row>
@@ -74,6 +78,25 @@
                                 <b-table fixed responsive striped hover borderless small
                                     :items="getPlacesFormatted(stats.year)"
                                     @row-clicked="switchYearChart">
+                                </b-table>
+                            </b-col>
+                        </b-row>
+                    </b-col>
+                </b-row>
+                <b-row v-if="stats.alltime.games" v-show="statsAlltime">
+                    <b-col>
+                        <div class="mb-3"><strong>Results:</strong></div>
+                        <b-row>
+                            <b-col lg="3" class="mb-3" v-show="alltimeBar">
+                                <BarChart :chartData="stats.alltime.places" :height="100"/>
+                            </b-col>
+                            <b-col lg="3" class="mb-3" v-show="alltimePie">
+                                <PieChart :chartData="stats.alltime.places" :height="100"/>
+                            </b-col>
+                            <b-col lg="9" class="mb-3">
+                                <b-table fixed responsive striped hover borderless small
+                                    :items="getPlacesFormatted(stats.alltime)"
+                                    @row-clicked="switchAlltimeChart">
                                 </b-table>
                             </b-col>
                         </b-row>
@@ -191,6 +214,10 @@
                 monthPie: true,
                 yearBar: true,
                 yearPie: true,
+                alltimeBar: true,
+                alltimePie: true,
+                statsYear: true,
+                statsAlltime: true,
                 gameTypes: [
                     { value: 1, text:'regular' },
                     { value: 5, text:'monthly' },
@@ -231,12 +258,18 @@
             },
         },
         mounted() {
-            this.monthPie = this.yearPie = false
+            if(this.stats.year.games) this.showStats(1)
+            else this.showStats(0)
+            this.monthPie = this.yearPie = this.alltimePie = false
             this.current_year = this.year = new Date().getFullYear()
             this.current_month = this.month = new Date().getMonth() + 1
             this.filter()
         },
         methods: {
+            showStats(type){
+                this.statsYear = (type == 1) ? true : false
+                this.statsAlltime = (type == 1) ? false : true
+            },
             switchMonthChart(item, index, event) {
                 this.monthBar = (index == 0) ? true : false
                 this.monthPie = (index == 0) ? false : true
@@ -244,6 +277,10 @@
             switchYearChart(item, index, event) {
                 this.yearBar = (index == 0) ? true : false
                 this.yearPie = (index == 0) ? false : true
+            },
+            switchAlltimeChart(item, index, event){
+                this.alltimeBar = (index == 0) ? true : false
+                this.alltimePie = (index == 0) ? false : true
             },
             getPlacesFormatted(stats){
                 let places = []

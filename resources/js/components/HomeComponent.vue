@@ -1,12 +1,13 @@
 <template>
     <div>
-        <h1>HomeComponent1</h1>
+        <h1>Welcome to the Weekly Cup, {{ name }}!</h1>
     </div>
 </template>
 <script>
     export default {
+        props: ['name'],
         mounted() {
-            console.log('HomeComponent mounted.')
+
         }
     }
 </script>

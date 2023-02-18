@@ -1,18 +1,30 @@
 <template>
     <div>
-        <h3>Results</h3>
+        <b-row v-if="arole !== ''" class="mb-3">
+            <b-col>
+                <h3>Results</h3>
+            </b-col>
+            <b-col class="col-gameno">
+                <b-input-group append="#">
+                    <b-form-input v-model="gameno" @input="searchGame" placeholder="Wec"
+                        onkeypress="return event.charCode >= 48 && event.charCode <= 57">
+                    </b-form-input>
+                </b-input-group>
+            </b-col>
+        </b-row>
+        <h3 v-else>Results</h3>
         <b-row class="mb-3">
             <b-col>
-                <b-form-select :disabled="alltime" v-model="year" @change="filter()" :options="yearRange"></b-form-select>
+                <b-form-select :disabled="searching||alltime" v-model="year" @change="filter()" :options="yearRange"></b-form-select>
             </b-col>
             <b-col>
-                <b-form-select :disabled="alltime" v-model="month" @change="filter()" :options="monthRange"></b-form-select>
+                <b-form-select :disabled="searching||alltime" v-model="month" @change="filter()" :options="monthRange"></b-form-select>
             </b-col>
             <b-col>
-                <b-form-select v-model="type" @change="filter()" :options="gameTypes"></b-form-select>
+                <b-form-select :disabled="searching" v-model="type" @change="filter()" :options="gameTypes"></b-form-select>
             </b-col>
             <b-col>
-                <b-form-checkbox class="mt-2" @change="filter()" v-model="alltime" switch>
+                <b-form-checkbox :disabled="searching" class="mt-2" @change="filter()" v-model="alltime" switch>
                     All-Time
                 </b-form-checkbox>
             </b-col>
@@ -66,6 +78,9 @@
                     { value: 6, text:'yearly' },
                     { value: 0, text:'all' }
                 ],
+                gameno: null,
+                searching: false,
+                arole: window.arole,
             }
         },
         computed: {
@@ -152,6 +167,26 @@
                     console.log(error)
                 });
             },
+            searchGame(){
+                if(this.gameno.length){
+                    this.searching = true
+                    axios.post('/results', {
+                        gameno: this.gameno
+                    })
+                    .then(response => {
+                        if(response.data.success === true){
+                            this.result = this.formatResult(response.data.result)
+                            this.total = response.data.total
+                            this.page = 1
+                        }
+                    }, (error) => {
+                        console.log(error)
+                    });
+                }else{
+                    this.searching = false
+                    this.filter()
+                }
+            },
             paginate(bvEvt, page){
                 bvEvt.preventDefault()
                 this.filter(page)
@@ -160,9 +195,16 @@
                 this.year = this.current_year
                 this.month = this.current_month
                 this.alltime = false
+                this.searching = false
+                this.gameno = null
                 this.type = 1
                 this.filter()
             }
         }
     }
 </script>
+<style lang="scss" scoped>
+.col-gameno{
+    max-width: 135px;
+}
+</style>
