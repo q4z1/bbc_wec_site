@@ -147,7 +147,7 @@
                 return results
             },
             showGame(item, index, event) {
-                window.location.href = '/results/game/' + item.number
+                window.location.href = '/results/game/' + item.wec
             },
             filter(page=1){
                 this.page = page
