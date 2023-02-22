@@ -69,7 +69,7 @@
                 current_month: null,
                 year: null,
                 month: null,
-                type: 1, // regular games
+                type: 0, // all games
                 page: 1, // we always start with page 1
                 total: null,
                 gameTypes: [
@@ -197,7 +197,7 @@
                 this.alltime = false
                 this.searching = false
                 this.gameno = null
-                this.type = 1
+                this.type = 0
                 this.filter()
             }
         }

@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1>Welcome to the Weekly Cup, {{ name }}!</h1>
+        <h1>Welcome to WeCup, {{ name }}!</h1>
     </div>
 </template>
 <script>

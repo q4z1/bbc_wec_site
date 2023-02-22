@@ -1,6 +1,6 @@
 <template>
     <div>
-        <h1>Welcome to the Weekly Cup!</h1>
+        <h1>Welcome to WeCup!</h1>
     </div>
 </template>
 <script>
