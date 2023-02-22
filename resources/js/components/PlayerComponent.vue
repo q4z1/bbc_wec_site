@@ -64,10 +64,10 @@
                         </b-row>
                     </b-col>
                 </b-row>
-                <b-row v-if="stats.year.games" v-show="statsYear">
+                <b-row>
                     <b-col>
                         <div class="mb-3"><strong>Results:</strong></div>
-                        <b-row>
+                        <b-row v-if="stats.year.games" v-show="statsYear">
                             <b-col lg="3" class="mb-3" v-show="yearBar">
                                 <BarChart :chartData="stats.year.places" :height="100"/>
                             </b-col>
@@ -81,12 +81,7 @@
                                 </b-table>
                             </b-col>
                         </b-row>
-                    </b-col>
-                </b-row>
-                <b-row v-if="stats.alltime.games" v-show="statsAlltime">
-                    <b-col>
-                        <div class="mb-3"><strong>Results:</strong></div>
-                        <b-row>
+                        <b-row v-if="stats.alltime.games" v-show="statsAlltime">
                             <b-col lg="3" class="mb-3" v-show="alltimeBar">
                                 <BarChart :chartData="stats.alltime.places" :height="100"/>
                             </b-col>
@@ -208,7 +203,7 @@
                 month: null,
                 total: null,
                 games: null,
-                type: 1,
+                type: 0,
                 page: 1,
                 monthBar: true,
                 monthPie: true,
@@ -341,7 +336,7 @@
                 this.year = this.current_year
                 this.month = this.current_month
                 this.alltime = false
-                this.type = 1
+                this.type = 0
                 this.filter()
             },
         }

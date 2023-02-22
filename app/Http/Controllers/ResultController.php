@@ -44,8 +44,7 @@ class ResultController extends Controller
             'p10.nickname as p10'
         )->orderBy('number', 'DESC')
             ->whereYear('started','=', date("Y"))
-            ->whereMonth('started','=', date("m"))
-            ->where('type', 1); // default type
+            ->whereMonth('started','=', date("m"));
         $totals = $query->count();
         $results = $query->limit(10)
             ->get();
