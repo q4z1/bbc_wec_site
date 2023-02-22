@@ -370,7 +370,7 @@
                 renderTable: true,
                 result: null,
                 season_select: null,
-                type: 1, // regular games
+                type: 0, // all games
                 page: 1, // we always start with page 1
                 total: null,
                 games: null,
@@ -524,7 +524,7 @@
             reset(){
                 this.season_select = this.season
                 this.alltime = false
-                this.type = 1
+                this.type = 0
                 this.filter()
             },
             editTickets(){

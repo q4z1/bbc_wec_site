@@ -60,7 +60,7 @@ export default {
       renderTable: true,
       result: null,
       season_select: null,
-      type: 1, // regular games
+      type: 0, // all games
       page: 1, // we always start with page 1
       total: null,
       gameTypes: [
@@ -144,7 +144,7 @@ export default {
       this.filter(page);
     },
     reset() {
-      this.type = 1;
+      this.type = 0;
       this.alltime = false;
       this.season_select = this.season;
       this.filter();
