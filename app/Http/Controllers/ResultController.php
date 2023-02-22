@@ -49,7 +49,7 @@ class ResultController extends Controller
         ->whereBetween('started', [
             $sr['start'],
             $sr['end']
-        ])->where('type', 1); // default type
+        ]);
         $totals = $query->count();
         $results = $query->limit(10)
             ->get();
