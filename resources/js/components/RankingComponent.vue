@@ -102,10 +102,10 @@ export default {
     formatResult(stats) {
       let stats_formatted = []
       let l = stats.length
-      if((this.season_select > 8 && !this.alltime) && !this.step1_visible){
+      if((this.season_select >= 9 && !this.alltime) && !this.step1_visible){
         this.fields.push({key: 'step1', sortable: true})
         this.step1_visible = true
-      }else if((this.season_select <= 8 || this.alltime) && this.step1_visible){
+      }else if((this.season_select < 9 || this.alltime) && this.step1_visible){
         this.fields.pop()
         this.step1_visible = false
       }
