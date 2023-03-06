@@ -34,7 +34,7 @@ class ResultController extends Controller
         ->leftJoin('players as p9', 'games.pos9', '=', 'p9.id')
         ->leftJoin('players as p10', 'games.pos10', '=', 'p10.id')
         ->select(
-            'games.id', 'games.type', 'games.number', 'games.started',
+            'games.type', 'games.number', 'games.started',
             'p1.nickname as p1',
             'p2.nickname as p2',
             'p3.nickname as p3',
@@ -172,7 +172,7 @@ class ResultController extends Controller
         ->leftJoin('players as p9', 'games.pos9', '=', 'p9.id')
         ->leftJoin('players as p10', 'games.pos10', '=', 'p10.id')
         ->select(
-            'games.id', 'games.type', 'games.number', 'games.started',
+            'games.type', 'games.number', 'games.started',
             'p1.nickname as p1',
             'p2.nickname as p2',
             'p3.nickname as p3',
