@@ -4,9 +4,14 @@
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-body" id="vtable">
-                        <el-col :span="4">
-                            <el-input v-model="filters.value" placeholder="Username"></el-input>
-                        </el-col>
+                        <el-row :gutter="20" type="flex" justify="space-between" align="middle">
+                            <el-col :lg="3" :md="4" :sm="6" :xs="12">
+                                <el-input v-model="filters.value" placeholder="Username"></el-input>
+                            </el-col>
+                            <el-col :lg="3" :md="4" :sm="6" :xs="12" v-if="arole === 's'">
+                                <el-switch v-model="filters.new" active-text="New Regs"></el-switch>
+                            </el-col>
+                        </el-row>
                         <data-tables-server 
                             :data="data" 
                             :total="total" 
@@ -52,6 +57,7 @@
                 filters: {
                     props: 'nickname',
                     value: '',
+                    new: false,
                     def: [{
                         'value': '',
                     }]
@@ -72,6 +78,7 @@
                 },
                 layout: 'table, pagination',
                 queryInfo: false,
+                arole: window.arole,
             }
         },
         mounted() {

@@ -48,6 +48,9 @@
         <span v-else class="text-success" v-html="data.value"></span>
       </template>
     </b-table>
+    <b-row class="mb-3" v-if="avg_games">
+      <b-col class="text-center font-italic">a={{ avg_games }}</b-col>
+    </b-row>
   </div>
 </template>
 <script>
@@ -61,6 +64,7 @@ export default {
       loading: false,
       alltime: false,
       step1_visible: false,
+      avg_games: 0,
       fields: [{
           key: 'position'
         },
@@ -109,7 +113,8 @@ export default {
         this.fields.pop()
         this.step1_visible = false
       }
-      for (let i = 0; i < l; i++) {
+      let i = 0, games = 0
+      for(i; i<l; i++){
         let s = stats[i]
         stats_formatted.push({
           'position': i + 1,
@@ -118,7 +123,9 @@ export default {
           'games': s.games,
           'step1': s.step1
         })
+        games += s.games
       }
+      this.avg_games = (i > 0) ? (games / i).toFixed() : 0
       return stats_formatted
     },
     filter() {
