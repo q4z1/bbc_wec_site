@@ -72,12 +72,11 @@
 </template>
 <script>
     export default {
-        props: ['stats'],
+        props: ['stats', 'stats_year', 'stats_month'],
         data() {
             return {
                 renderTable: true,
                 result: null,
-                current_year: 0,
                 year: 0,
                 month: 0,
                 loading: false,
@@ -105,7 +104,7 @@
         computed: {
             yearRange: function(){
                 let years = []
-                let now = this.current_year
+                let now = new Date().getFullYear()
                 let past = 2012
                 for(let i=now;i>=past;i--){
                     years.push({value: i, text: i})
@@ -134,8 +133,13 @@
             },
         },
         mounted() {
-            this.current_year = this.year = new Date().getFullYear()
+            this.year = new Date().getFullYear()
             this.month = new Date().getMonth() + 1
+            if(this.stats_year) {
+                this.year = this.stats_year
+                if(this.stats_month) this.month = this.stats_month
+                else this.allyear = true
+            } else this.alltime = true
             this.result = this.formatResult(this.stats)
         },
         methods:{
