@@ -73,15 +73,30 @@ class ResultController extends Controller
     }
 
     public function ranking(Request $request){
+        if($request->isMethod('get') && ($request->has('year') || $request->has('month'))){
+            $years = [];
+            for($i = date("Y"); $i >= 2012; $i--){
+                $years[] = $i;
+            }
+            $request->validate([
+                'year' => 'integer|in:0,' . implode(',', $years),
+                'month' => 'integer|between:0,12',
+            ]);
+        }
         $year = $request->input('year', date("Y"));
-        $month = $request->input('month', date("m"));
+        $month = $request->has('year') ? $request->input('month', 0) : $request->input('month', date("m"));
+        if($year == 0) $month = 0;
 
         $stats = $this->all_player_stats($year, $month);
 
-        if($request->isMethod('post')) return ['success' => true, 'stats' => $stats];
+        if($request->isMethod('post')){
+            return ['success' => true, 'stats' => $stats, 'year' => $year, 'month' => $month];
+        }
 
         return view('ranking', [
             "stats" => $stats,
+            "year" => $year,
+            "month" => $month,
         ]);
     }
 
