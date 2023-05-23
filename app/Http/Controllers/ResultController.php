@@ -109,9 +109,15 @@ class ResultController extends Controller
             if($sort){
                 usort($all_stats, function($a, $b) use ($season) {
                     if($season >= 9){
-                        // sort 1st by min games check (S1 >= 20 & games >= 40)
-                        $acheck = ($a['step1'] >= 20 && $a['games'] >= 40);
-                        $bcheck = ($b['step1'] >= 20 && $b['games'] >= 40);
+                        if($season == 9) {
+                            // sort 1st by min games check (S1 >= 20 & games >= 40)
+                            $acheck = ($a['step1'] >= 20 && $a['games'] >= 40);
+                            $bcheck = ($b['step1'] >= 20 && $b['games'] >= 40);
+                        } else {
+                            // sort 1st by min S1 games (S1 >= 45)
+                            $acheck = ($a['step1'] >= 45);
+                            $bcheck = ($b['step1'] >= 45);
+                        }
                         if($acheck != $bcheck) return ($acheck) ? -1 : 1;
                     }
                     return  [ $b['score'], strtolower($a['nickname']) ] <=>

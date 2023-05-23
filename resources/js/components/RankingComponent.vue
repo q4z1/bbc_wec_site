@@ -39,12 +39,13 @@
       <template #cell(nickname)="data">
         <span v-html="data.value"></span>
       </template>
-      <template #cell(games)="data" v-if="step1_visible">
+      <template #cell(games)="data" v-if="(season_select == 9) && step1_visible">
         <span v-if="data.value < 40" class="text-danger" v-html="data.value"></span>
         <span v-else class="text-success" v-html="data.value"></span>
       </template>
       <template #cell(step1)="data" v-if="step1_visible">
-        <span v-if="data.value < 20" class="text-danger" v-html="data.value"></span>
+        <span v-if="(season_select == 9) && (data.value < 20)" class="text-danger" v-html="data.value"></span>
+        <span v-else-if="(season_select >= 10) && (data.value < 45)" class="text-danger" v-html="data.value"></span>
         <span v-else class="text-success" v-html="data.value"></span>
       </template>
     </b-table>
