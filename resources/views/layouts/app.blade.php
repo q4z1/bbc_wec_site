@@ -26,7 +26,7 @@
 <body>
     <div id="app">
         <b-navbar toggleable="lg" variant="secondary">
-            <b-navbar-brand href="{{ url('/') }}"><img height="75" src="{{ url('/logo.jpg') }}" alt="{{ config('app.name', 'Laravel') }}" /></b-navbar-brand>
+            <b-navbar-brand href="{{ url('/') }}"><img src="{{ url('/logo.png') }}" width="128" height="75" alt="{{ config('app.name', 'Laravel') }}" /></b-navbar-brand>
             <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
             <b-collapse id="nav-collapse" is-nav>
                 <b-navbar-nav>
