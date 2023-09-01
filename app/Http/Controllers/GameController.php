@@ -117,14 +117,22 @@ class GameController extends Controller
                 $pt->type = $g->type;
                 $pt->player_id = $player->id;
                 $pt->save();
-
-
             }
         }
         if($g->type == 4){
             $season = new Season();
             $season->start = date("Y-m-d H:i:s");
             $season->save();
+
+            // @INFO: 2023-08-02 - delete all tickets
+            $pls = Player::get();
+            foreach($pls as $p){
+                $p->s2_tickets = 0;
+                $p->s3_tickets = 0;
+                $p->s4_tickets = 0;
+                $p->updated_at = date("Y-m-d H:i:s");
+                $p->save();
+            }
         }
         Cache::flush();
         return ["status" => true, 'msg' => $g];
