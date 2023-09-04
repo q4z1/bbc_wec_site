@@ -44,8 +44,7 @@
         <span v-else class="text-success" v-html="data.value"></span>
       </template>
       <template #cell(step1)="data" v-if="step1_visible">
-        <span v-if="(season_select == 9) && (data.value < 20)" class="text-danger" v-html="data.value"></span>
-        <span v-else-if="(season_select >= 10) && (data.value < 45)" class="text-danger" v-html="data.value"></span>
+        <span v-if="((season_select == 9) && (data.value < 20)) || ((season_select == 10) && (data.value < 45))" class="text-danger" v-html="data.value"></span>
         <span v-else class="text-success" v-html="data.value"></span>
       </template>
     </b-table>
@@ -107,10 +106,10 @@ export default {
     formatResult(stats) {
       let stats_formatted = []
       let l = stats.length
-      if((this.season_select >= 9 && !this.alltime) && !this.step1_visible){
+      if(((this.season_select == 9 || this.season_select == 10) && !this.alltime) && !this.step1_visible){
         this.fields.push({key: 'step1', sortable: true})
         this.step1_visible = true
-      }else if((this.season_select < 9 || this.alltime) && this.step1_visible){
+      }else if((this.season_select < 9 || this.season_select > 10 || this.alltime) && this.step1_visible){
         this.fields.pop()
         this.step1_visible = false
       }

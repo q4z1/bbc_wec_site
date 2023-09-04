@@ -92,9 +92,9 @@ class GameController extends Controller
                         if($player->s3_tickets > 10) $player->s3_tickets = 10;
                         break;
                     case(3):
-                        if($i != 3){
+                        // if($i != 3){
                             $player->s3_tickets -= 1;
-                        }
+                        // }
                         if($i < 3){
                             $player->s4_tickets += 1;
                         }
@@ -127,11 +127,13 @@ class GameController extends Controller
             // @INFO: 2023-08-02 - delete all tickets
             $pls = Player::get();
             foreach($pls as $p){
-                $p->s2_tickets = 0;
-                $p->s3_tickets = 0;
-                $p->s4_tickets = 0;
-                $p->updated_at = date("Y-m-d H:i:s");
-                $p->save();
+                if($p->s2_tickets || $p->s3_tickets || $p->s4_tickets){
+                    $p->s2_tickets = 0;
+                    $p->s3_tickets = 0;
+                    $p->s4_tickets = 0;
+                    $p->updated_at = date("Y-m-d H:i:s");
+                    $p->save();
+                }
             }
         }
         Cache::flush();

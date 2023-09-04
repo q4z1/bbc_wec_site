@@ -169,11 +169,11 @@ class PlayerController extends Controller
         $points = $points->select('points', 'pos', 'type')->get();
         $total = $this->calculateTotals($points);
       }else{
-        if($season >= 9) $points = $points->select('points', 'type')->get();
+        if($season == 9 || $season == 10) $points = $points->select('points', 'type')->get();
         $plucked = $points->pluck('points');
         $total['points'] = $plucked->sum();
         $total['games'] = $plucked->count();
-        if($season >= 9) $total['step1'] = $points->where('type', 1)->count();
+        if($season == 9 || $season == 10) $total['step1'] = $points->where('type', 1)->count();
       }
 
       $stats =

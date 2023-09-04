@@ -1061,7 +1061,7 @@ class LogFileController extends Controller
 					sort($tmp);
 					$most_wins[4][] = array_pop($tmp);
 				} else {
-					$most_wins[4][] = "&nbsp;";
+					$most_wins[4][] = "0";
 				}
 			}
 		}
