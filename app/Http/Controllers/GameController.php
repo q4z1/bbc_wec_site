@@ -136,6 +136,8 @@ class GameController extends Controller
                 }
             }
         }
+        // @TODO: call boehmi's script /home/devuser/.local/bin/sync_bbc_tickets.sh
+        
         Cache::flush();
         return ["status" => true, 'msg' => $g];
     }
