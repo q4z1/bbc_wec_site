@@ -28,7 +28,6 @@ class SyncTickets extends Command
      */
     public function handle()
     {
-      $outputFile="/var/www/bbc/public/exp3/bbcbot/minidb.txt";
       $users = DB::select('SELECT p.nickname,p.s2_tickets,p.s3_tickets,p.s4_tickets,p.id,p.id FROM players p join points pt on (p.id = pt.player_id)');
  
       $miniDBRaw = array();
