@@ -6,6 +6,8 @@ public/js
 public/exp3/
 public/fonts/
 storage/*.key
+storage/framework/cache/data/*
+storage/framework/sessions/*
 vendor
 .env
 .env.backup
