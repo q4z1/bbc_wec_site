@@ -32,7 +32,7 @@ class SyncTickets extends Command
  
       $miniDBRaw = array();
       foreach ($users as $user) {
-          $miniDBRaw[] = "{$user->nickname} {$user->s2_tickets} {$user->s3_tickets} {$user->s4_tickets} {$user->id} {$user->id}";
+          $miniDBRaw[] = "{$user->nickname}\t{$user->s2_tickets}\t{$user->s3_tickets}\t{$user->s4_tickets}\t{$user->id}\t{$user->id}";
       }
       sort($miniDBRaw);
       $miniDB = implode("\n", (array_unique($miniDBRaw)));
