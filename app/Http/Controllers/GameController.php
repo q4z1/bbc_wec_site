@@ -9,6 +9,7 @@ use App\Models\Season;
 use App\Http\Controllers\LogFileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Artisan;
 
 class GameController extends Controller
 {
@@ -136,8 +137,7 @@ class GameController extends Controller
                 }
             }
         }
-        // @TODO: call boehmi's script /home/devuser/.local/bin/sync_bbc_tickets.sh
-        
+        Artisan::call('tickets:sync');
         Cache::flush();
         return ["status" => true, 'msg' => $g];
     }
@@ -165,6 +165,7 @@ class GameController extends Controller
         if(!$game) return ["status" => false, 'msg' => "Game not found!"];
         Point::where('game_id', $game->id)->delete();
         $game->delete();
+        Artisan::call('tickets:sync');
         Cache::flush();
         return ["status" => true, 'msg' => "Game deleted!"];
     }
@@ -211,6 +212,7 @@ class GameController extends Controller
                 }
             }
         }
+        Artisan::call('tickets:sync');
         Cache::flush();
         return ["status" => true, 'msg' => "Game succesfully saved!"];
     }

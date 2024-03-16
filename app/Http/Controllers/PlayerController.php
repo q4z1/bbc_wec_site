@@ -12,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Artisan;
 
 class PlayerController extends Controller
 {
@@ -126,6 +127,7 @@ class PlayerController extends Controller
       $player->save();
       $success = true;
     }
+    Artisan::call('tickets:sync');
     return ['success' => $success];
   }
 
