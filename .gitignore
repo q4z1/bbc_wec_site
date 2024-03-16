@@ -7,6 +7,8 @@ public/storage
 public/css
 public/js
 storage/*.key
+storage/framework/cache/data/*
+storage/framework/sessions/*
 vendor
 .env
 .env.backup
