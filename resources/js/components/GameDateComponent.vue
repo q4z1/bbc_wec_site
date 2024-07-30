@@ -23,6 +23,9 @@
                     <template #cell(nickname)="data">
                         <span v-html="data.value"></span>
                     </template>
+                    <template #cell(tickets)="data">
+                        <span v-html="data.value"></span>
+                    </template>
                     <template #cell(action)="data">
                         <span class="text-danger float-right" @click="deleteReg" :data-id="data.value" v-if="parseInt(data.value) > 0"><b-icon-trash-fill></b-icon-trash-fill></span>
                     </template>
@@ -73,6 +76,8 @@ export default {
     },
     mounted() {
         this.s_date = this.date
+        //console.log("step="+this.date.step)
+        if(this.date.step > 1) this.fields.push({key: 'tickets', label: 'Tickets'})
         if(['u', 'a', 's'].indexOf(window.arole) !== -1){
             if(window.arole === 's'){
                 this.fields.push(
@@ -106,11 +111,19 @@ export default {
                 let admin = false
                 let n = 0
                 let owner = false
+                let tickets = "n/a"
                 if(reg.player !== null){
                     nick = reg.player.nickname
                     admin = reg.player.admin
                     n = parseInt(reg.player.new)
                     owner = reg.player.owner
+                    if(this.date.step > 1){
+                      
+                      if(this.date.step == 2) tickets = reg.player.s2_tickets
+                      else if(this.date.step == 3) tickets = reg.player.s3_tickets
+                      else if(this.date.step == 4) tickets = reg.player.s4_tickets
+                      //console.log("tickets="+tickets)
+                    } 
                 }
                 new_regs.push({
                     id: reg.id,
@@ -119,6 +132,7 @@ export default {
                     ip: (reg.ip) ? reg.ip : 'n/a',
                     fp: (reg.fp) ? reg.fp : 'n/a',
                     action: (owner) ? reg.id : 0,
+                    tickets: tickets
                 })
             }
             return new_regs
