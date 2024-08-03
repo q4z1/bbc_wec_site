@@ -10,9 +10,11 @@ class SeasonController extends Controller
 
     public static function dateRange($season_id){
         $s = Season::where('id', $season_id)->first();
+        $ts = strtotime($s->start) - (60 * 60); // -1 hour
+        $start = date("Y-m-d H:i:s", $ts);
         $se = Season::where('id', '>', $season_id)->first();
         $end = (!is_null($se)) ? $se->start : date('Y-m-d H:i:s');
-        return ['start' => $s->start, 'end' => $end];
+        return ['start' => $start, 'end' => $end];
     }
 
     /**
