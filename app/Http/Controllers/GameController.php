@@ -162,9 +162,9 @@ class GameController extends Controller
     public function delete_game(Request $request, $game)
     {
         $game = Game::where('number', $game)->first();
-        if(!$game) return ["status" => false, 'msg' => "Game not found!"];
-        Point::where('game_id', $game->id)->delete();
-        $game->delete();
+        // if(!$game) return ["status" => false, 'msg' => "Game not found!"];
+        // Point::where('game_id', $game->id)->delete();
+        // $game->delete();
         // json gedöns
         $payload = json_decode($request->getContent(), true);
         if(array_key_exists("tickets", $payload) && $payload["tickets"] === true){
