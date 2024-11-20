@@ -168,7 +168,8 @@ class GameController extends Controller
         // json gedöns
         $payload = json_decode($request->getContent(), true);
         if($request->input("tickets", false) === true){
-            die("proceeding with tickets", $request->input("tickets", false));
+            echo "<pre>".var_export($request->input("tickets", false), true) . "</pre>";
+            die("proceeding with tickets");
         }
 
         Artisan::call('tickets:sync');
