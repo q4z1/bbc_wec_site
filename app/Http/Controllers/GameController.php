@@ -166,6 +166,12 @@ class GameController extends Controller
         if(!$game) return ["status" => false, 'msg' => "Game not found!"];
         Point::where('game_id', $game->id)->delete();
         $game->delete();
+        // json gedöns
+        $payload = json_decode($request->getContent(), true);
+        if(array_key_exists("tickets", $payload) && $payload["tickets"] === true){
+            die("proceeding with tickets");
+        }
+
         Artisan::call('tickets:sync');
         Cache::flush();
         return ["status" => true, 'msg' => "Game deleted!"];
