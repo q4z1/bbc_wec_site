@@ -21,7 +21,7 @@ Route::get('/pages', [App\Http\Controllers\PageController::class, 'get'])->name(
 Route::resource('page', 'App\Http\Controllers\PageController');
 
 Route::get('/upload/game', [App\Http\Controllers\GameController::class, 'upload_view'])->name('upload.game.view');
-Route::get('/delete/game/{game}', [App\Http\Controllers\GameController::class, 'delete_game'])->name('delete.game');
+Route::post('/delete/game/{game}', [App\Http\Controllers\GameController::class, 'delete_game'])->name('delete.game');
 Route::get('/delete/award/{award}', [App\Http\Controllers\AwardController::class, 'delete_award'])->name('delete.award');
 Route::post('/upload/game', [App\Http\Controllers\GameController::class, 'upload'])->name('upload.game.ajax');
 Route::post('/update/game/{game}', [App\Http\Controllers\GameController::class, 'update_game'])->name('update.game');

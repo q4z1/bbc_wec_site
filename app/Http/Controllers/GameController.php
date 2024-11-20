@@ -161,6 +161,7 @@ class GameController extends Controller
 
     public function delete_game(Request $request, $game)
     {
+        die(var_export($request, true));
         $game = Game::where('number', $game)->first();
         if(!$game) return ["status" => false, 'msg' => "Game not found!"];
         Point::where('game_id', $game->id)->delete();

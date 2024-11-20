@@ -203,7 +203,9 @@
           Are you sure to delete game #{{ this.game.number }}?
         </b-col>
         <b-col>
-          Checkbox Tickets here...
+          <b-form-checkbox class="mt-2" v-model="tickets" switch>
+          Ticket removal?
+        </b-form-checkbox>
         </b-col>
       </b-row>
       <b-button
@@ -250,6 +252,7 @@ export default {
         { text: "Step 4", value: 4 },
       ],
       arole: window.arole,
+      tickets: false
     };
   },
   methods: {
@@ -628,9 +631,13 @@ export default {
       window.location.href = window.location.href;
     },
     deleteGame() {
+      let data = new FormData()
+      data.append('tickets', this.tickets)
       axios({
-        method: "get",
+        method: "post",
         url: "/delete/game/" + this.game.number,
+        data: data,
+        headers: { "Content-Type": "application/json" },
       })
         .then((response) => {
           if (response.data.status) {
