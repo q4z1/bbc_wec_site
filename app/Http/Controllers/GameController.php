@@ -167,7 +167,7 @@ class GameController extends Controller
         // $game->delete();
         // json gedöns
         $payload = json_decode($request->getContent(), true);
-        if($request->input("tickets", false){
+        if($request->input("tickets", false)){
             die("proceeding with tickets");
         }
 
