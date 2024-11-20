@@ -167,7 +167,7 @@ class GameController extends Controller
         // $game->delete();
         // json gedöns
         $payload = json_decode($request->getContent(), true);
-        die("<pre>" . var_export($payload,true) . "</pre>");
+        die("<pre>" . var_export($request->input("tickets", false),true) . "</pre>");
 
         if($request->input("tickets", false) === true){
             echo "<pre>".var_export($request->input("tickets", false), true) . "</pre>";
