@@ -198,7 +198,14 @@
       </template>
     </b-modal>
     <b-modal ref="delete" id="delete" title="Delete Game" ok-disabled>
-      Are you sure to delete game #{{ this.game.number }}?
+      <b-row>
+        <b-col>
+          Are you sure to delete game #{{ this.game.number }}?
+        </b-col>
+        <b-col>
+          Checkbox Tickets here...
+        </b-col>
+      </b-row>
       <b-button
         class="mt-3"
         variant="outline-info"
