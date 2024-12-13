@@ -48,7 +48,10 @@ class RegistrationController extends Controller
       $p->nickname = $nickname;
       $p->new = 1;
       $p->save();
-    } else {
+    } elseif(!$p && $date->step > 1){
+        return ['success' => false, 'msg' => 'Not applicable for new players!'];
+    }
+    else {
       if($date->step > 1){
         // check if player registered other $date->step games substracting tickets then
         $open = 0;
