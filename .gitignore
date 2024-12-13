@@ -5,6 +5,7 @@ public/css
 public/js
 public/exp3/
 public/fonts/
+public/psqlmy/tmp/*
 storage/*.key
 storage/framework/cache/data/*
 storage/framework/sessions/*

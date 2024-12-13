@@ -182,7 +182,7 @@ class GameController extends Controller
                   ++$player->s2_tickets;
                   break;
                 case(3):
-                  if($i === 3) break;
+                  // if($i === 3) break;
                   if($i < 3){
                     $player->s4_tickets = max($player->s4_tickets-1, 0);
                   }

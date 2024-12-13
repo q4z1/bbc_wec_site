@@ -201,12 +201,12 @@
       <b-row>
         <b-col>
           Are you sure to delete game #{{ this.game.number }}?
-        </b-col>
+        <!-- </b-col>
         <b-col>
           <b-form-checkbox class="mt-2" v-model="tickets" switch>
           Ticket removal?
         </b-form-checkbox>
-        </b-col>
+        </b-col> -->
       </b-row>
       <b-button
         class="mt-3"
