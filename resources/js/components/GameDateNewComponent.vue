@@ -15,6 +15,11 @@
                 <b-form-select v-model="step" :options="steps" class="mb-3"></b-form-select>
             </b-col>
         </b-row>
+        <b-row v-if="step === 0">
+            <b-col>
+              <b-form-input id="input-title" v-model="title" trim  class="mb-3" placeholder="Enter a custom title"></b-form-input>
+            </b-col>
+        </b-row>
         <b-row>
             <b-col>
                 <b-button @click="createDate" variant="success" class="w-100">Submit</b-button>
@@ -30,12 +35,14 @@ export default {
             time: null,
             dateMin: null,
             time: '19:30:00',
+            title: null,
             step: 1,
             steps: [
                 { value: 1, text: 'Step 1' },
                 { value: 2, text: 'Step 2' },
                 { value: 3, text: 'Step 3' },
                 { value: 4, text: 'Step 4' },
+                { value: 0, text: 'custom' },
             ],
         }
     },
@@ -53,6 +60,7 @@ export default {
         createDate(){
             let data = new FormData()
             data.append('step', this.step)
+            if(this.step === 0) data.append('title', this.title)
             data.append('date', this.date + ' ' + this.time)
             axios({
                 method: "post",

@@ -44,13 +44,14 @@ class GameDateController extends Controller
     if (!in_array(auth()->user()->role, ['a', 's'])) return ['success' => false, 'msg' => 'Not valid.'];
     $date = $request->input('date', null);
     $step = $request->input('step', null);
-    if (!$date || !$step) return ['success' => false, 'msg' => 'Missing paramter(s).'];
+    if (!$date || !is_numeric($step)) return ['success' => false, 'msg' => 'Missing paramter(s).'];
     $d = GameDate::where([['date', $date], ['step', $step]])->first();
     if ($d) return ['success' => false, 'msg' => 'Game already exists.'];
     elseif (strtotime($date) < strtotime("now")) return ['success' => false, 'msg' => 'Date/Time is in the past.'];
     $d = new GameDate();
     $d->date = $date;
     $d->step = $step;
+    $d->title =  $request->input('title', null);
     $d->save();
     return ['success' => true, 'dates' => GameDate::getUpcomingGames()];
   }

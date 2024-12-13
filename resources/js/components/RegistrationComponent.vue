@@ -164,13 +164,13 @@ export default {
         let date = dates[i];
         let admin = "n/a";
         admin = date.admin;
-        let colors = { 1: "primary", 2: "success", 3: "warning", 4: "danger" };
+        let colors = { 0: "info", 1: "primary", 2: "success", 3: "warning", 4: "danger" };
         let color = "var(--" + colors[date.step] + ")";
 
         let num = date.num;
         new_dates.push({
           id: date.id,
-          title: "Step" + date.step,
+          title: (date.step > 0) ? "Step" + date.step : date.title,
           start: date.date.replace(" ", "T"),
           end: date.date
             .replace(" ", "T")
