@@ -163,38 +163,36 @@ class GameController extends Controller
     {
         $game = Game::where('number', $game)->first();
         if(!$game) return ["status" => false, 'msg' => "Game not found!"];
-        if($request->input("tickets") === "true"){
-            $out = [];
-            for($i=1;$i<11;$i++){
-              $player = Player::where("id", $game->{"pos$i"})->first();
-              $out[$i] = "";
-              switch($game->type){
-                case(1):
-                  if($i < 3){
-                    $player->s2_tickets = max($player->s2_tickets-1, 0);
-                  }
-                  break;
-                case(2):
-                  if($i === 3) break;
-                  if($i < 3){
-                    $player->s3_tickets = max($player->s3_tickets-1, 0);
-                  }
-                  ++$player->s2_tickets;
-                  break;
-                case(3):
-                  // if($i === 3) break;
-                  if($i < 3){
-                    $player->s4_tickets = max($player->s4_tickets-1, 0);
-                  }
-                  ++$player->s3_tickets;
-                  break;
-                case(4):
-                  break;
+        $out = [];
+        for($i=1;$i<11;$i++){
+          $player = Player::where("id", $game->{"pos$i"})->first();
+          $out[$i] = "";
+          switch($game->type){
+            case(1):
+              if($i < 3){
+                $player->s2_tickets = max($player->s2_tickets-1, 0);
               }
-              $player->save();
-            }
-            // return ["status" => false, 'msg' => "proceeding with ticket removal ... UNFINISHED!"];
+              break;
+            case(2):
+              if($i === 3) break;
+              if($i < 3){
+                $player->s3_tickets = max($player->s3_tickets-1, 0);
+              }
+              ++$player->s2_tickets;
+              break;
+            case(3):
+              // if($i === 3) break;
+              if($i < 3){
+                $player->s4_tickets = max($player->s4_tickets-1, 0);
+              }
+              ++$player->s3_tickets;
+              break;
+            case(4):
+              break;
+          }
+          $player->save();
         }
+        // return ["status" => false, 'msg' => "proceeding with ticket removal ... UNFINISHED!"];
         Point::where('game_id', $game->id)->delete();
         $game->delete();
         Artisan::call('tickets:sync');
