@@ -140,7 +140,7 @@ class GameController extends Controller
             }
         }
         $action = new Action();
-        $action->action = "Step" . $game->type . " game #" . $game->id . " uploaded.";
+        $action->action = "Step" . $g->type . " game #" . $g->id . " uploaded.";
         $action->reason = "n/a"; // @TODO: reason handling
         $action->user = Auth::id();
         $action->save();
