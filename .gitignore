@@ -6,6 +6,7 @@ public/js
 public/exp3/
 public/fonts/
 public/psqlmy/tmp/*
+bootstrap/cache/*
 storage/*.key
 storage/framework/cache/data/*
 storage/framework/sessions/*
