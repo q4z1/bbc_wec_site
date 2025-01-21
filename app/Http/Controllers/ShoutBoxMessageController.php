@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\ShoutBoxMessage;
+use App\Models\Action;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ShoutBoxMessageController extends Controller
 {
@@ -203,6 +205,11 @@ class ShoutBoxMessageController extends Controller
     {
         $shoutBoxMessage->active = 0;
         $shoutBoxMessage->save();
+        $action = new Action();
+        $action->action = "Shoutbox Message #" . $shoutBoxMessage->id . " deleted.";
+        $action->reason = "n/a"; // @TODO: reason handling
+        $action->user = Auth::id();
+        $action->save();
         return ['success' => true, 'msg' => 'Message deleted.'];
     }
 
@@ -233,6 +240,11 @@ class ShoutBoxMessageController extends Controller
         $shoutBoxMessage->active = (in_array($request->user()->role, ['a', 's']) && $admin_post > 0) ? 3 : 2;
         $shoutBoxMessage->message = strip_tags($msg);
         $shoutBoxMessage->save();
+        // $action = new Action();
+        // $action->action = "Shoutbox Message #" . $shoutBoxMessage->id . " updated.";
+        // $action->reason = "n/a"; // @TODO: reason handling
+        // $action->user = Auth::id();
+        // $action->save();
         return ['success' => true, 'msg' => 'Post updated.', 'post' => $shoutBoxMessage];
     }
 

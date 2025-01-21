@@ -50,7 +50,7 @@
                   variant="info"
                   @click="edit = true"
                   class="w-100"
-                  v-if="arole === 's'"
+                  v-if="arole === 'a' || arole === 's'"
                   >Edit Game</b-button
                 >
               </b-row>
@@ -59,7 +59,7 @@
                   variant="danger"
                   v-b-modal.delete
                   class="w-100"
-                  v-if="arole === 's'"
+                  v-if="arole === 'a' || arole === 's'"
                   >Delete Game</b-button
                 >
               </b-row>

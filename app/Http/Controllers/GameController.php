@@ -6,10 +6,12 @@ use App\Models\Game;
 use App\Models\Player;
 use App\Models\Point;
 use App\Models\Season;
+use App\Models\Action;
 use App\Http\Controllers\LogFileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
 {
@@ -137,6 +139,11 @@ class GameController extends Controller
                 }
             }
         }
+        $action = new Action();
+        $action->action = "Step" . $game->type . " game #" . $game->id . " uploaded.";
+        $action->reason = "n/a"; // @TODO: reason handling
+        $action->user = Auth::id();
+        $action->save();
         Artisan::call('tickets:sync');
         Cache::flush();
         return ["status" => true, 'msg' => $g];
@@ -192,7 +199,11 @@ class GameController extends Controller
           }
           $player->save();
         }
-        // return ["status" => false, 'msg' => "proceeding with ticket removal ... UNFINISHED!"];
+        $action = new Action();
+        $action->action = "Step" . $game->type . " game #" . $game->id . " deleted.";
+        $action->reason = "n/a"; // @TODO: reason handling
+        $action->user = Auth::id();
+        $action->save();
         Point::where('game_id', $game->id)->delete();
         $game->delete();
         Artisan::call('tickets:sync');
@@ -242,6 +253,11 @@ class GameController extends Controller
                 }
             }
         }
+        $action = new Action();
+        $action->action = "Step" . $game->type . " game #" . $game->id . " updated.";
+        $action->reason = "n/a"; // @TODO: reason handling
+        $action->user = Auth::id();
+        $action->save();    
         Artisan::call('tickets:sync');
         Cache::flush();
         return ["status" => true, 'msg' => "Game succesfully saved!"];

@@ -8,11 +8,13 @@ use App\Models\Player;
 use App\Models\PlayerAward;
 use App\Models\Point;
 use App\Models\Season;
+use App\Models\Action;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Auth;
 
 class PlayerController extends Controller
 {
@@ -120,6 +122,14 @@ class PlayerController extends Controller
   public function tickets(Request $request, Player $player)
   {
     $success = false;
+    $action = new Action();
+    $action->action = "Tickets edited: S2=" . $player->s2_tickets . " to " . $request->s2;
+    $action->action .= "/S3=" . $player->s3_tickets . " to " . $request->s3;
+    $action->action .= "/S4=" . $player->s4_tickets . " to " . $request->s4;
+    $action->action .= " (Player: " . $player->nickname . ")"; 
+    $action->reason = "n/a"; // @TODO: reason handling
+    $action->user = Auth::id();
+    $action->save();
     if ($request->exists('s2') && $request->exists('s3') && $request->exists('s4')) {
       $player->s2_tickets = $request->s2;
       $player->s3_tickets = $request->s3;
@@ -203,6 +213,11 @@ class PlayerController extends Controller
 
   public function delete(Request $request, Player $player)
   {
+    $action = new Action();
+    $action->action = "Player " . $player->nickname . " deleted.";
+    $action->reason = "n/a"; // @TODO: reason handling
+    $action->user = Auth::id();
+    $action->save();
     $player->delete();
     return ['success' => true];
   }

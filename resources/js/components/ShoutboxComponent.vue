@@ -44,7 +44,7 @@
                                         <b-col class="text-warning" v-if="user !== null && post.user_id === user.id">
                                             <b-icon-pencil-fill class="actions" role="button" @click="edit(post.id)"></b-icon-pencil-fill>
                                         </b-col>
-                                        <b-col class="text-danger ml-2" v-if="arole === 's'">
+                                        <b-col class="text-danger ml-2" v-if="arole === 'a' || arole === 's'">
                                             <b-icon-trash-fill class="actions" role="button" @click="del(post.id)"></b-icon-trash-fill>
                                         </b-col>
                                     </b-row>

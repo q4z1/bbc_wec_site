@@ -34,7 +34,7 @@
         </b-row>
         </div>
         <hr />
-        <b-row v-if="arole !== 's'">
+        <b-row v-if="arole !== 'a' && arole !== 's'">
             <b-col>
                 <registration-new-component @show-alert="showAlert" @update-dates="updateDates" v-if="s_date && !old" :date="s_date" :fp="fp"></registration-new-component>
             </b-col>

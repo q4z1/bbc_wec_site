@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Page;
+use App\Models\Action;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PageController extends Controller
 {
@@ -48,8 +50,10 @@ class PageController extends Controller
     $page_id = $request->input('id', false);
     $slug = $request->input('slug', '');
     if($slug === '') return ['status' => false, 'msg' => 'Slug may not be empty.'];
+    $act = "edited";
     if (!$page_id) {
       $page = new Page();
+      $act = "created";
     } else {
       $page = Page::find($page_id);
     }
@@ -61,6 +65,11 @@ class PageController extends Controller
     $page->order = $request->input('order', 0);
     $page->active = $request->input('active', 0);
     $page->save();
+    $action = new Action();
+    $action->action = "Page " . $page->slug . " " . $act . "."; 
+    $action->reason = "n/a"; // @TODO: reason handling
+    $action->user = Auth::id();
+    $action->save();
     return ['status' => true, 'msg' => 'Page saved.'];
   }
 
@@ -109,6 +118,11 @@ class PageController extends Controller
   public function destroy(Request $request, Page $page)
   {
     if ($page->slug === "home") return ['success' => false, 'msg' => 'Home cannot be deleted!'];
+    $action = new Action();
+    $action->action = "Page " . $page->slug . " deleted."; 
+    $action->reason = "n/a"; // @TODO: reason handling
+    $action->user = Auth::id();
+    $action->save();
     $page->delete();
     return ['status' => true];
   }

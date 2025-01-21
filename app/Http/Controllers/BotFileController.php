@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Action;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class BotFileController extends Controller
 {
@@ -51,6 +53,11 @@ class BotFileController extends Controller
         $content = $payload["content"];
         if($content == "") return ["status" => false, 'msg' => "File is empty - not saved!"];
         file_put_contents(public_path() . "/exp3/bbcbot/" . $file, $content);
+        $action = new Action();
+        $action->action = "Botfile " . $file . " updated.";
+        $action->reason = "n/a"; // @TODO: reason handling
+        $action->user = Auth::id();
+        $action->save();
         return ["status" => true, 'msg' => "BotFile has been saved."];
     }
 

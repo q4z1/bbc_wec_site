@@ -32,7 +32,7 @@ class RegistrationController extends Controller
     $gd = GameDate::where('id', $reg->game_date_id)->first();
     $p = Player::where('id', $reg->player_id)->first();
     $u = User::where('name', $p->nickname)->first();
-    if (!(in_array(auth()->user()->role, ['s'])) && !($u && $u->id == auth()->id() && time() < (strtotime($gd->date) - 60 * 60))) return ['success' => false, 'msg' => 'Not valid.'];
+    if (!(in_array(auth()->user()->role, ['a','s'])) && !($u && $u->id == auth()->id() && time() < (strtotime($gd->date) - 60 * 60))) return ['success' => false, 'msg' => 'Not valid.'];
     $reg->delete();
     return ['success' => true, 'dates' => GameDate::getUpcomingGames()];
   }
@@ -70,7 +70,7 @@ class RegistrationController extends Controller
         }
       }
     }
-    if (auth() && auth()->user() && auth()->user()->role === 's') {
+    if (auth() && auth()->user() && in_array(auth()->user()->role, ['a','s'])) {
       if (Registration::where([['game_date_id', $date->id], ['player_id', $p->id]])->first()) {
         return ['success' => false, 'msg' => 'Already registered!'];
       }

@@ -208,10 +208,10 @@
                 <b-row class="mt-5 ml-0 mb-3">
                     <b-col md="4">
                         <b-row class="w-75">
-                            <b-button variant="warning" v-b-modal.tickets class="w-100" v-if="arole === 's'">Edit Tickets</b-button>
+                            <b-button variant="warning" v-b-modal.tickets class="w-100" v-if="arole === 'a' || arole === 's'">Edit Tickets</b-button>
                         </b-row>
                         <b-row class="mt-2 w-75">
-                            <b-button variant="danger" v-b-modal.delete class="w-100" v-if="arole === 's'">Delete Player</b-button>
+                            <b-button variant="danger" v-b-modal.delete class="w-100" v-if="arole === 'a' || arole === 's'">Delete Player</b-button>
                         </b-row>
                     </b-col>
                 </b-row>

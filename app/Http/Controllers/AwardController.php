@@ -5,9 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\Award;
 use App\Models\Player;
 use App\Models\PlayerAward;
+use App\Models\Action;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Auth;
 
 class AwardController extends Controller
 {
@@ -46,6 +48,11 @@ class AwardController extends Controller
         $awards = Cache::rememberForever('awards', function () {
             return Award::get();
         });
+        $action = new Action();
+        $action->action = "Award" . $award->title . " uploaded.";
+        $action->reason = "n/a"; // @TODO: reason handling
+        $action->user = Auth::id();
+        $action->save();
         return ['success' => true, 'msg' => 'Award uploaded.', 'awards' => $awards];
     }
 
@@ -61,6 +68,11 @@ class AwardController extends Controller
         $awards = Cache::rememberForever('awards', function () {
             return Award::get();
         });
+        $action = new Action();
+        $action->action = "Award" . $award->title . " edited.";
+        $action->reason = "n/a"; // @TODO: reason handling
+        $action->user = Auth::id();
+        $action->save();
         return ['success' => true, 'msg' => 'Award updated.', 'awards' => $awards];
     }
 
@@ -71,6 +83,11 @@ class AwardController extends Controller
             $pa->award_id = $award->id;
             $pa->player_id = $player_id;
             $pa->save();
+            $action = new Action();
+            $action->action = "Award" . $award->title . " assigned to " . $pa->nickname . ".";
+            $action->reason = "n/a"; // @TODO: reason handling
+            $action->user = Auth::id();
+            $action->save();
         }
         return ['success' => true];
     }
@@ -94,6 +111,11 @@ class AwardController extends Controller
         $awards = Cache::rememberForever('awards', function () {
             return Award::get();
         });
+        $action = new Action();
+        $action->action = "Award" . $award->title . " deleted.";
+        $action->reason = "n/a"; // @TODO: reason handling
+        $action->user = Auth::id();
+        $action->save();
         return ['success' => true, 'msg' => 'Award deleted.', 'awards' => $awards];
     }
 

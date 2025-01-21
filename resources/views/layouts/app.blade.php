@@ -49,7 +49,16 @@
                         </svg>&nbsp;Botfiles</b-dropdown-item>
                     </b-nav-item-dropdown>
                     @elseif(auth()->user()->role === 'a')
-                    <b-nav-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-nav-item>
+                    <b-nav-item-dropdown>
+                        <!-- Using 'button-content' slot -->
+                        <template #button-content>
+                            <b-icon-tools></b-icon-tools>
+                            <strong>Admin</strong>
+                        </template>
+                    <b-dropdown-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-dropdown-item>
+                    <b-dropdown-item  href="{{ route('award.view') }}"><b-icon-award></b-icon-award>&nbsp;Awards</b-dropdown-item>
+                    <b-dropdown-item  href="{{ route('pages') }}"><b-icon-file-text></b-icon-file-text>&nbsp;Pages</b-dropdown-item>
+                    </b-nav-item-dropdown>
                     @endif
                     @endauth
                     <b-nav-item href="{{ route('results') }}"><b-icon-book-fill></b-icon-book-fill>&nbsp;Results</b-nav-item>

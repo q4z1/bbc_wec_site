@@ -35,7 +35,7 @@
     <b-modal
       id="modal-newdate"
       title="New Game"
-      v-if="arole === 'a'"
+      v-if="arole === 'a' || arole === 's'"
       hide-footer
     >
       <game-date-new-component
@@ -89,7 +89,7 @@ export default {
         headerToolbar: {
           left: "prev,next today",
           center: "title",
-          right: window.arole === "s" ? "addEvent" : "",
+          right: window.arole === "a" ? "addEvent" : "",
         },
         eventTimeFormat: {
           hour: "2-digit",
@@ -121,7 +121,7 @@ export default {
     },
   },
   mounted() {
-    if (window.arole === "s") this.gModalSize = "xl";
+    if (window.arole === "a") this.gModalSize = "xl";
     this.game_dates = this.formatDates(this.gamedates);
     const fpPromise = FingerprintJS.load();
     (async () => {
