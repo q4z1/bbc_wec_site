@@ -73,3 +73,6 @@ Route::post('/awards/edit/{award}', [App\Http\Controllers\AwardController::class
 Route::get('/awards/delete/{award}', [App\Http\Controllers\AwardController::class, 'delete'])->name('award.delete');
 Route::post('/awards/assign/{award}', [App\Http\Controllers\AwardController::class, 'assign'])->name('award.assign');
 Route::get('/awards/assignments/{award}', [App\Http\Controllers\AwardController::class, 'assignments'])->name('award.assignments');
+
+Route::get('/actions', [App\Http\Controllers\ActionController::class, 'index'])->name('actions.view');
+Route::post('/actions', [App\Http\Controllers\ActionController::class, 'filter'])->name('actions.filter');

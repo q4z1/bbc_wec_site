@@ -2,12 +2,24 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StoreActionRequest;
-use App\Http\Requests\UpdateActionRequest;
 use App\Models\Action;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class ActionController extends Controller
 {
+
+    /**
+     * Create a new controller instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
+        $this->middleware('auth');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -15,72 +27,41 @@ class ActionController extends Controller
      */
     public function index()
     {
-        //
+      $totals = DB::table('actions')
+      ->select(
+          '*'
+      )
+      ->count();
+      $actions = DB::table('actions')
+      ->select(
+          'actions.created_at', 'actions.action', 'actions.user'
+      )->orderBy('id', 'DESC')
+      ->limit(10)
+      ->get()->map(function ($a) {
+        $a->user = User::where('id', '=', $a->user)->first()->name;
+        return $a;
+      });
+
+      $params = [
+        "actions" => $actions,
+        "totals" => $totals
+      ];
+      return view('actions', $params);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreActionRequest  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StoreActionRequest $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Action  $action
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Action $action)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Action  $action
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Action $action)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \App\Http\Requests\UpdateActionRequest  $request
-     * @param  \App\Models\Action  $action
-     * @return \Illuminate\Http\Response
-     */
-    public function update(UpdateActionRequest $request, Action $action)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Action  $action
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Action $action)
-    {
-        //
+    public function filter(Request $request){
+      $page = $request->input('page', 1);
+      $actions = DB::table('actions')
+      ->select(
+          'actions.created_at', 'actions.action', 'actions.user'
+      )->orderBy('id', 'DESC');
+      $total = $actions->count();
+      $actions = $actions->offset(($page-1)*10)
+      ->take(10)
+      ->get()->map(function ($a) {
+        $a->user = User::where('id', '=', $a->user)->first()->name;
+        return $a;
+      });
+      return ['success' => true, 'result' => $actions, 'total' => $total];
     }
 }

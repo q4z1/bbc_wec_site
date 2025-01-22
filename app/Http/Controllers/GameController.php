@@ -140,7 +140,7 @@ class GameController extends Controller
             }
         }
         $action = new Action();
-        $action->action = "Step" . $g->type . " game #" . $g->id . " uploaded.";
+        $action->action = "Step" . $g->type . " game #" . $g->number . " uploaded.";
         $action->reason = "n/a"; // @TODO: reason handling
         $action->user = Auth::id();
         $action->save();
@@ -200,7 +200,7 @@ class GameController extends Controller
           $player->save();
         }
         $action = new Action();
-        $action->action = "Step" . $game->type . " game #" . $game->id . " deleted.";
+        $action->action = "Step" . $game->type . " game #" . $game->number . " deleted.";
         $action->reason = "n/a"; // @TODO: reason handling
         $action->user = Auth::id();
         $action->save();
@@ -254,7 +254,7 @@ class GameController extends Controller
             }
         }
         $action = new Action();
-        $action->action = "Step" . $game->type . " game #" . $game->id . " updated.";
+        $action->action = "Step" . $game->type . " game #" . $game->number . " updated.";
         $action->reason = "n/a"; // @TODO: reason handling
         $action->user = Auth::id();
         $action->save();    
