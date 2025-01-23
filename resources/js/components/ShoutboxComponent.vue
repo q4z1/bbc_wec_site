@@ -39,6 +39,12 @@
                                         <b-col><small>{{ post.fp }}</small></b-col>
                                     </b-row>
                                 </b-col>
+                                <b-col v-if="arole === 'a'" class="data">
+                                    <b-row>
+                                        <b-col sm="4"><small class="text-primary font-weight-bolder">Fingerprint:</small></b-col>
+                                        <b-col><small>{{ post.fp }}</small></b-col>
+                                    </b-row>
+                                </b-col>                                
                                 <b-col class="text-right actions">
                                     <b-row>
                                         <b-col class="text-warning" v-if="user !== null && post.user_id === user.id">

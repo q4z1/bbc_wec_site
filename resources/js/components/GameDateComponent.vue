@@ -85,6 +85,10 @@ export default {
                     {key: 'fp', label: 'Fingerprint', sortable: true},
 
                 )
+            }else if(window.arole === 'a'){
+              this.fields.push(
+                    {key: 'fp', label: 'Fingerprint', sortable: true},
+              )
             }
             if(!this.old){
                 this.fields.push(
