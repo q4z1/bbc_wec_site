@@ -49,7 +49,7 @@ class AwardController extends Controller
             return Award::get();
         });
         $action = new Action();
-        $action->action = "Award" . $award->title . " uploaded.";
+        $action->action = "Award " . $award->title . " uploaded.";
         $action->reason = "n/a"; // @TODO: reason handling
         $action->user = Auth::id();
         $action->save();
@@ -69,7 +69,7 @@ class AwardController extends Controller
             return Award::get();
         });
         $action = new Action();
-        $action->action = "Award" . $award->title . " edited.";
+        $action->action = "Award " . $award->title . " edited.";
         $action->reason = "n/a"; // @TODO: reason handling
         $action->user = Auth::id();
         $action->save();
@@ -83,8 +83,9 @@ class AwardController extends Controller
             $pa->award_id = $award->id;
             $pa->player_id = $player_id;
             $pa->save();
+            $pl = Player::where("id", "=", $player_id)->get()->first();
             $action = new Action();
-            $action->action = "Award" . $award->title . " assigned to " . $pa->nickname . ".";
+            $action->action = "Award " . $award->title . " assigned to " . $pl->nickname . ".";
             $action->reason = "n/a"; // @TODO: reason handling
             $action->user = Auth::id();
             $action->save();
