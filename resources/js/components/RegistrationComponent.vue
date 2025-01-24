@@ -89,7 +89,7 @@ export default {
         headerToolbar: {
           left: "prev,next today",
           center: "title",
-          right: window.arole === "a" ? "addEvent" : "",
+          right: window.arole === "a" || window.arole === "s" ? "addEvent" : "",
         },
         eventTimeFormat: {
           hour: "2-digit",
@@ -121,7 +121,7 @@ export default {
     },
   },
   mounted() {
-    if (window.arole === "a") this.gModalSize = "xl";
+    if (window.arole === "a" || window.arole === "s") this.gModalSize = "xl";
     this.game_dates = this.formatDates(this.gamedates);
     const fpPromise = FingerprintJS.load();
     (async () => {

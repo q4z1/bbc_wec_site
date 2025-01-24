@@ -76,3 +76,6 @@ Route::get('/awards/assignments/{award}', [App\Http\Controllers\AwardController:
 
 Route::get('/actions', [App\Http\Controllers\ActionController::class, 'index'])->name('actions.view');
 Route::post('/actions', [App\Http\Controllers\ActionController::class, 'filter'])->name('actions.filter');
+
+Route::get('/fpnicksearch', [App\Http\Controllers\FingerprintNickname::class, 'index'])->name('fpnicksearch');
+Route::post('/fpnicksearch', [App\Http\Controllers\FingerprintNickname::class, 'search'])->name('fpnicksearch.search');

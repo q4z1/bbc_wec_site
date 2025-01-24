@@ -12,7 +12,7 @@
                 </b-alert>
             </b-col>
         </b-row>
-        <b-row>
+        <b-row v-if="date.id != 6493">
             <b-col class="d-flex justify-content-center"><b-button v-b-toggle.collapse-reg variant="primary" class=" w-100">Register</b-button></b-col>
         </b-row>
         <div class="row">
