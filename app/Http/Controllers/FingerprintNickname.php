@@ -47,14 +47,22 @@ class FingerprintNickname extends Controller
     }else if($nickname !== null){
       $pl = Player::where("nickname", "=", $nickname)->get()->first();
       $u = User::where("name", "=", $nickname)->get()->first();
-      $sb = ShoutBoxMessage::where("user_id", "=", $u->id)->get()->map(function ($a) {
-        return $a->fp;
-      });
-      $reg = Registration::where("player_id", "=", $pl->id)->get()->map(function ($a) {
-        return $a->fp;
-      });
-      $sb = array_unique($sb->toArray());
-      $reg = array_unique($reg->toArray());
+      if(!is_null($u)){
+        $sb = ShoutBoxMessage::where("user_id", "=", $u->id)->get()->map(function ($a) {
+          return $a->fp;
+        })->toArray();
+      }else{
+        $sb = [];
+      }
+      if(!is_null($pl)){
+        $reg = Registration::where("player_id", "=", $pl->id)->get()->map(function ($a) {
+          return $a->fp;
+        })->toArray();
+      }else{
+        $reg = [];
+      }
+      $sb = array_unique($sb);
+      $reg = array_unique($reg);
       $result = ["sb" => $sb, "reg" => $reg];
     }else{
       $success = false;
