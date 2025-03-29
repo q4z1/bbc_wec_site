@@ -198,7 +198,7 @@ class ShoutBoxMessageController extends Controller
 
         $posts = ShoutBoxMessage::where('active', '>=', $active)->limit(200)->orderBy('created_at', 'ASC')->with('player')->get();
 
-        return ['success' => true, 'msg' => 'Message posted.', 'posts' => $this->map($posts)];
+        return ['success' => true, 'msg' => 'Message posted.', 'posts' => $posts];
     }
 
     public function delete(Request $request, ShoutBoxMessage $shoutBoxMessage)
@@ -228,7 +228,7 @@ class ShoutBoxMessageController extends Controller
 
         $posts = ShoutBoxMessage::whereBetween('active', [1, $post_active])->orderBy('id', 'DESC')->limit(200)->offset($offset)->with('player')->get();
 
-        return ['success' => true, 'posts' => $this->map($posts)];
+        return ['success' => true, 'posts' => $posts];
     }
 
     public function update(Request $request, ShoutBoxMessage $shoutBoxMessage)
@@ -238,7 +238,7 @@ class ShoutBoxMessageController extends Controller
         if(is_null($request->user()) || $request->user()->id !== $shoutBoxMessage->user_id ) return ['success' => false, 'msg' => 'Unauthorized!'];
         elseif(is_null($msg)) return ['success' => false, 'msg' => 'Missing Parameter!'];
         $shoutBoxMessage->active = (in_array($request->user()->role, ['a', 's']) && $admin_post > 0) ? 3 : 2;
-        $shoutBoxMessage->message = strip_tags($msg);
+        $shoutBoxMessage->message = nl2br(strip_tags($msg));
         $shoutBoxMessage->save();
         // $action = new Action();
         // $action->action = "Shoutbox Message #" . $shoutBoxMessage->id . " updated.";
