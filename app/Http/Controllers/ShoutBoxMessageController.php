@@ -278,4 +278,40 @@ class ShoutBoxMessageController extends Controller
     public function map_single(Request $request, ShoutBoxMessage $sbpost){
         return ['success' => true, 'post' => $this->map(collect([$sbpost]))->first()];
     }
+
+    public function deleted_view()
+    {
+        $user = (!is_null(auth())) ? auth()->user() : null;
+        if(is_null($user) || !in_array($user->role, ['a', 's'])) return view('shoutbox', ['user' => $user]);
+        return view('sbdel', ['user' => $user]);
+        
+    }
+
+    public function deleted_action(Request $request)
+    {
+
+    }
+
+    public function deleted_filter(Request $request)
+    {
+      $user = (!is_null(auth())) ? auth()->user() : null;
+      if(is_null($user) || !in_array($user->role, ['a', 's'])) return view('shoutbox', ['user' => $user]);
+      $page = $request->input('page', 1);
+      $pagesize = $request->input('pageSize', 50);
+      $sort = $request->input('sort');
+
+      $new = (!empty($filters) && $filters['new']) ? 1 : 0;
+      $total = ShoutBoxMessage::where('active', "=", 0)->count();
+
+      $query = ShoutBoxMessage::where('active', "=", 0)->orderBy(
+        $sort['prop'], (($sort['order'] == 'descending') ? 'DESC' : 'ASC')
+      )->offset(($page - 1) * $pagesize)->limit($pagesize);
+
+      $posts = $query->get()->map(function ($post) use ($user) {
+        if($user->role == 'a') $post->ip = "";
+        return $post;
+      });
+
+      return ['total' => $total, 'data' => $posts];
+    }
 }

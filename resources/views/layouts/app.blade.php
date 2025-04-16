@@ -49,6 +49,7 @@
                         </svg>&nbsp;Botfiles</b-dropdown-item>
                         <b-dropdown-item  href="{{ route('fpnicksearch') }}"><b-icon-search></b-icon-search>&nbsp;Fingerprint Search</b-dropdown-item>
                         <b-dropdown-item  href="{{ route('actions.view') }}"><b-icon-card-list></b-icon-card-list>&nbsp;Action-Log</b-dropdown-item>
+                        <b-dropdown-item  href="{{ route('sbdel.view') }}"><b-icon-chat-text></b-icon-chat-text>&nbsp;Deleted Shoutbox Messages</b-dropdown-item>
                     </b-nav-item-dropdown>
                     @elseif(auth()->user()->role === 'a')
                     <b-nav-item-dropdown>
@@ -62,6 +63,7 @@
                     <b-dropdown-item  href="{{ route('pages') }}"><b-icon-file-text></b-icon-file-text>&nbsp;Pages</b-dropdown-item>
                     <b-dropdown-item  href="{{ route('fpnicksearch') }}"><b-icon-search></b-icon-search>&nbsp;Fingerprint Search</b-dropdown-item>
                     <b-dropdown-item  href="{{ route('actions.view') }}"><b-icon-card-list></b-icon-card-list>&nbsp;Action-Log</b-dropdown-item>
+                    <b-dropdown-item  href="{{ route('sbdel.view') }}"><b-icon-chat-text></b-icon-chat-text>&nbsp;Deleted Shoutbox Messages</b-dropdown-item>
                     </b-nav-item-dropdown>
                     @endif
                     @endauth

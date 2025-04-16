@@ -77,5 +77,9 @@ Route::get('/awards/assignments/{award}', [App\Http\Controllers\AwardController:
 Route::get('/actions', [App\Http\Controllers\ActionController::class, 'index'])->name('actions.view');
 Route::post('/actions', [App\Http\Controllers\ActionController::class, 'filter'])->name('actions.filter');
 
+Route::get('/sbdel', [App\Http\Controllers\ShoutBoxMessageController::class, 'deleted_view'])->name('sbdel.view');
+Route::post('/sbdel', [App\Http\Controllers\ShoutBoxMessageController::class, 'deleted_action'])->name('sbdel.action');
+Route::post('/sbdel/filter', [App\Http\Controllers\ShoutBoxMessageController::class, 'deleted_filter'])->name('sbdel.filter');
+
 Route::get('/fpnicksearch', [App\Http\Controllers\FingerprintNickname::class, 'index'])->name('fpnicksearch');
 Route::post('/fpnicksearch', [App\Http\Controllers\FingerprintNickname::class, 'search'])->name('fpnicksearch.search');
