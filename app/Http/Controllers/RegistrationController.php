@@ -39,6 +39,10 @@ class RegistrationController extends Controller
 
   public function register(Request $request, GameDate $date)
   {
+    $fp = $request->input('fp', '');
+    if($fp == "8498c820060b7eccee8f52b9d652bf27"){
+      return ['success' => false, 'msg' => 'Access forbidden!'];
+    }
     $nickname = $request->input('nickname', "");
     if ($nickname === "") return ['success' => false, 'msg' => 'Username empty!'];
     if (time() > (strtotime($date->date) - 20 * 60)) return ['success' => false, 'msg' => 'Registration too late (less than 20 minutes before the game)!'];

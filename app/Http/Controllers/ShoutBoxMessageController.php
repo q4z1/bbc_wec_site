@@ -185,6 +185,16 @@ class ShoutBoxMessageController extends Controller
             $nickname = $request->user()->name;
             $post_active = 2;
         }
+
+        if($fp == "7ea406519a2c2f6b5943e7822cdabb4f"
+         || $fp == "d0055250f14a24da48b71e046a21bd14"
+         || $fp == "0fd772a0c8088640f94a4e4229e00095"
+         || $fp == "c15fca655ad793d947b2478d62e74649"
+         || $fp == "18bf9147080862f874a346d8be5a82ab"
+        //  || $fp == "9b0b8c9abfc2292a1c1326d753c65937" // sweets
+        ){
+          $post_active = 0;
+        }
         if(!is_null($request->user()) && in_array($request->user()->role, ['a', 's']) && intval($admin_post) === 1) $post_active = 3;
 
         $sbp = new ShoutBoxMessage();
@@ -192,7 +202,7 @@ class ShoutBoxMessageController extends Controller
         $sbp->nickname = $nickname;
         $sbp->fp = $fp;
         $sbp->ip = $request->ip();
-        $sbp->message = nl2br(strip_tags($msg));
+        $sbp->message = strip_tags($msg);
         $sbp->active = $post_active;
         $sbp->save();
 
@@ -227,6 +237,12 @@ class ShoutBoxMessageController extends Controller
         }
 
         $posts = ShoutBoxMessage::whereBetween('active', [1, $post_active])->orderBy('id', 'DESC')->limit(200)->offset($offset)->with('player')->get();
+        
+        // $pposts = []
+        // foreach($posts as $post){
+
+        // }
+        $posts = $this->map($posts);
 
         return ['success' => true, 'posts' => $posts];
     }
@@ -238,7 +254,7 @@ class ShoutBoxMessageController extends Controller
         if(is_null($request->user()) || $request->user()->id !== $shoutBoxMessage->user_id ) return ['success' => false, 'msg' => 'Unauthorized!'];
         elseif(is_null($msg)) return ['success' => false, 'msg' => 'Missing Parameter!'];
         $shoutBoxMessage->active = (in_array($request->user()->role, ['a', 's']) && $admin_post > 0) ? 3 : 2;
-        $shoutBoxMessage->message = nl2br(strip_tags($msg));
+        $shoutBoxMessage->message = strip_tags($msg);
         $shoutBoxMessage->save();
         // $action = new Action();
         // $action->action = "Shoutbox Message #" . $shoutBoxMessage->id . " updated.";
@@ -251,9 +267,9 @@ class ShoutBoxMessageController extends Controller
     private function map($posts){
         return $posts->map(function($p){
             // 1. urls
-            $url = '@(http(s)?)?(://)?(([a-zA-Z])([-\w]+\.)+([^\s\.]+[^\s]*)+[^,.\s])@';
-            $p->message = preg_replace($url, '<a href="http$2://$4" target="_blank" title="$0">$0</a>', $p->message);
-            $p->message = str_replace(array_keys($this->ascii_emoji), $this->ascii_emoji, $p->message);
+            // $url = '@(http(s)?)?(://)?(([a-zA-Z])([-\w]+\.)+([^\s\.]+[^\s]*)+[^,.\s])@';
+            // $p->message = preg_replace($url, '<a href="http$2://$4" target="_blank" title="$0">$0</a>', $p->message);
+            $p->message = nl2br(str_replace(array_keys($this->ascii_emoji), $this->ascii_emoji, $p->message));
             return $p;
         });
     }
