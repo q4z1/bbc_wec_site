@@ -289,29 +289,51 @@ class ShoutBoxMessageController extends Controller
 
     public function deleted_action(Request $request)
     {
-
+      $user = (!is_null(auth())) ? auth()->user() : null;
+      if(is_null($user) || !in_array($user->role, ['a', 's'])) return [ "success" => false, "reason" => "Not allowed!"];
+      $msg = ShoutBoxMessage::where("id", "=", $request->input('sbmsg', 0))->first();
+      if($msg === null) return [ "success" => false, "reason" => "SB-Message not found!"];
+      $msg->active = 1;
+      $msg->save();
+      $reason = $request->input('reason', "n/a");
+      $action = new Action();
+      $action->action = "Shoutbox Message #" . $msg->id . " undeleted.";
+      $action->reason = $reason; // @TODO: reason handling
+      $action->user = Auth::id();
+      $action->save();
+      return [ "success" => true];
     }
 
     public function deleted_filter(Request $request)
     {
       $user = (!is_null(auth())) ? auth()->user() : null;
-      if(is_null($user) || !in_array($user->role, ['a', 's'])) return view('shoutbox', ['user' => $user]);
+      if(is_null($user) || !in_array($user->role, ['a', 's'])) return [ "success" => false, "reason" => "Not allowed!"];
       $page = $request->input('page', 1);
       $pagesize = $request->input('pageSize', 50);
-      $sort = $request->input('sort');
+      $sort = $request->input('sort', null);
 
       $new = (!empty($filters) && $filters['new']) ? 1 : 0;
       $total = ShoutBoxMessage::where('active', "=", 0)->count();
 
-      $query = ShoutBoxMessage::where('active', "=", 0)->orderBy(
-        $sort['prop'], (($sort['order'] == 'descending') ? 'DESC' : 'ASC')
-      )->offset(($page - 1) * $pagesize)->limit($pagesize);
+      $query = ShoutBoxMessage::where('active', "=", 0);
+      // if(!is_null($sort)) $query->orderBy(
+      //   $sort['prop'], (($sort['order'] == 'descending') ? 'DESC' : 'ASC')
+      // );
+      $query->orderBy("id", "DESC");
+      $query->offset(($page - 1) * $pagesize)->limit($pagesize);
 
       $posts = $query->get()->map(function ($post) use ($user) {
-        if($user->role == 'a') $post->ip = "";
-        return $post;
+        $p = [];
+        $p["id"] = $post->id;
+        $p["fp"] = $post->fp;
+        $p["ip"] = $post->ip;
+        if($user->role == 's') $p["ip"] = $post->ip;
+        $p["nickname"] = $post->nickname;
+        $p["message"] = $post->message;
+        $p["created_at"] = $post->created_at->toDateTimeString();
+        return $p;
       });
 
-      return ['total' => $total, 'data' => $posts];
+      return ['total' => $total, 'data' => $posts, "success" => true];
     }
 }
