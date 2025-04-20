@@ -47,7 +47,7 @@
                 </div>
             </div>
         </div>
-        <b-modal id="modal-preview" title="Are you sure to undelete this Post?" hide-footer>
+        <b-modal id="modal-preview" :title="'Are you sure to undelete this Post #' + this.undel_id + '?'" hide-footer>
           <b-row class="mt-3">
                 <div class="col-md-12" style="font-weight: bolder">From: {{ undel_nickname }}</div>
             </b-row>

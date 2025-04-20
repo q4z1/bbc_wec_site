@@ -34,7 +34,7 @@ class ActionController extends Controller
       ->count();
       $actions = DB::table('actions')
       ->select(
-          'actions.created_at', 'actions.action', 'actions.user'
+          'actions.created_at', 'actions.action', 'actions.user', 'actions.reason'
       )->orderBy('id', 'DESC')
       ->limit(10)
       ->get()->map(function ($a) {

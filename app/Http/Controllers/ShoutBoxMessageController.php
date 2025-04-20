@@ -293,12 +293,11 @@ class ShoutBoxMessageController extends Controller
       if(is_null($user) || !in_array($user->role, ['a', 's'])) return [ "success" => false, "reason" => "Not allowed!"];
       $msg = ShoutBoxMessage::where("id", "=", $request->input('sbmsg', 0))->first();
       if($msg === null) return [ "success" => false, "reason" => "SB-Message not found!"];
-      $msg->active = 1;
+      $msg->active = 1; // @INFO: cannot restore if admin or public message => goes public then
       $msg->save();
-      $reason = $request->input('reason', "n/a");
       $action = new Action();
       $action->action = "Shoutbox Message #" . $msg->id . " undeleted.";
-      $action->reason = $reason; // @TODO: reason handling
+      $action->reason = $request->input('reason', "n/a"); // @TODO: reason handling
       $action->user = Auth::id();
       $action->save();
       return [ "success" => true];

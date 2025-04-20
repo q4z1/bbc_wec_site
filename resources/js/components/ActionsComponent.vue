@@ -5,7 +5,7 @@
       v-if="result"
       v-model="page"
       :total-rows="total"
-      :per-page="10"
+      :per-page="50"
       aria-controls="actions_table"
       @page-click="paginate"
     ></b-pagination>
@@ -19,7 +19,7 @@
       v-if="result"
       v-model="page"
       :total-rows="total"
-      :per-page="10"
+      :per-page="50"
       aria-controls="actions_table"
       @page-click="paginate"
     ></b-pagination>
@@ -27,7 +27,7 @@
 </template>
 <script>
 export default {
-  props: ["actions", "totals", "season", "allseasons"],
+  props: ["actions", "totals"],
   data() {
     return {
       alltime: false,
