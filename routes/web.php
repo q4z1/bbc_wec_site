@@ -31,7 +31,7 @@ Route::post('/botfiles/get', [App\Http\Controllers\BotFileController::class, 'ge
 
 Route::get('/player/{player}', [App\Http\Controllers\PlayerController::class, 'index'])->name('player');
 Route::post('/player/tickets/{player?}', [App\Http\Controllers\PlayerController::class, 'tickets'])->name('player.tickets');
-Route::get('/players/delete/{player?}', [App\Http\Controllers\PlayerController::class, 'delete'])->name('player.delete');
+Route::post('/players/delete/{player?}', [App\Http\Controllers\PlayerController::class, 'delete'])->name('player.delete');
 Route::get('/players', [App\Http\Controllers\PlayerController::class, 'all'])->name('player.all');
 Route::post('/players', [App\Http\Controllers\PlayerController::class, 'all'])->name('player.filter');
 Route::get('/players/list', [App\Http\Controllers\PlayerController::class, 'playerlist'])->name('player.list');
@@ -45,7 +45,7 @@ Route::get('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 
 Route::post('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 'filter'])->name('shoutbox.filter');
 Route::get('/shoutbox/map/{sbpost}', [App\Http\Controllers\ShoutBoxMessageController::class, 'map_single'])->name('shoutbox.map');
 Route::post('/shoutbox/new', [App\Http\Controllers\ShoutBoxMessageController::class, 'post'])->name('shoutbox.post');
-Route::get('/shoutbox/delete/{shoutBoxMessage}', [App\Http\Controllers\ShoutBoxMessageController::class, 'delete'])->name('shoutbox.delete');
+Route::post('/shoutbox/delete/{shoutBoxMessage}', [App\Http\Controllers\ShoutBoxMessageController::class, 'delete'])->name('shoutbox.delete');
 Route::post('/shoutbox/update/{shoutBoxMessage}', [App\Http\Controllers\ShoutBoxMessageController::class, 'update'])->name('shoutbox.update');
 
 Route::get('/registration', [App\Http\Controllers\RegistrationController::class, 'index'])->name('registration');

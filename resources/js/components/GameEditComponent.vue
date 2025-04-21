@@ -37,6 +37,9 @@
                                         <b-col><b-form-timepicker v-model="form.time" class="mb-2" required></b-form-timepicker></b-col>
                                     </b-form-row>
                                 </b-form-group>
+                                <b-row class="mt-3">
+                                    <div class="col-md-12"><b-form-input v-model="form.reason" placeholder="Enter a reason"></b-form-input></div>
+                                </b-row> 
                             </div>
                             <div class="col">
                                 <b-form-group
@@ -105,8 +108,10 @@ export default {
                 date: this.game.started.slice(0, 10),
                 time: this.game.started.slice(11),
                 disco_dummy: [],
-                player: []
+                player: [],
+                reason: ""
             },
+            
         }
     },
     methods:{

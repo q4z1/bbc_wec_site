@@ -127,7 +127,7 @@ class PlayerController extends Controller
     $action->action .= "/S3=" . $player->s3_tickets . " to " . $request->s3;
     $action->action .= "/S4=" . $player->s4_tickets . " to " . $request->s4;
     $action->action .= " (Player: " . $player->nickname . ")"; 
-    $action->reason = "n/a"; // @TODO: reason handling
+    $action->reason = $request->input('reason', "n/a");
     $action->user = Auth::id();
     $action->save();
     if ($request->exists('s2') && $request->exists('s3') && $request->exists('s4')) {
@@ -215,7 +215,7 @@ class PlayerController extends Controller
   {
     $action = new Action();
     $action->action = "Player " . $player->nickname . " deleted.";
-    $action->reason = "n/a"; // @TODO: reason handling
+    $action->reason = $request->input('reason', "n/a");
     $action->user = Auth::id();
     $action->save();
     $player->delete();

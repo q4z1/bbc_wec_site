@@ -55,6 +55,9 @@
                 <div class="col-md-12">{{ undel_message }}</div>
             </b-row>
             <b-row class="mt-3">
+                <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
+            </b-row>            
+            <b-row class="mt-3">
                 <b-col><b-button variant="outline-success" block @click="doUndelete(undel_id)">
                     Ok - Undelete!&nbsp;<b-icon-hand-thumbs-up></b-icon-hand-thumbs-up>
                 </b-button></b-col>
@@ -107,6 +110,7 @@
               arole: window.arole,
               undel_message: "",
               undel_nickname: "",
+              reason: "",
               undel_id: 0 
           }
       },
@@ -136,7 +140,7 @@
             axios
               .post("/sbdel", {
                 sbmsg: id,
-                reason: "n/a"
+                reason: this.reason
                 // type: this.type,
               })
               .then(

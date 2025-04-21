@@ -307,6 +307,9 @@
         </b-row>
         <b-modal ref="delete" id="delete" :title="'Delete Player ' + player.nickname" ok-disabled hide-footer>
             Are you sure to delete player <strong class="text-warning">{{ player.nickname }}</strong>?<br />
+            <b-row class="mt-3">
+                <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
+            </b-row> 
             <strong class="text-danger">This cannot be undone!</strong>
             <b-button class="mt-3" variant="outline-info" block @click="$refs['delete'].hide()">Cancel</b-button>
             <b-button class="mt-2" variant="outline-danger" block @click="deletePlayer">Yes, Delete!</b-button>
@@ -339,6 +342,9 @@
                     <input class="form-control input-sm" v-model="s4" type="number">
                 </b-col>
             </b-row>
+            <b-row class="mt-3">
+                <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
+            </b-row> 
             <b-row>
                 <b-col>
                     <b-button class="mt-3" variant="outline-info" block @click="revertTickets">Cancel</b-button>
@@ -396,6 +402,7 @@
                 alltimeBarS4: true,
                 alltimePieS4: true,
                 arole: window.arole,
+                reason: "",
             }
         },
         computed: {
@@ -533,7 +540,8 @@
                 axios.post('/player/tickets/' + this.player.id, {
                     s2: this.s2,
                     s3: this.s3,
-                    s4: this.s4
+                    s4: this.s4,
+                    reason: this.reason
                 })
                 .then(response => {
                     if(response.data.success === true){
@@ -566,7 +574,9 @@
             },
             deletePlayer(){
                 console.log("deletePlayer.")
-                axios.get('/players/delete/' + this.player.id)
+                axios.post('/players/delete/' + this.player.id,  {
+                    reason: this.reason
+                })
                 .then(response => {
                     if(response.data.success === true){
                         window.location.href = window.location.origin + "/players";

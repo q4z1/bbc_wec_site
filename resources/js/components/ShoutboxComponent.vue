@@ -126,6 +126,9 @@
         </b-row>
         <b-modal ref="delete" id="delete" :title="'Delete Post #' + this.sbid" ok-disabled hide-footer>
             Are you sure to delete post <strong class="text-warning">#{{ this.sbid }}</strong>?<br />
+            <b-row class="mt-3">
+                <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
+            </b-row> 
             <b-button class="mt-3" variant="outline-info" block @click="$refs['delete'].hide()">Cancel</b-button>
             <b-button class="mt-2" variant="outline-danger" block @click="doDel">Yes, Delete!</b-button>
         </b-modal>
@@ -160,6 +163,7 @@ export default {
     props: ['user'],
     data() {
         return {
+            reason: null,
             fp: null,
             arole: window.arole,
             total: 0,
@@ -328,7 +332,9 @@ export default {
             this.$refs['delete'].show()
         },
         doDel(){
-            axios.get("/shoutbox/delete/" + this.sbid)
+            axios.post("/shoutbox/delete/" + this.sbid, {
+              reason: this.reason
+            })
             .then(response => {
                 if(response.data.success === true){
                     for(let i in this.posts){

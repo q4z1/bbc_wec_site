@@ -217,7 +217,7 @@ class ShoutBoxMessageController extends Controller
         $shoutBoxMessage->save();
         $action = new Action();
         $action->action = "Shoutbox Message #" . $shoutBoxMessage->id . " deleted.";
-        $action->reason = "n/a"; // @TODO: reason handling
+        $action->reason = $request->input('reason', "n/a");
         $action->user = Auth::id();
         $action->save();
         return ['success' => true, 'msg' => 'Message deleted.'];
@@ -297,7 +297,7 @@ class ShoutBoxMessageController extends Controller
       $msg->save();
       $action = new Action();
       $action->action = "Shoutbox Message #" . $msg->id . " undeleted.";
-      $action->reason = $request->input('reason', "n/a"); // @TODO: reason handling
+      $action->reason = $request->input('reason', "n/a");
       $action->user = Auth::id();
       $action->save();
       return [ "success" => true];

@@ -201,13 +201,11 @@
       <b-row>
         <b-col>
           Are you sure to delete game #{{ this.game.number }}?
-        <!-- </b-col>
-        <b-col>
-          <b-form-checkbox class="mt-2" v-model="tickets" switch>
-          Ticket removal?
-        </b-form-checkbox>
-        </b-col> -->
+        </b-col>
       </b-row>
+      <b-row class="mt-3">
+                <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
+            </b-row> 
       <b-button
         class="mt-3"
         variant="outline-info"
@@ -226,6 +224,7 @@ export default {
   props: ["game"],
   data() {
     return {
+      reason: null,
       datacollection1: null,
       datacollection2: null,
       options1: null,
@@ -633,6 +632,7 @@ export default {
     deleteGame() {
       let data = new FormData()
       data.append('tickets', this.tickets)
+      data.append('reason', this.reason)
       axios({
         method: "post",
         url: "/delete/game/" + this.game.number,

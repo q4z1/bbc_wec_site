@@ -161,7 +161,7 @@ class GameController extends Controller
     public function upload_view()
     {
         $last = Game::orderBy('number', 'DESC')->first();
-        $gameno = 123456;
+        $gameno = 1234567890;
         if($last) $gameno = $last->number + 1;
         return view('game_upload', ['last' => $gameno]);
     }
@@ -201,7 +201,7 @@ class GameController extends Controller
         }
         $action = new Action();
         $action->action = "Step" . $game->type . " game #" . $game->number . " deleted.";
-        $action->reason = "n/a"; // @TODO: reason handling
+        $action->reason = $request->input('reason', "n/a");
         $action->user = Auth::id();
         $action->save();
         Point::where('game_id', $game->id)->delete();
@@ -255,7 +255,7 @@ class GameController extends Controller
         }
         $action = new Action();
         $action->action = "Step" . $game->type . " game #" . $game->number . " updated.";
-        $action->reason = "n/a"; // @TODO: reason handling
+        $action->reason = $request->input('reason', "n/a");
         $action->user = Auth::id();
         $action->save();    
         Artisan::call('tickets:sync');
