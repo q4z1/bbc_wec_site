@@ -136,6 +136,15 @@
           },
           doUndelete(id) {
             console.log("undelete " + id + "!");
+            if(this.reason === ""){
+              this.$bvToast.toast("Please enter a reason!", {
+                            title: 'Error!',
+                            autoHideDelay: 3000,
+                            appendToast: true,
+                            variant: 'danger',
+                        })
+              return false;
+            }
             this.$bvModal.hide('modal-preview')
             axios
               .post("/sbdel", {

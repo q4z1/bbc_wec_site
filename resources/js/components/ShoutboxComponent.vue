@@ -163,7 +163,7 @@ export default {
     props: ['user'],
     data() {
         return {
-            reason: null,
+            reason: "",
             fp: null,
             arole: window.arole,
             total: 0,
@@ -332,11 +332,26 @@ export default {
             this.$refs['delete'].show()
         },
         doDel(){
+            if(this.reason === ""){
+              this.$bvToast.toast("Please enter a reason!", {
+                            title: 'Error!',
+                            autoHideDelay: 3000,
+                            appendToast: true,
+                            variant: 'danger',
+                        })
+              return false;
+            }
             axios.post("/shoutbox/delete/" + this.sbid, {
               reason: this.reason
             })
             .then(response => {
                 if(response.data.success === true){
+                  this.$bvToast.toast("Shoutbox Message deleted!", {
+                            title: 'Success!',
+                            autoHideDelay: 3000,
+                            appendToast: true,
+                            variant: 'success',
+                        })
                     for(let i in this.posts){
                         if(this.posts[i].id == this.sbid){
                             this.posts.splice(i, 1)

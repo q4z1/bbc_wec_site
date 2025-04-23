@@ -5,7 +5,7 @@
                 <div class="row">
                     <div class="col">
                         <div class="row">
-                            <div class="col-7">
+                            <div class="col-12 mb-2">
                                 <b-form-group
                                     id="input-group-1"
                                     label="Game-Number:"
@@ -17,7 +17,7 @@
                                     required
                                     ></b-form-input>
                                 </b-form-group>
-                                <b-form-group id="input-group-2" label="Game Type:" label-for="input-2">
+                                <!-- <b-form-group id="input-group-2" label="Game Type:" label-for="input-2">
                                     <b-form-select
                                     id="input-2"
                                     v-model="form.gametype"
@@ -27,7 +27,7 @@
                                         :value="type.value"
                                     >{{ type.text }}</option>
                                     </b-form-select>
-                                </b-form-group>
+                                </b-form-group> -->
                                 <b-form-group
                                     id="input-group-3"
                                     label="Date/Time:"
@@ -41,7 +41,7 @@
                                     <div class="col-md-12"><b-form-input v-model="form.reason" placeholder="Enter a reason"></b-form-input></div>
                                 </b-row> 
                             </div>
-                            <div class="col">
+                            <!-- <div class="col">
                                 <b-form-group
                                     id="input-group-4"
                                     label="Player:"
@@ -70,7 +70,7 @@
                                         </div>
                                     </div>
                                 </b-form-group>
-                            </div>
+                            </div> -->
                         </div>
                         <div class="row">
                             <div class="col">
@@ -141,6 +141,15 @@ export default {
             player.dispatchEvent(new Event('change'))
         },
         saveGame(){
+            if(this.form.reason === ""){
+              this.$bvToast.toast("Please enter a reason!", {
+                            title: 'Error!',
+                            autoHideDelay: 3000,
+                            appendToast: true,
+                            variant: 'danger',
+                        })
+              return false;
+            }
             axios({
                 method: 'post',
                 url: '/update/game/' + this.game.number,

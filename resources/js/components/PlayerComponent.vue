@@ -536,6 +536,15 @@
             },
             editTickets(){
                 console.log("editTickets.")
+                if(this.reason === ""){
+                  this.$bvToast.toast("Please enter a reason!", {
+                                title: 'Error!',
+                                autoHideDelay: 3000,
+                                appendToast: true,
+                                variant: 'danger',
+                            })
+                  return false;
+                }
                 this.formatTicketNum()
                 axios.post('/player/tickets/' + this.player.id, {
                     s2: this.s2,
@@ -546,6 +555,12 @@
                 .then(response => {
                     if(response.data.success === true){
                         this.ticket_success = 4
+                        this.$bvToast.toast("Tickets successfully edited!", {
+                                title: 'Success!',
+                                autoHideDelay: 3000,
+                                appendToast: true,
+                                variant: 'success',
+                            })
                     }else{                       
                         this.s2 = this.player.s2_tickets
                         this.s3 = this.player.s3_tickets
@@ -574,11 +589,26 @@
             },
             deletePlayer(){
                 console.log("deletePlayer.")
+                if(this.reason === ""){
+                  this.$bvToast.toast("Please enter a reason!", {
+                                title: 'Error!',
+                                autoHideDelay: 3000,
+                                appendToast: true,
+                                variant: 'danger',
+                            })
+                  return false;
+                }
                 axios.post('/players/delete/' + this.player.id,  {
                     reason: this.reason
                 })
                 .then(response => {
                     if(response.data.success === true){
+                      this.$bvToast.toast("Player deleted!", {
+                                title: 'Success!',
+                                autoHideDelay: 3000,
+                                appendToast: true,
+                                variant: 'success',
+                            })
                         window.location.href = window.location.origin + "/players";
                     }else{
                         this.delete_fail = true

@@ -224,7 +224,7 @@ export default {
   props: ["game"],
   data() {
     return {
-      reason: null,
+      reason: "",
       datacollection1: null,
       datacollection2: null,
       options1: null,
@@ -630,6 +630,15 @@ export default {
       window.location.href = window.location.href;
     },
     deleteGame() {
+      if(this.reason === ""){
+        this.$bvToast.toast("Please enter a reason!", {
+                      title: 'Error!',
+                      autoHideDelay: 3000,
+                      appendToast: true,
+                      variant: 'danger',
+                  })
+        return false;
+      }
       let data = new FormData()
       data.append('tickets', this.tickets)
       data.append('reason', this.reason)
