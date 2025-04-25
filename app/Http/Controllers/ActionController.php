@@ -53,7 +53,7 @@ class ActionController extends Controller
       $page = $request->input('page', 1);
       $actions = DB::table('actions')
       ->select(
-          'actions.created_at', 'actions.action', 'actions.user'
+          'actions.created_at', 'actions.action', 'actions.user', 'actions.reason'
       )->orderBy('id', 'DESC');
       $total = $actions->count();
       $actions = $actions->offset(($page-1)*10)
