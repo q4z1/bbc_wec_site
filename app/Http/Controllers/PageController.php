@@ -67,7 +67,7 @@ class PageController extends Controller
     $page->save();
     $action = new Action();
     $action->action = "Page " . $page->slug . " " . $act . "."; 
-    $action->reason = "n/a"; // @TODO: reason handling
+    $action->reason = $request->input('reason', "n/a");
     $action->user = Auth::id();
     $action->save();
     return ['status' => true, 'msg' => 'Page saved.'];
@@ -87,40 +87,17 @@ class PageController extends Controller
   }
 
   /**
-   * Show the form for editing the specified resource.
-   *
-   * @param  \App\Models\Page  $page
-   * @return \Illuminate\Http\Response
-   */
-  public function edit(Request $request, $page)
-  {
-    //
-  }
-
-  /**
-   * Update the specified resource in storage.
-   *
-   * @param  \Illuminate\Http\Request  $request
-   * @param  \App\Models\Page  $page
-   * @return \Illuminate\Http\Response
-   */
-  public function update(Request $request, $page)
-  {
-    //
-  }
-
-  /**
    * Remove the specified resource from storage.
    *
    * @param  \App\Models\Page  $page
    * @return \Illuminate\Http\Response
    */
-  public function destroy(Request $request, Page $page)
+  public function delete(Request $request, Page $page)
   {
     if ($page->slug === "home") return ['success' => false, 'msg' => 'Home cannot be deleted!'];
     $action = new Action();
     $action->action = "Page " . $page->slug . " deleted."; 
-    $action->reason = "n/a"; // @TODO: reason handling
+    $action->reason = $request->input('reason', "n/a");
     $action->user = Auth::id();
     $action->save();
     $page->delete();

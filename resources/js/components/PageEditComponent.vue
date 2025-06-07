@@ -78,7 +78,7 @@
               <div>
                 <b-button
                   size="sm"
-                  @click="save"
+                  @click="saveConfirm"
                   v-b-tooltip.hover
                   title="Save & Close"
                   variant="success"
@@ -116,6 +116,14 @@
         </b-col>
       </b-row>
     </div>
+    <b-modal ref="save" id="save" :title="'Save Page ' + pedit.title + '?'" ok-disabled hide-footer>
+        Are you sure to save Page <strong class="text-warning">{{ pedit.title }}</strong>?<br />
+        <b-row class="mt-3">
+            <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
+        </b-row> 
+        <b-button class="mt-3" variant="outline-info" block @click="$refs['delete'].hide()">Cancel</b-button>
+        <b-button class="mt-2" variant="outline-danger" block @click="save">Yes, Save!</b-button>
+    </b-modal>
   </div>
 </template>
 <script>
@@ -128,19 +136,35 @@ export default {
   data() {
     return {
       pedit: null,
+      reason: "",
     };
   },
   mounted() {
     this.pedit = this.page;
   },
   methods: {
+    saveConfirm(){
+      this.$nextTick(() => {
+          this.$refs['save'].show()
+      })
+    },
     save() {
+      if(this.reason === ""){
+        this.$bvToast.toast("Please enter a reason!", {
+                      title: 'Error!',
+                      autoHideDelay: 3000,
+                      appendToast: true,
+                      variant: 'danger',
+                  })
+        return false;
+      }
       let data = new FormData();
       data.append("order", this.pedit.order);
       data.append("active", this.pedit.active);
       data.append("markdown", this.pedit.markdown);
       data.append("title", this.pedit.title);
       data.append("slug", this.pedit.slug);
+      data.append("reason", this.reason);
       if (typeof this.pedit.id !== "undefined")
         data.append("id", this.pedit.id);
       console.log("save", data);

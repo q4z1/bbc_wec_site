@@ -55,7 +55,7 @@
                   variant="danger"
                   v-b-tooltip.hover
                   title="Delete Page"
-                  @click="deletePage(data, true)"
+                  @click="delConfirm(data.item);"
                   ><b-icon-trash-fill></b-icon-trash-fill
                 ></b-button>
               </b-col>
@@ -75,6 +75,14 @@
         </b-table>
       </b-col>
     </b-row>
+    <b-modal vi-if="dpage" ref="delete" id="delete" :title="'Delete Page ' + dpage.title + '?'" ok-disabled hide-footer>
+        Are you sure to delete Page <strong class="text-warning">{{ dpage.title }}</strong>?<br />
+        <b-row class="mt-3">
+            <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
+        </b-row> 
+        <b-button class="mt-3" variant="outline-info" block @click="$refs['delete'].hide()">Cancel</b-button>
+        <b-button class="mt-2" variant="outline-danger" block @click="deletePage(dpage, true)">Yes, Delete!</b-button>
+    </b-modal>
   </div>
 </template>
 <script>
@@ -89,7 +97,9 @@ export default {
       pedit: null,
       edit: false,
       npage: null,
+      dpage: false,
       rpages: null,
+      reason: "",
       fields: [
         {
           key: "id",
@@ -149,10 +159,30 @@ export default {
       this.npage = null;
       if (typeof data !== "undefined") data.toggleDetails();
     },
+    delConfirm(p) {
+        this.dpage = p
+        this.$nextTick(() => {
+            this.$refs['delete'].show()
+        })
+    },
     deletePage(data, edit) {
-      axios
-        .delete("/page/" + data.item.id)
-        .then(function (response) {
+      if(this.reason === ""){
+        this.$bvToast.toast("Please enter a reason!", {
+                      title: 'Error!',
+                      autoHideDelay: 3000,
+                      appendToast: true,
+                      variant: 'danger',
+                  })
+        return false;
+      }
+      let fd = new FormData()
+      fd.append('reason', this.reason)
+      axios({
+          method: "post",
+          url: "/page/delete/" + this.dpage.id,
+          data: fd,
+          headers: { "Content-Type": "application/json" },
+      }).then(function (response) {
           if (response.data.status && response.data.status === true) {
             window.location.reload();
           } else {

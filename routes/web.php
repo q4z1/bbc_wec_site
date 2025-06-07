@@ -19,6 +19,7 @@ Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('ho
 
 Route::get('/pages', [App\Http\Controllers\PageController::class, 'get'])->name('pages');
 Route::resource('page', 'App\Http\Controllers\PageController');
+Route::post('page/delete/{page}',[App\Http\Controllers\PageController::class, 'delete']);
 
 Route::get('/upload/game', [App\Http\Controllers\GameController::class, 'upload_view'])->name('upload.game.view');
 Route::post('/delete/game/{game}', [App\Http\Controllers\GameController::class, 'delete_game'])->name('delete.game');
