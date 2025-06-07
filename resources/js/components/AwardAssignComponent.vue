@@ -40,6 +40,9 @@
                             <option v-for="(player, key) in players" :key="key" v-html="player.nickname"></option>
                         </datalist>
                         <hr />
+                        <b-row class="mt-3">
+                            <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
+                        </b-row> 
                         <b-row>
                             <b-col class="form-action">
                                 <b-button type="submit" variant="primary">Submit</b-button>
@@ -62,6 +65,7 @@ export default {
             assignments: null,
             ass_o: null,
             p_input: null,
+            reason: "",
         }
     },
     computed: {
@@ -87,10 +91,20 @@ export default {
         doSubmit(evt){
             evt.preventDefault()
             evt.stopPropagation()
+            if(this.reason === ""){
+              this.$bvToast.toast("Please enter a reason!", {
+                            title: 'Error!',
+                            autoHideDelay: 3000,
+                            appendToast: true,
+                            variant: 'danger',
+                        })
+              return false;
+            }
             let data = new FormData()
             for(var i = 0; i < this.assignments.length; i += 1) {
                 data.append('player[]', this.assignments[i].id)
             }
+            data.append('reason', this.reason)
             axios.post('/awards/assign/' + this.award.id, data)
             .then(response => {
                 if(response.data.success === true){

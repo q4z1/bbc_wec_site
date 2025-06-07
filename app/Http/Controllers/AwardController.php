@@ -50,7 +50,7 @@ class AwardController extends Controller
         });
         $action = new Action();
         $action->action = "Award " . $award->title . " uploaded.";
-        $action->reason = "n/a"; // @TODO: reason handling
+        $action->reason = $request->input('reason', "n/a");
         $action->user = Auth::id();
         $action->save();
         return ['success' => true, 'msg' => 'Award uploaded.', 'awards' => $awards];
@@ -70,25 +70,45 @@ class AwardController extends Controller
         });
         $action = new Action();
         $action->action = "Award " . $award->title . " edited.";
-        $action->reason = "n/a"; // @TODO: reason handling
+        $action->reason = $request->input('reason', "n/a");
         $action->user = Auth::id();
         $action->save();
         return ['success' => true, 'msg' => 'Award updated.', 'awards' => $awards];
     }
 
     public function assign(Request $request, Award $award){
+        $pas = PlayerAward::where("award_id", "=", $award->id)->get()->toArray();
         PlayerAward::where('award_id', $award->id)->delete();
         foreach($request->player as $player_id){
+            $exists = false;
+            foreach($pas as $i => $p){
+              if($p['player_id'] == $player_id){
+                 $exists = true;
+                 unset($pas[$i]);
+              }
+            }
             $pa = new PlayerAward();
             $pa->award_id = $award->id;
             $pa->player_id = $player_id;
             $pa->save();
             $pl = Player::where("id", "=", $player_id)->get()->first();
+            if(!$exists){
+              $action = new Action();
+              $action->action = "Award " . $award->title . " assigned to " . $pl->nickname . ".";
+              $action->reason = $request->input('reason', "n/a");
+              $action->user = Auth::id();
+              $action->save();
+            }
+        }
+        if(count($pas) > 0){
+          foreach($pas as $a){
+            $pl = Player::where("id", "=", $a['player_id'])->get()->first();
             $action = new Action();
-            $action->action = "Award " . $award->title . " assigned to " . $pl->nickname . ".";
-            $action->reason = "n/a"; // @TODO: reason handling
+            $action->action = "Award " . $award->title . " assigment removed from " . $pl->nickname . ".";
+            $action->reason = $request->input('reason', "n/a");
             $action->user = Auth::id();
             $action->save();
+          }
         }
         return ['success' => true];
     }

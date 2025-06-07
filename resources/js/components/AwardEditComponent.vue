@@ -46,6 +46,7 @@ export default {
             preview: false,
             award_preview: null,
             replace: false,
+            reason: "",
         }
     },
     mounted() {
@@ -59,6 +60,7 @@ export default {
             let data = new FormData()
             data.append('title', this.title)
             data.append('award', this.award_file)
+            data.append('reason', this.reason)
             axios.post('/awards/edit/' + this.award.id, data)
             .then(response => {
                 if(response.data.success === true){
