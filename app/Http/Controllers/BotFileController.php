@@ -55,7 +55,7 @@ class BotFileController extends Controller
         file_put_contents(public_path() . "/exp3/bbcbot/" . $file, $content);
         $action = new Action();
         $action->action = "Botfile " . $file . " updated.";
-        $action->reason = "n/a"; // @TODO: reason handling
+        $action->reason = $request->input('reason', "n/a");
         $action->user = Auth::id();
         $action->save();
         return ["status" => true, 'msg' => "BotFile has been saved."];

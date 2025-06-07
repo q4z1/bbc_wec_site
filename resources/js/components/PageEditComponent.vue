@@ -121,7 +121,7 @@
         <b-row class="mt-3">
             <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
         </b-row> 
-        <b-button class="mt-3" variant="outline-info" block @click="$refs['delete'].hide()">Cancel</b-button>
+        <b-button class="mt-3" variant="outline-info" block @click="$refs['save'].hide()">Cancel</b-button>
         <b-button class="mt-2" variant="outline-danger" block @click="save">Yes, Save!</b-button>
     </b-modal>
   </div>
