@@ -16,7 +16,7 @@ class UserController extends Controller
 
   public function index()
   {
-    if (auth()->user()->role !== 's') abort(401);
+    if (auth()->user()->role !== 's' || auth()->user()->role !== 's') abort(401);
     return view('users', ['users' => User::get()]);
   }
 
