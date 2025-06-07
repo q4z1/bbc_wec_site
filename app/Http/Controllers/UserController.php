@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Action;
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
@@ -20,7 +22,12 @@ class UserController extends Controller
 
   public function update(Request $request, User $user)
   {
-    if (auth()->user()->role !== 's') return ['success' => false, 'msg' => 'Unauthorized!'];
+    if (auth()->user()->role !== 's' && auth()->user()->role !== 'a') return ['success' => false, 'msg' => 'Unauthorized!'];
+    $action = new Action();
+    $action->action = "User " . $user->name . " updated.";
+    $action->reason = $request->input('reason', "n/a");
+    $action->user = Auth::id();
+    $action->save();
     $user->role = $request->input('role', $user->role);
     $user->save();
     return ['success' => true, 'users' => User::get()];
@@ -28,7 +35,12 @@ class UserController extends Controller
 
   public function delete(Request $request, User $user)
   {
-    if (auth()->user()->role !== 's') return ['success' => false, 'msg' => 'Unauthorized!'];
+    if (auth()->user()->role !== 's' && auth()->user()->role !== 'a') return ['success' => false, 'msg' => 'Unauthorized!'];
+    $action = new Action();
+    $action->action = "User " . $user->name . " deleted.";
+    $action->reason = $request->input('reason', "n/a");
+    $action->user = Auth::id();
+    $action->save();
     $user->delete();
     return ['success' => true];
   }

@@ -21,11 +21,17 @@
         </div>
         <b-modal v-if="user" ref="delete" id="delete" :title="'Delete User' + this.user.name" ok-disabled hide-footer>
             Are you sure to delete User <strong class="text-warning">{{ this.user.name }}</strong>?<br />
+            <b-row class="mt-3">
+                <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
+            </b-row> 
             <b-button class="mt-3" variant="outline-info" block @click="$refs['delete'].hide()">Cancel</b-button>
             <b-button class="mt-2" variant="outline-danger" block @click="doDelete">Yes, Delete!</b-button>
         </b-modal>
         <b-modal v-if="user" ref="edit" id="edit" :title="'Edit '+this.user.name+'\'s role'" ok-disabled hide-footer>
             <b-form-select v-model="role" :options="roleOpts"></b-form-select>
+            <b-row class="mt-3">
+                <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
+            </b-row> 
             <b-button class="mt-3" variant="outline-info" block @click="$refs['edit'].hide()">Cancel</b-button>
             <b-button class="mt-2" variant="outline-danger" block @click="doUpdate">Update User!</b-button>
         </b-modal>
@@ -50,6 +56,7 @@
                     { value: 's', text: 'Super Admin' },
                 ],
                 role: null,
+                reason: "",
             }
         },
         mounted() {
@@ -80,8 +87,18 @@
                 })
             },
             doUpdate(){
+                if(this.reason === ""){
+                  this.$bvToast.toast("Please enter a reason!", {
+                                title: 'Error!',
+                                autoHideDelay: 3000,
+                                appendToast: true,
+                                variant: 'danger',
+                            })
+                  return false;
+                }
                 let data = new FormData()
                 data.append('role', this.role)
+                data.append('reason', this.reason)
                 axios({
                     method: "post",
                     url: "/user/update/" + this.user_id,
@@ -110,7 +127,23 @@
                 })
             },
             doDelete(){
-                axios.get("/user/delete/" + this.user_id)
+                if(this.reason === ""){
+                  this.$bvToast.toast("Please enter a reason!", {
+                                title: 'Error!',
+                                autoHideDelay: 3000,
+                                appendToast: true,
+                                variant: 'danger',
+                            })
+                  return false;
+                }
+                let data = new FormData()
+                data.append('reason', this.reason)
+                axios({
+                    method: "post",
+                    url: "/user/delete/" + this.user_id,
+                    data: data,
+                    headers: { "Content-Type": "application/json" },
+                })
                 .then(response => {
                     if(response.data.success === true){
                         for(let i in this.tusers){

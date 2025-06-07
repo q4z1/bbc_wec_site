@@ -38,7 +38,7 @@ Route::get('/players/list', [App\Http\Controllers\PlayerController::class, 'play
 
 Route::get('/user/theme', [App\Http\Controllers\UserController::class, 'set_theme'])->name('user.theme.set');
 Route::get('/users', [App\Http\Controllers\UserController::class, 'index'])->name('user.view');
-Route::get('/user/delete/{user}', [App\Http\Controllers\UserController::class, 'delete'])->name('user.delete');
+Route::post('/user/delete/{user}', [App\Http\Controllers\UserController::class, 'delete'])->name('user.delete');
 Route::post('/user/update/{user}', [App\Http\Controllers\UserController::class, 'update'])->name('user.update');
 
 Route::get('/shoutbox', [App\Http\Controllers\ShoutBoxMessageController::class, 'index'])->name('shoutbox');

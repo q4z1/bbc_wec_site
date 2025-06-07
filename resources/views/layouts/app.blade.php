@@ -60,6 +60,7 @@
                         </template>
                     <b-dropdown-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-dropdown-item>
                     <b-dropdown-item  href="{{ route('award.view') }}"><b-icon-award></b-icon-award>&nbsp;Awards</b-dropdown-item>
+                    <b-dropdown-item  href="{{ route('user.view') }}"><b-icon-person-fill></b-icon-person-fill>&nbsp;Users</b-dropdown-item>
                     <b-dropdown-item  href="{{ route('pages') }}"><b-icon-file-text></b-icon-file-text>&nbsp;Pages</b-dropdown-item>
                     <b-dropdown-item  href="{{ route('fpnicksearch') }}"><b-icon-search></b-icon-search>&nbsp;Fingerprint Search</b-dropdown-item>
                     <b-dropdown-item  href="{{ route('sbdel.view') }}"><b-icon-chat-text></b-icon-chat-text>&nbsp;Deleted Shoutbox Messages</b-dropdown-item>
