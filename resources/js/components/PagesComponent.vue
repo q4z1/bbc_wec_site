@@ -50,7 +50,7 @@
                   ><b-icon-pencil-fill></b-icon-pencil-fill
                 ></b-button>
                 <b-button
-                  v-if="data.item.slug !== 'home'"
+                  v-if="data.item.slug !== 'home' && arole === 's'"
                   size="sm"
                   variant="danger"
                   v-b-tooltip.hover
@@ -100,6 +100,7 @@ export default {
       dpage: false,
       rpages: null,
       reason: "",
+      arole: window.arole,
       fields: [
         {
           key: "id",
