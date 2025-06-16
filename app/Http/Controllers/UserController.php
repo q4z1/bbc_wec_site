@@ -23,6 +23,7 @@ class UserController extends Controller
   public function update(Request $request, User $user)
   {
     if (auth()->user()->role !== 's' && auth()->user()->role !== 'a') return ['success' => false, 'msg' => 'Unauthorized!'];
+    if(auth()->user()->role !== 's' &&  $request->input('role') === 's') return ['success' => false, 'msg' => 'Unauthorized!'];
     $action = new Action();
     $action->action = "User " . $user->name . " updated.";
     $action->reason = $request->input('reason', "n/a");
