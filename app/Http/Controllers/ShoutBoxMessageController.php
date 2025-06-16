@@ -325,8 +325,6 @@ class ShoutBoxMessageController extends Controller
         $p = [];
         $p["id"] = $post->id;
         $p["fp"] = $post->fp;
-        $p["ip"] = $post->ip;
-        if($user->role == 's') $p["ip"] = $post->ip;
         $p["nickname"] = $post->nickname;
         $p["message"] = $post->message;
         $p["created_at"] = $post->created_at->toDateTimeString();

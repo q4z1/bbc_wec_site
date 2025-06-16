@@ -85,10 +85,6 @@
                   label: "Fingerprint"
                 },
                 {
-                  key: "ip",
-                  label: "IP"
-                },
-                {
                   key: "nickname",
                   label: "From"
                 },
