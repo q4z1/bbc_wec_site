@@ -23,7 +23,6 @@ Route::post('page/delete/{page}',[App\Http\Controllers\PageController::class, 'd
 
 Route::get('/upload/game', [App\Http\Controllers\GameController::class, 'upload_view'])->name('upload.game.view');
 Route::post('/delete/game/{game}', [App\Http\Controllers\GameController::class, 'delete_game'])->name('delete.game');
-Route::get('/delete/award/{award}', [App\Http\Controllers\AwardController::class, 'delete_award'])->name('delete.award');
 Route::post('/upload/game', [App\Http\Controllers\GameController::class, 'upload'])->name('upload.game.ajax');
 Route::post('/update/game/{game}', [App\Http\Controllers\GameController::class, 'update_game'])->name('update.game');
 Route::get('/botfiles', [App\Http\Controllers\BotFileController::class, 'show_files'])->name('botfiles.show');
@@ -71,7 +70,7 @@ Route::post('/results/halloffame', [App\Http\Controllers\ResultController::class
 Route::get('/awards', [App\Http\Controllers\AwardController::class, 'index'])->name('award.view');
 Route::post('/awards/upload', [App\Http\Controllers\AwardController::class, 'upload'])->name('award.upload');
 Route::post('/awards/edit/{award}', [App\Http\Controllers\AwardController::class, 'edit'])->name('award.edit');
-Route::get('/awards/delete/{award}', [App\Http\Controllers\AwardController::class, 'delete'])->name('award.delete');
+Route::post('/awards/delete/{award}', [App\Http\Controllers\AwardController::class, 'delete'])->name('award.delete');
 Route::post('/awards/assign/{award}', [App\Http\Controllers\AwardController::class, 'assign'])->name('award.assign');
 Route::get('/awards/assignments/{award}', [App\Http\Controllers\AwardController::class, 'assignments'])->name('award.assignments');
 

@@ -14,7 +14,10 @@
                     </b-row>
                 </div>
                 <hr />
-                <b-form @submit="doUpload" @reset="doReset" v-if="show">
+                <b-row class="mt-3">
+                    <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
+                </b-row> 
+                <b-form @reset="doReset" v-if="show">
                     <b-form-group id="input-group-1" label="Image File:" label-for="input-1" v-if="replace">
                         <b-form-file
                             accept="image/jpeg, image/png, image/gif"
@@ -28,7 +31,7 @@
                     <b-form-group id="input-group-2" label="Title:" label-for="input-2">
                         <b-form-input v-model="title"></b-form-input>
                     </b-form-group>
-                    <b-button type="submit" variant="primary">Submit</b-button>
+                    <b-button @click="doUpload" variant="primary">Submit</b-button>
                     <b-button @click="closeModal" variant="danger">Cancel</b-button>
                 </b-form>
             </b-card-text>
@@ -54,9 +57,16 @@ export default {
         this.award_preview = this.award.award
     },
     methods: {
-        doUpload(evt) {
-            evt.preventDefault()
-            evt.stopPropagation()
+        doUpload() {
+            if(this.reason === ""){
+              this.$bvToast.toast("Please enter a reason!", {
+                            title: 'Error!',
+                            autoHideDelay: 3000,
+                            appendToast: true,
+                            variant: 'danger',
+                        })
+              return false;
+            }
             let data = new FormData()
             data.append('title', this.title)
             data.append('award', this.award_file)

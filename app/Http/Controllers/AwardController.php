@@ -134,7 +134,7 @@ class AwardController extends Controller
         });
         $action = new Action();
         $action->action = "Award" . $award->title . " deleted.";
-        $action->reason = "n/a"; // @TODO: reason handling
+        $action->reason = $request->input('reason', "n/a");
         $action->user = Auth::id();
         $action->save();
         return ['success' => true, 'msg' => 'Award deleted.', 'awards' => $awards];

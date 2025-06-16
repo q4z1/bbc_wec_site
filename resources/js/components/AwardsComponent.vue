@@ -29,7 +29,7 @@
         <b-modal id="modal-edit" title="Edit Award"  hide-footer>
             <award-edit-component :award="award" @update-awards="updateAwards"></award-edit-component>
         </b-modal>
-        <b-modal id="modal-delete" title="Delete Award" ok-title="Yes" cancel-title="No" @ok="handleYes">
+        <b-modal  ref="delete" id="delete" title="Delete Award">
             <b-row v-if="award">
                 <b-col class="text-center"><img :src="award.award" :alt="award.title" class="img-col"></b-col>
             </b-row>
@@ -37,8 +37,14 @@
                 <b-col class="text-center">{{ award.title }}</b-col>
             </b-row>
             <hr />
+            <b-row class="mt-3">
+                <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
+            </b-row> 
             <b-row>
                 <b-col class="text-center"><strong class="text-danger">Are you sure to delete this award?</strong> </b-col>
+            </b-row>
+            <b-row>
+              <b-col class="text-center"><b-button @click="handleYes" variant="primary">Yes - Delete!</b-button>&nbsp;<b-button @click="closeModal" variant="danger">Cancel</b-button></b-col>
             </b-row>
         </b-modal>
     </div>
@@ -61,6 +67,7 @@ export default {
             ],
             award: null,
             players: null,
+            reason: "",
         }
     },
     mounted() {
@@ -97,15 +104,38 @@ export default {
             this.award = item
             this.$bvModal.show('modal-assign')
         },
+        closeModal(){
+            this.$refs['delete'].hide()
+        },
         deleteAward(item, index, target){
             this.award = item
-            this.$bvModal.show('modal-delete')
+            this.$nextTick(() => {
+                this.$refs['delete'].show()
+            })
         },
         handleYes(){
-            axios.get('/awards/delete/' + this.award.id)
+            if(this.reason === ""){
+              this.$bvToast.toast("Please enter a reason!", {
+                            title: 'Error!',
+                            autoHideDelay: 3000,
+                            appendToast: true,
+                            variant: 'danger',
+                        })
+              return false;
+            }
+            axios.post('/awards/delete/' + this.award.id, { reason: this.reason })
             .then(response => {
                 if(response.data.success === true){
                     this.updateAwards(response.data.awards)
+                    this.$nextTick(() => {
+                        this.$refs['delete'].hide()
+                    })
+                    this.$bvToast.toast("Award deleted!", {
+                            title: 'Success!',
+                            autoHideDelay: 3000,
+                            appendToast: true,
+                            variant: 'success',
+                        })
                 }else{
                     console.log(response.data)
                 }
