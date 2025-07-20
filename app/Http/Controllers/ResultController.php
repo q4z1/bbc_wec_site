@@ -46,10 +46,8 @@ class ResultController extends Controller
             'p9.nickname as p9',
             'p10.nickname as p10'
         )->orderBy('number', 'DESC')
-        ->whereBetween('started', [
-            $sr['start'],
-            $sr['end']
-        ]);
+        ->whereDate('started', '>=', $sr['start'])
+        ->whereDate('started', '<=', $sr['end']);
         $totals = $query->count();
         $results = $query->limit(10)
             ->get();

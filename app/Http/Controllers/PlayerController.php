@@ -171,10 +171,8 @@ class PlayerController extends Controller
       $points = Point::where('player_id', $player->id);
       if ($season > 0) { // 0 => alltime
         $date_range = SeasonController::dateRange($season);
-        $points = $points->whereBetween('game_started', [
-          $date_range['start'],
-          $date_range['end']
-        ]);
+        $points = $points->whereDate('game_started', '>=', $date_range['start'])
+        ->whereDate('game_started', '<=', $date_range['end']);
       }
       $total = ['points' => 0, 'games' => 0, 'step1' => 0, 'places' => [] ];
       if($places){
