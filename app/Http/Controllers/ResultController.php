@@ -191,10 +191,8 @@ class ResultController extends Controller
             'p10.nickname as p10'
         )->orderBy('number', 'DESC');
         if(!$alltime){
-            $query = $query->whereBetween('started', [
-                $sr['start'],
-                $sr['end']
-            ]);
+            $query = $query->whereDate('started', '>=', $sr['start'])
+                            ->whereDate('started', '<=', $sr['end']);
         }
         if($type){
             $query = $query->where('type', $type);
@@ -214,9 +212,11 @@ class ResultController extends Controller
             });
         }
         $total = $query->count();
+        // \DB::enableQueryLog(); // Enable query log
         $results = $query->offset(($page-1)*10)
         ->take(10)
         ->get();
+        // dd(\DB::getQueryLog());
         return ['success' => true, 'result' => $results, 'total' => $total];
     }
 
