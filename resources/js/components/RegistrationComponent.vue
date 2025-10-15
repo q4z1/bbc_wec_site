@@ -29,6 +29,7 @@
         @update-dates="updateDates"
         v-if="date"
         :date="date"
+        :utcDate="utcDate"
         :fp="fp"
       />
     </b-modal>
@@ -61,6 +62,7 @@ export default {
     return {
       game_dates: null,
       date: null,
+      utcDate: null,
       fp: null,
       gModalSize: "md",
       alertVar: "danger",
@@ -142,6 +144,7 @@ export default {
         (response) => {
           if (response.data.success === true) {
             this.date = response.data.date;
+            this.utcDate = response.data.utcDate;
             this.$bvModal.show("modal-date");
           } else {
             console.log(response.data);
