@@ -46,13 +46,16 @@ class ResultController extends Controller
             'p9.nickname as p9',
             'p10.nickname as p10'
         )->orderBy('number', 'DESC')
-        ->whereBetween('started', [
-            $sr['start'],
-            $sr['end']
-        ]);
+        // ->whereDate('started', '>=', $sr['start'])
+        // ->whereDate('started', '<=', $sr['end']);
+        ->whereRaw("started >= STR_TO_DATE('".$sr['start']."', '%Y-%m-%d %H:%i:%s')")
+        ->whereRaw("started <= STR_TO_DATE('".$sr['end']."', '%Y-%m-%d %H:%i:%s')");
+        // dd($query->toSql());
         $totals = $query->count();
         $results = $query->limit(10)
             ->get();
+
+
         $params = [
           "results" => $results,
           "totals" => $totals,
@@ -191,10 +194,10 @@ class ResultController extends Controller
             'p10.nickname as p10'
         )->orderBy('number', 'DESC');
         if(!$alltime){
-            $query = $query->whereBetween('started', [
-                $sr['start'],
-                $sr['end']
-            ]);
+            // $query = $query->whereDate('started', '>=', $sr['start'])
+            //                 ->whereDate('started', '<=', $sr['end']);
+            $query = $query->whereRaw("started >= STR_TO_DATE('".$sr['start']."', '%Y-%m-%d %H:%i:%s')")
+                        ->whereRaw("started <= STR_TO_DATE('".$sr['end']."', '%Y-%m-%d %H:%i:%s')");
         }
         if($type){
             $query = $query->where('type', $type);
@@ -214,9 +217,11 @@ class ResultController extends Controller
             });
         }
         $total = $query->count();
+        // \DB::enableQueryLog(); // Enable query log
         $results = $query->offset(($page-1)*10)
         ->take(10)
         ->get();
+        // dd(\DB::getQueryLog());
         return ['success' => true, 'result' => $results, 'total' => $total];
     }
 
