@@ -53,13 +53,13 @@
 import RegistrationNewComponent from './RegistrationNewComponent.vue'
 export default {
     components: { RegistrationNewComponent },
-    props: ['date', 'fp'],
+    props: ['date', 'utcDate', 'fp'],
     data() {
         return {
             regs: [],
             fields: [{key: 'pos'},{key: 'nickname'}],
             s_date: null,
-            old: (Date.now() - 15 * 60 * 60) > new Date(this.date.date).valueOf(),
+            old: null,
             arole: window.arole,
             alertVar: 'danger',
             alertMsg: '',
@@ -76,7 +76,17 @@ export default {
     },
     mounted() {
         this.s_date = this.date
-        //console.log("step="+this.date.step)
+        // console.log("date="+this.date.date, "utcDate="+this.utcDate)
+        let gameLocal = new Date(this.date.date).valueOf()
+        let gameUTC = new Date(this.utcDate).valueOf()
+        let local = Date.now()
+        let localString = new Date(local).toString()
+        let offset = new Date().getTimezoneOffset()
+        let localUTC = local + (offset*60*1000)
+        let localUTCString = new Date(localUTC).toString()
+        let diff = gameUTC - localUTC
+        let diff_min = (diff)/(60*1000)
+        this.old = localUTC > gameUTC
         if(this.date.step > 1) this.fields.push({key: 'tickets', label: 'Tickets'})
         if(['u', 'a', 's'].indexOf(window.arole) !== -1){
             if(window.arole === 's'){

@@ -38,7 +38,7 @@ class GameDateController extends Controller
       if ((auth() && auth()->user() && in_array(auth()->user()->role, ['a','s'])) || ($u && auth() && auth()->id() == $u->id && (time() < (strtotime($gd->date) - 60 * 60)))) $gd->regs[$i]->player->owner = true;
       $j++;
     }
-    return  ['success' => true, 'date' => $gd];
+    return  ['success' => true, 'date' => $gd, 'utcDate' => gmdate('Y-m-d H:i:s', strtotime($gd->date))];
   }
 
   public function add(Request $request)
