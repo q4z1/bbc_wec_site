@@ -207,7 +207,19 @@ class ShoutBoxMessageController extends Controller
         $sbp->save();
 
         $posts = ShoutBoxMessage::where('active', '>=', $active)->limit(200)->orderBy('created_at', 'ASC')->with('player')->get();
-
+        // discord webhook
+        if(is_null(env('DISCORD_SHOUTBOX_WEBHOOK'))) return ['success' => true, 'msg' => 'Message posted.', 'posts' => $posts];
+        $color = (is_null($user_id)) ? "1127128" : "14177041";
+        $data = '{"username": "Webhook", "embeds": [{"author": {"name": "'.$nickname.':"},"fields": [{"name": "", "value": "'.strip_tags($msg).'","inline": true}],"color": "'.$color.'"}]}';
+        $headers = array('Content-Type: application/json', 'Accept: application/json');
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, env('DISCORD_SHOUTBOX_WEBHOOK'));
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($curl, CURLOPT_CUSTOMREQUEST, 'POST');
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        $response = curl_exec($curl);
+        curl_close($curl);
         return ['success' => true, 'msg' => 'Message posted.', 'posts' => $posts];
     }
 
