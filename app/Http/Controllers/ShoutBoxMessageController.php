@@ -210,7 +210,9 @@ class ShoutBoxMessageController extends Controller
         // discord webhook
         if(is_null(env('DISCORD_SHOUTBOX_WEBHOOK'))) return ['success' => true, 'msg' => 'Message posted.', 'posts' => $posts];
         $color = (is_null($user_id)) ? "1127128" : "14177041";
-        $data = '{"username": "Webhook", "embeds": [{"author": {"name": "'.$nickname.':"},"fields": [{"name": "", "value": "'.strip_tags($msg).'","inline": true}],"color": "'.$color.'"}]}';
+        $content = strip_tags(str_replace(["\n"], ["\\n"], $msg));
+        if(strlen($content) > 120) $content = substr($content, 0, 117) . '...';
+        $data = '{"username": "Webhook", "embeds": [{"author": {"name": "'.$nickname.':"},"fields": [{"name": "", "value": "'.$content.'","inline": true}],"color": "'.$color.'"}]}';
         $headers = array('Content-Type: application/json', 'Accept: application/json');
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, env('DISCORD_SHOUTBOX_WEBHOOK'));
