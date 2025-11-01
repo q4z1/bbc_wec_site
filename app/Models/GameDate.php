@@ -9,6 +9,11 @@ class GameDate extends Model
 {
     use HasFactory;
 
+    protected $fillable = [
+        'date',
+        'step'
+    ];
+
     public function regs(){
         return $this->hasMany(Registration::class, 'game_date_id', 'id');
     }

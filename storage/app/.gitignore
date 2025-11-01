@@ -1,4 +1,5 @@
 *
 !pdb/
 !public/
+!private/
 !.gitignore
