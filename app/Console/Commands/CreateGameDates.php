@@ -133,12 +133,7 @@ class CreateGameDates extends Command
 
   private function matrix_file_init()
   {
-    if (!Storage::disk('local')->exists($this->matrix_file)) {
-      Storage::disk('local')->put($this->matrix_file, $this->matrix_file_comments . json_encode($this->default_matrix, JSON_PRETTY_PRINT));
-      $this->matrix = $this->default_matrix;
-    } else {
-      $this->matrix = json_decode(substr(Storage::disk('local')->get($this->matrix_file), strlen($this->matrix_file_comments)));
-    }
+    $this->matrix = json_decode(Storage::disk('local')->get($this->matrix_file));
   }
 
   /**
@@ -181,11 +176,13 @@ class CreateGameDates extends Command
       $weekDay = strtolower($date->format('D'));
 
       $matrix_week = $weekEven ? 'week_even' : 'week_odd';
-      foreach ($this->matrix->$matrix_week->$weekDay as $time => $step_game) {
-        GameDate::create([
-          'date' => $date->format('Y-m-d') . ' ' . $time,
-          'step' => $step_game
-        ]);
+
+      foreach ($this->matrix->$matrix_week->$weekDay as $gdO) {
+        $this->info("Creating GameDate for ".$date->format('Y-m-d')." $gdO->time with step $gdO->step");
+        $gd = new GameDate();
+        $gd->date = $date->format('Y-m-d') . ' ' . $gdO->time;
+        $gd->step = $gdO->step;
+        $gd->save();
       }
     }
     $this->info(($this->diff_days_limit - $diff_days_from_now) . " days with GameDates created successfully.");
