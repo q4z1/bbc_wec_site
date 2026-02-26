@@ -152,6 +152,17 @@ class CreateGameDates extends Command
     $season = Season::orderBy('start', 'DESC')->first()->id;
     $sr = SeasonController::dateRange($season);
 
+    $season_start = $sr['start'];
+    $season_end = $sr['end'];
+
+    // Anzahl Tage seit Saisonbeginn und abgerundete Wochen (ganzzahlig)
+    $days_since_season_start = Carbon::parse($season_start)->diffInDays(Carbon::now());
+    $weeks_since_season_start = intdiv($days_since_season_start, 7);
+
+    echo "season start: $season_start, season end: $season_end\n";
+    echo "days since season start: $days_since_season_start, weeks (floored): $weeks_since_season_start\n";
+    
+
     $last = GameDate::latest('date')->first();
 
     $diff_days_from_now = Carbon::parse($last->date)->diffInDays(Carbon::now());
@@ -164,6 +175,14 @@ class CreateGameDates extends Command
     echo "days until last created GameDate: $diff_days_from_now, limit of days until last created GameDate: {$this->diff_days_limit}\n";
     echo "current tickets: S2=$s2, S3=$s3, S4=$s4\n";
 
+    /*
+      if S2 amont < 30, run jconf_1 (4 S1 /day)
+      if S2 amount > 30, run jconf_2 (4 S1 /day and + S2 /day)
+      if S3 amount > 20, run jconf_3 (4 S1 /day + one S2 /day + one S3 /week)
+      if S4 amount = or > 12, run jconf_4 (4 S1 /day + 2 S2/ day + 2 S3 /week + one S4)
+      if last saturday of the month, run jconf_5 (3 S1 in the day)
+    */
+
     if ($diff_days_from_now >= $this->diff_days_limit) {
       $this->info("Last created GameDate is within the limit of {$this->diff_days_limit} days. No new GameDates created.");
       return Command::SUCCESS;
@@ -172,10 +191,14 @@ class CreateGameDates extends Command
     for($i =1; $i <= ($this->diff_days_limit - $diff_days_from_now); $i++) {
       $date = Carbon::parse($last->date)->addDays($i);
       $weekNum = $date->format("W");
-      $weekEven = $weekNum % 2 === 0;
       $weekDay = strtolower($date->format('D'));
-
-      $matrix_week = $weekEven ? 'week_even' : 'week_odd';
+      
+      // for 2 weeks matrix
+      // $weekEven = $weekNum % 2 === 0; 
+      // $matrix_week = $weekEven ? 'week_even' : 'week_odd'; 
+      
+      // for 4 weeks matrix
+      $matrix_week = (($weekNum - 1) % 4) + 1; // for 4 weeks matrix
 
       foreach ($this->matrix->$matrix_week->$weekDay as $gdO) {
         $this->info("Creating GameDate for ".$date->format('Y-m-d')." $gdO->time with step $gdO->step");

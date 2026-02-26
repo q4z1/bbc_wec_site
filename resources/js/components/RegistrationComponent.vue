@@ -99,14 +99,16 @@ export default {
           meridiem: false,
           hour12: false,
         },
+        eventOrder: (a, b) => (a.extendedProps.sortOrder ?? 0) - (b.extendedProps.sortOrder ?? 0),
         events: this.game_dates,
         eventDidMount: function (info) {
-          // $(info.el)
-          //   .data("powertip", info.event.extendedProps.description)
-          //   .powerTip({
-          //     placement: "n",
-          //     smartPlacement: true,
-          //   });
+          const colorMap = { 0: "info", 1: "primary", 2: "success", 3: "warning", 4: "danger" };
+          const step = info.event.extendedProps.step;
+          const colorVar = "var(--" + (colorMap[step] ?? "primary") + ")";
+          const timeEl = info.el.querySelector(".fc-event-time");
+          const titleEl = info.el.querySelector(".fc-event-title");
+          if (timeEl) timeEl.style.color = colorVar;
+          if (titleEl) titleEl.style.color = colorVar;
         },
         eventClick: (info) => {
           this.showDate(info.event.id);
@@ -171,15 +173,34 @@ export default {
         let color = "var(--" + colors[date.step] + ")";
 
         let num = date.num;
+
+        // Si l'heure est avant 14h, on considère que c'est la soirée de la veille (ex: 00h30 → affiché la veille)
+        let hour = parseInt(date.date.substr(11, 2));
+        let minute = parseInt(date.date.substr(14, 2));
+        let calDate = date.date;
+        if (hour < 14) {
+          let d = new Date(date.date.replace(" ", "T"));
+          d.setDate(d.getDate() - 1);
+          let y = d.getFullYear();
+          let m = String(d.getMonth() + 1).padStart(2, "0");
+          let day = String(d.getDate()).padStart(2, "0");
+          calDate = y + "-" + m + "-" + day + " " + date.date.substr(11);
+        }
+
+        // Les heures < 14h sont traitées comme heure+24 pour le tri (01:00 → 25:00, après 23:15)
+        let sortOrder = hour < 14 ? (hour + 24) * 60 + minute : hour * 60 + minute;
+
         new_dates.push({
           id: date.id,
           title: (date.step > 0) ? "Step" + date.step : date.title,
-          start: date.date.replace(" ", "T"),
-          end: date.date
+          start: calDate.replace(" ", "T"),
+          end: calDate
             .replace(" ", "T")
-            .replace(date.date.substr(date.date.length - 2, 2), "59"),
+            .replace(calDate.substr(calDate.length - 2, 2), "59"),
           description: "Players: " + num + "/10",
           color: color,
+          sortOrder: sortOrder,
+          step: date.step,
         });
       }
       return new_dates;
