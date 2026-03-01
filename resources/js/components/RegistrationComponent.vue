@@ -99,6 +99,7 @@ export default {
           meridiem: false,
           hour12: false,
         },
+        now: new Date(Date.now() - 90 * 60 * 1000),
         eventOrder: (a, b) => (a.extendedProps.sortOrder ?? 0) - (b.extendedProps.sortOrder ?? 0),
         events: this.game_dates,
         eventDidMount: function (info) {
