@@ -196,6 +196,8 @@ class ShoutBoxMessageController extends Controller
           $post_active = 0;
         }
         if(!is_null($request->user()) && in_array($request->user()->role, ['a', 's']) && intval($admin_post) === 1) $post_active = 3;
+        $global_warning = $request->input('global_warning', 0);
+        if(!is_null($request->user()) && in_array($request->user()->role, ['a', 's']) && intval($global_warning) === 1) $post_active = 4;
 
         $sbp = new ShoutBoxMessage();
         $sbp->user_id = $user_id;
@@ -246,11 +248,15 @@ class ShoutBoxMessageController extends Controller
         if(!is_null($request->user()) && in_array($request->user()->role, ['a', 's'])) $post_active = 3;
 
         if($id){
-            $posts = ShoutBoxMessage::where('id', '<', $id - 4)->whereBetween('active', [1, $post_active])->orderBy('id', 'DESC')->limit(9)->with('player')->get();
+            $posts = ShoutBoxMessage::where('id', '<', $id - 4)->where(function($q) use ($post_active) {
+                $q->whereBetween('active', [1, $post_active])->orWhere('active', 4);
+            })->orderBy('id', 'DESC')->limit(9)->with('player')->get();
             return ['success' => true, 'posts' => $posts];
         }
 
-        $posts = ShoutBoxMessage::whereBetween('active', [1, $post_active])->orderBy('id', 'DESC')->limit(200)->offset($offset)->with('player')->get();
+        $posts = ShoutBoxMessage::where(function($q) use ($post_active) {
+            $q->whereBetween('active', [1, $post_active])->orWhere('active', 4);
+        })->orderBy('id', 'DESC')->limit(200)->offset($offset)->with('player')->get();
         
         // $pposts = []
         // foreach($posts as $post){
@@ -267,7 +273,10 @@ class ShoutBoxMessageController extends Controller
         $admin_post = $request->input('admin_post', 0);
         if(is_null($request->user()) || $request->user()->id !== $shoutBoxMessage->user_id ) return ['success' => false, 'msg' => 'Unauthorized!'];
         elseif(is_null($msg)) return ['success' => false, 'msg' => 'Missing Parameter!'];
-        $shoutBoxMessage->active = (in_array($request->user()->role, ['a', 's']) && $admin_post > 0) ? 3 : 2;
+        $global_warning = $request->input('global_warning', 0);
+        if(in_array($request->user()->role, ['a', 's']) && intval($global_warning) === 1) $shoutBoxMessage->active = 4;
+        elseif(in_array($request->user()->role, ['a', 's']) && $admin_post > 0) $shoutBoxMessage->active = 3;
+        else $shoutBoxMessage->active = 2;
         $shoutBoxMessage->message = strip_tags($msg);
         $shoutBoxMessage->save();
         // $action = new Action();

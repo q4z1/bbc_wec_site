@@ -22,7 +22,7 @@
                         <span slot="spinner"></span>
                     </infinite-loading>
                     <b-list-group flush v-if="show">
-                        <b-list-group-item v-for="(post, index) in posts" :key="post.id" :class="(post.active === 3) ? 'admin' : ''">
+                        <b-list-group-item v-for="(post, index) in posts" :key="post.id" :class="{ 'admin': post.active === 3, 'warning': post.active === 4 }">
                             <b-row class="head">
                                 <b-col >
                                     <h6 class="float-left mr-2 mb-0 pb-0">#{{ post.id }}</h6>
@@ -101,6 +101,15 @@
                                         >
                                             <b-form-checkbox size="lg" class="mt-2 text-right" v-model="admin_post" name="check-button" switch></b-form-checkbox>
                                         </b-form-group>
+                                        <b-form-group
+                                            label="Global Notice:"
+                                            label-for="warning-button"
+                                            label-cols="6"
+                                            label-size="lg"
+                                            label-align-sm="left"
+                                        >
+                                            <b-form-checkbox size="lg" class="mt-2 text-right" v-model="global_warning" name="warning-button" switch></b-form-checkbox>
+                                        </b-form-group>
                                     </b-col>
                                 </b-row>
                             </b-col>
@@ -148,6 +157,16 @@
             >
                 <b-form-checkbox size="lg" class="mt-2 text-right" v-model="admin_post" name="check-button" switch></b-form-checkbox>
             </b-form-group>
+            <b-form-group
+                v-if="arole === 'a' || arole === 's'"
+                label="Global Notice:"
+                label-for="warning-button"
+                label-cols="6"
+                label-size="lg"
+                label-align-sm="left"
+            >
+                <b-form-checkbox size="lg" class="mt-2 text-right" v-model="global_warning" name="warning-button" switch></b-form-checkbox>
+            </b-form-group>
             <b-button class="mt-3" variant="outline-info" block @click="$refs['edit'].hide()">Cancel</b-button>
             <b-button class="mt-2" variant="outline-danger" block @click="doUpdate">Update Post!</b-button>
         </b-modal>
@@ -173,11 +192,16 @@ export default {
             nickname: null,
             offset: 0,
             admin_post: false,
+            global_warning: false,
             show: true,
             alertVar: 'danger',
             alertMsg: '',
             alert: false,
         }
+    },
+    watch: {
+        admin_post(val) { if(val) this.global_warning = false },
+        global_warning(val) { if(val) this.admin_post = false },
     },
     computed: {
 
@@ -269,6 +293,7 @@ export default {
             data.append('fp', this.fp)
             data.append('nickname', this.nickname)
             data.append('admin_post', (this.admin_post) ? 1 : 0)
+            data.append('global_warning', (this.global_warning) ? 1 : 0)
             axios({
                 method: "post",
                 url: "/shoutbox/new",
@@ -292,6 +317,7 @@ export default {
                     let post = response.data.post
                     this.sbmsg = post.message
                     this.admin_post = (post.active === 3) ? true : false
+                    this.global_warning = (post.active === 4) ? true : false
                     this.$refs['edit'].show()
                 }else{
                     console.log(response.data.msg)
@@ -304,6 +330,7 @@ export default {
             let data = new FormData()
             data.append('message', this.sbmsg)
             data.append('admin_post', (this.admin_post) ? 1 : 0)
+            data.append('global_warning', (this.global_warning) ? 1 : 0)
             axios({
                 method: "post",
                 url: "/shoutbox/update/" + this.sbid,
@@ -390,6 +417,9 @@ export default {
                         .list-group-item{
                             &.admin{
                                 background-color: var(--admin);
+                            }
+                            &.warning{
+                                background-color: rgba(255, 140, 0, 0.35);
                             }
                             .row{
                                 hr{

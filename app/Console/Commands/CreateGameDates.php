@@ -28,7 +28,7 @@ class CreateGameDates extends Command
 
   protected $matrix_file = 'private/gamedate_matrix.jconf';
 
-  protected $diff_days_limit = 14;
+  protected $diff_days_limit = 21;
 
   protected $matrix_file_comments = "/*" . PHP_EOL
     . "\t" . "This file is a matrix for automated gamedate creation ..." . PHP_EOL
