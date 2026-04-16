@@ -27,14 +27,17 @@
                 <el-tooltip content="Theme wechseln" placement="bottom">
                     <el-button class="theme-toggle-btn" :icon="Sunny" circle />
                 </el-tooltip>
-                <a href="{{ route('shoutbox') }}" class="navbar-icon-link">
-                    <el-icon style="font-size:1.4rem;"><chat-dot-round /></el-icon>
-                </a>
-                <el-dropdown trigger="click" placement="bottom-end">
-                    <button type="button" class="navbar-user-trigger">
-                        <el-icon><Avatar /></el-icon>
-                        @auth&nbsp;<strong>{{ Auth::user()->name }}</strong>@endauth
-                    </button>
+                <el-tooltip content="Shoutbox" placement="bottom">
+                    <a href="{{ route('shoutbox') }}" class="navbar-icon-link">
+                        <el-icon style="font-size:1.4rem;"><chat-dot-round /></el-icon>
+                    </a>
+                </el-tooltip>
+                <el-tooltip content="Profil" placement="bottom-end">
+                    <el-dropdown trigger="click" placement="bottom-end">
+                        <button type="button" class="navbar-user-trigger">
+                            <el-icon><Avatar /></el-icon>
+                            @auth&nbsp;<strong>{{ Auth::user()->name }}</strong>@endauth
+                        </button>
                     <template #dropdown>
                         <el-dropdown-menu>
                             @guest
@@ -49,7 +52,8 @@
                             @endguest
                         </el-dropdown-menu>
                     </template>
-                </el-dropdown>
+                    </el-dropdown>
+                </el-tooltip>
             </div>
 
             <!-- Kollabierbare Nav-Items (per CSS order:2 auf Desktop zwischen Brand und End) -->

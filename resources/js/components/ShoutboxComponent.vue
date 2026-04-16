@@ -5,7 +5,7 @@
             <el-alert :title="alertMsg" :type="alertTypeEl" show-icon closable @close="alert = false" />
         </div>
         <div class="box">
-            <div v-if="posts" class="card" ref="scrollBox">
+            <div v-if="posts" class="card" ref="scrollBox" :style="{ height: cardHeight + 'px', overflowY: 'auto' }">
                 <InfiniteLoading v-if="initialLoaded" direction="top" @infinite="infiniteHandler">
                     <template #no-more><span></span></template>
                     <template #no-results><span></span></template>
@@ -41,7 +41,7 @@
                 </ul>
             </div>
         </div>
-        <div class="sb-form-wrap">
+        <div class="sb-form-wrap sb-input-area">
             <div class="sb-form-inner">
                 <div class="sb-form-left">
                     <el-input placeholder="PokerTH Nickname" v-model="nickname" :disabled="arole !== ''" />
@@ -119,6 +119,7 @@ export default {
             alert: false,
             showDeleteDialog: false,
             showEditDialog: false,
+            cardHeight: 400,
         };
     },
     watch: {
@@ -139,13 +140,32 @@ export default {
             this.fp = result.visitorId;
         })();
         if (this.user !== null) this.nickname = this.user.name;
-        const footer = window.document.getElementsByTagName('footer')[0];
-        if (footer) footer.style.display = 'none';
+        this.$nextTick(() => this.updateCardHeight());
+        this._resizeObserver = new ResizeObserver(() => this.updateCardHeight());
+        this._resizeObserver.observe(document.body);
         // Initiales Laden: neueste Posts holen und danach nach unten scrollen
         this.filter(null, false);
         setInterval(() => { this.filter(null, true); }, 10000);
     },
+    beforeUnmount() {
+        if (this._resizeObserver) this._resizeObserver.disconnect();
+    },
     methods: {
+        updateCardHeight() {
+            const el = this.$el;
+            if (!el) return;
+            const card = this.$refs.scrollBox;
+            if (!card) return;
+            const cardTop = card.getBoundingClientRect().top;
+            const footer = document.querySelector('footer.page-footer');
+            const footerH = footer ? footer.offsetHeight : 0;
+            const inputArea = el.querySelector('.sb-input-area');
+            const inputH = inputArea ? inputArea.offsetHeight : 0;
+            const mainEl = document.querySelector('main');
+            const mainPadBottom = mainEl ? parseInt(window.getComputedStyle(mainEl).paddingBottom) : 24;
+            const available = window.innerHeight - cardTop - inputH - footerH - mainPadBottom - 8;
+            this.cardHeight = Math.max(200, available);
+        },
         date(index, updated = false) {
             const d = new Date(Date.parse(updated ? this.posts[index].updated_at : this.posts[index].created_at));
             return d.getFullYear() + '-' + this.pad(d.getMonth() + 1) + '-' + this.pad(d.getDate()) + ' ' + this.pad(d.getHours()) + ':' + this.pad(d.getMinutes()) + ':' + this.pad(d.getSeconds());
@@ -177,6 +197,7 @@ export default {
                             }
                             if (scroll) {
                                 this.$nextTick(() => {
+                                    if (!update) this.updateCardHeight();
                                     const box = this.$refs.scrollBox;
                                     if (box) box.scrollTop = box.scrollHeight;
                                     // InfiniteLoader erst einblenden nachdem Scroll ganz unten ist
@@ -263,7 +284,6 @@ export default {
 .shoutbox {
     .box {
         .card {
-            height: 400px;
             overflow-y: auto;
         }
     }

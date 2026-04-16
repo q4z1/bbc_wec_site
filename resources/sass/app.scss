@@ -1,15 +1,26 @@
 // Fonts
 @import url('https://fonts.googleapis.com/css?family=Nunito');
 
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
 body {
     font-family: 'Nunito', sans-serif;
-    position: relative;
 }
 
 #app {
-    position: absolute;
-    right: 0;
-    left: 0;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
+    }
 }
 
 // Navbar: responsiv mit CSS/Vue (kein Bootstrap-Collapse, kein JS)
@@ -141,9 +152,10 @@ body {
         fill: currentColor;
     }
 
-    &:hover {
+    &:hover, &:focus, &:focus-visible {
         background-color: var(--el-fill-color-light, #f5f7fa);
         color: var(--el-color-primary, #409eff);
+        outline: none;
     }
 }
 
@@ -162,8 +174,9 @@ body {
     font-family: 'Nunito', sans-serif;
     font-size: 14px;
 
-    &:hover {
+    &:hover, &:focus, &:focus-visible {
         background-color: var(--el-fill-color-light, #f5f7fa);
+        outline: none;
     }
 
     @media (max-width: 991.98px) {
