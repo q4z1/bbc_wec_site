@@ -1,252 +1,165 @@
 <template>
     <div class="game-date">
-        <b-row v-if="alert">
-            <b-col>
-                <b-alert
-                    :show="alert"
-                    dismissible
-                    :variant="alertVar"
-                    @dismissed="alert = false"
-                >
-                {{ alertMsg }}
-                </b-alert>
-            </b-col>
-        </b-row>
+        <el-alert v-if="alert" :title="alertMsg" :type="alertType" show-icon closable @close="alert = false" class="mb-3" />
         <div v-for="table in tables" :key="table">
-        <strong class="text-success"><u>Table {{ table }}</u></strong>
-        <b-row>
-            <b-col class="col" v-if="showT">
-                <b-table responsive v-if="regs" :fields="fields" :items="regs[table]" borderless striped>
-                    <template #cell(pos)="data">
-                        <span class="del" v-html="data.value"></span>
-                    </template>
-                    <template #cell(nickname)="data">
-                        <span v-html="data.value"></span>
-                    </template>
-                    <template #cell(tickets)="data">
-                        <span v-html="data.value"></span>
-                    </template>
-                    <template #cell(action)="data">
-                        <span class="text-danger float-right" @click="deleteReg" :data-id="data.value" v-if="parseInt(data.value) > 0"><b-icon-trash-fill></b-icon-trash-fill></span>
-                    </template>
-                </b-table>
-            </b-col>
-        </b-row>
+            <strong class="text-success"><u>Table {{ table }}</u></strong>
+            <div class="row" v-if="showT">
+                <div class="col">
+                    <el-table v-if="regs[table]" :data="regs[table]" stripe size="small" style="width:100%">
+                        <el-table-column prop="pos" label="Pos" width="60" />
+                        <el-table-column label="Nickname">
+                            <template #default="{ row }">
+                                <span v-html="row.nickname"></span>
+                            </template>
+                        </el-table-column>
+                        <el-table-column v-if="s_date && s_date.step > 1" prop="tickets" label="Tickets" width="80" />
+                        <el-table-column v-if="arole === 's'" prop="ip" label="IP" />
+                        <el-table-column v-if="arole === 'a' || arole === 's'" prop="fp" label="Fingerprint" />
+                        <el-table-column v-if="showAction" label="" width="50">
+                            <template #default="{ row }">
+                                <el-icon v-if="parseInt(row.action) > 0" class="text-danger"
+                                    style="cursor:pointer" @click="deleteReg(row.action)">
+                                    <Delete />
+                                </el-icon>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+                </div>
+            </div>
         </div>
         <hr />
-        <b-row v-if="arole !== 'a' && arole !== 's'">
-            <b-col>
-                <registration-new-component @show-alert="showAlert" @update-dates="updateDates" v-if="s_date && !old" :date="s_date" :fp="fp"></registration-new-component>
-            </b-col>
-        </b-row>
-        <b-row v-else>
-            <b-col sm="10">
-                <registration-new-component @show-alert="showAlert" @update-dates="updateDates" v-if="s_date && !old" :date="s_date" :fp="fp"></registration-new-component>
-            </b-col>
-            <b-col sm="2" class="d-flex justify-content-end">
-                <b-button v-if="!old" variant="danger" @click="deleteDate"><b-icon-trash-fill></b-icon-trash-fill></b-button>
-            </b-col>
-        </b-row>
+        <div class="row" v-if="arole !== 'a' && arole !== 's'">
+            <div class="col">
+                <registration-new-component @show-alert="showAlert" @update-dates="updateDates"
+                    v-if="s_date && !old" :date="s_date" :fp="fp" />
+            </div>
+        </div>
+        <div class="row" v-else>
+            <div class="col-10">
+                <registration-new-component @show-alert="showAlert" @update-dates="updateDates"
+                    v-if="s_date && !old" :date="s_date" :fp="fp" />
+            </div>
+            <div class="col-2 d-flex justify-content-end">
+                <el-button v-if="!old" type="danger" @click="deleteDate">
+                    <el-icon><Delete /></el-icon>
+                </el-button>
+            </div>
+        </div>
     </div>
 </template>
 <script>
-import RegistrationNewComponent from './RegistrationNewComponent.vue'
+import RegistrationNewComponent from './RegistrationNewComponent.vue';
 export default {
     components: { RegistrationNewComponent },
     props: ['date', 'utcDate', 'fp'],
+    emits: ['show-alert', 'update-dates', 'close-dialog'],
     data() {
         return {
             regs: [],
-            fields: [{key: 'pos'},{key: 'nickname'}],
             s_date: null,
             old: null,
             arole: window.arole,
-            alertVar: 'danger',
+            alertType: 'danger',
             alertMsg: '',
             alert: false,
             showT: true,
             tables: 1,
-        }
+        };
     },
     computed: {
-        test: function () {
-                let test = null
-                return test
+        showAction() {
+            return ['u', 'a', 's'].indexOf(this.arole) !== -1 && !this.old;
+        },
+        alertTypeEl() {
+            const map = { danger: 'error', success: 'success', warning: 'warning', info: 'info' };
+            return map[this.alertType] || 'error';
         },
     },
     mounted() {
-        this.s_date = this.date
-        // console.log("date="+this.date.date, "utcDate="+this.utcDate)
-        let gameLocal = new Date(this.date.date).valueOf()
-        let gameUTC = new Date(this.utcDate).valueOf()
-        let local = Date.now()
-        let localString = new Date(local).toString()
-        let offset = new Date().getTimezoneOffset()
-        let localUTC = local + (offset*60*1000)
-        let localUTCString = new Date(localUTC).toString()
-        let diff = gameUTC - localUTC
-        let diff_min = (diff)/(60*1000)
-        this.old = localUTC > gameUTC
-        if(this.date.step > 1) this.fields.push({key: 'tickets', label: 'Tickets'})
-        if(['u', 'a', 's'].indexOf(window.arole) !== -1){
-            if(window.arole === 's'){
-                this.fields.push(
-                    {key: 'ip', label: 'IP', sortable: true},
-                    {key: 'fp', label: 'Fingerprint', sortable: true},
-
-                )
-            }else if(window.arole === 'a'){
-              this.fields.push(
-                    {key: 'fp', label: 'Fingerprint', sortable: true},
-              )
-            }
-            if(!this.old){
-                this.fields.push(
-                    {key: 'action', label: ''}
-                )
-            }
-        }
-        this.tables = Math.ceil(this.date.regs.length/10);
-        // console.log("num tables="+ this.tables)
-        let i, j, k, temporary, chunk = 10;
-        for (k=1, i=0,j=this.date.regs.length; i < j; i += chunk) {
-            temporary = this.date.regs.slice(i, i + chunk);
-            this.regs[k] = this.formatRegs(temporary);
+        this.s_date = this.date;
+        const gameUTC = new Date(this.utcDate).valueOf();
+        const offset = new Date().getTimezoneOffset();
+        const localUTC = Date.now() + offset * 60 * 1000;
+        this.old = localUTC > gameUTC;
+        this.tables = Math.ceil(this.date.regs.length / 10);
+        let k = 1;
+        for (let i = 0; i < this.date.regs.length; i += 10) {
+            this.regs[k] = this.formatRegs(this.date.regs.slice(i, i + 10));
             k++;
         }
-        // this.regs = this.formatRegs(this.date.regs)
     },
-    methods:{
-        formatRegs(regs){
-            let new_regs = []
-            for(let i in regs){
-                let reg = regs[i]
-                let nick = 'Player deleted'
-                let admin = false
-                let n = 0
-                let owner = false
-                let tickets = "n/a"
-                if(reg.player !== null){
-                    nick = reg.player.nickname
-                    admin = reg.player.admin
-                    n = parseInt(reg.player.new)
-                    owner = reg.player.owner
-                    if(this.date.step > 1){
-                      
-                      if(this.date.step == 2) tickets = reg.player.s2_tickets
-                      else if(this.date.step == 3) tickets = reg.player.s3_tickets
-                      else if(this.date.step == 4) tickets = reg.player.s4_tickets
-                      //console.log("tickets="+tickets)
-                    } 
+    methods: {
+        formatRegs(regs) {
+            return regs.map((reg, i) => {
+                let nick = 'Player deleted', admin = false, n = 0, owner = false, tickets = 'n/a';
+                if (reg.player !== null) {
+                    nick = reg.player.nickname;
+                    admin = reg.player.admin;
+                    n = parseInt(reg.player.new);
+                    owner = reg.player.owner;
+                    if (this.date.step === 2) tickets = reg.player.s2_tickets;
+                    else if (this.date.step === 3) tickets = reg.player.s3_tickets;
+                    else if (this.date.step === 4) tickets = reg.player.s4_tickets;
                 }
-                new_regs.push({
+                return {
                     id: reg.id,
-                    pos: parseInt(i) + 1,
-                    nickname: nick + ((admin) ? ' <sup class="text-danger">Admin</sup>' : ((n === 1) ? ' <sup class="text-warning">New</sup>' : '')),
-                    ip: (reg.ip) ? reg.ip : 'n/a',
-                    fp: (reg.fp) ? reg.fp : 'n/a',
-                    action: (owner) ? reg.id : 0,
-                    tickets: tickets
-                })
-            }
-            return new_regs
+                    pos: i + 1,
+                    nickname: nick + (admin ? ' <sup class="text-danger">Admin</sup>' : (n === 1 ? ' <sup class="text-warning">New</sup>' : '')),
+                    ip: reg.ip || 'n/a',
+                    fp: reg.fp || 'n/a',
+                    action: owner ? reg.id : 0,
+                    tickets,
+                };
+            });
         },
-        showAlert(msg, variant, duration=5){
-            this.$emit('show-alert', msg, variant, duration)
+        showAlert(msg, variant, duration = 5) {
+            this.$emit('show-alert', msg, variant, duration);
         },
-        showAlert2(msg, variant, duration=5){
-            // console.log('showAlert()', msg, variant, duration)
-            this.alertVar = variant
-            this.alertMsg = msg
-            this.alert = duration
+        showAlert2(msg, variant, duration = 5) {
+            const map = { danger: 'error', success: 'success', warning: 'warning', info: 'info' };
+            this.alertType = map[variant] || 'error';
+            this.alertMsg = msg;
+            this.alert = true;
         },
-        deleteReg(evt){
-            let el = $(evt.target)
-            let id = $(el).data('id')
-            if(typeof id === 'undefined'){
-                while(typeof id === 'undefined'){
-                    el = $(el).parent()
-                    id = $(el).data('id')
-                }
-            }
+        deleteReg(id) {
             axios.get('/registration/delete/' + id)
-            .then( (res) => {
-                if(res.data.success === true){
-                    this.showAlert2('Registration successfuly deleted.', 'success')
-                    for(let i in this.s_date.regs){
-                        if(this.s_date.regs[i].id === id){
-                            this.s_date.regs.splice(i, 1) 
+                .then((res) => {
+                    if (res.data.success === true) {
+                        this.showAlert2('Registration successfully deleted.', 'success');
+                        this.s_date.regs = this.s_date.regs.filter(r => r.id !== id);
+                        this.tables = Math.ceil(this.s_date.regs.length / 10);
+                        this.regs = [];
+                        let k = 1;
+                        for (let i = 0; i < this.s_date.regs.length; i += 10) {
+                            this.regs[k] = this.formatRegs(this.s_date.regs.slice(i, i + 10));
+                            k++;
                         }
+                        this.$emit('update-dates', res.data.dates);
+                    } else {
+                        this.showAlert(res.data.msg, 'danger');
                     }
-                    this.regs = this.formatRegs(this.s_date.regs)
-                    this.$emit('update-dates', res.data.dates)
-                }
-                else{
-                    this.showAlert(res.data.msg, 'danger')
-                }
-            })
-            .catch( (res) => {
-                console.log(res);
-                this.showAlert('Request Error.', 'danger')
-            })
+                })
+                .catch((res) => { console.log(res); this.showAlert('Request Error.', 'danger'); });
         },
-        deleteDate(){
+        deleteDate() {
             axios.get('/registration/date/delete/' + this.date.id)
-            .then( (res) => {
-                if(res.data.success === true){
-                    this.showAlert('Game successfuly deleted.', 'success')
-                    this.$emit('update-dates', res.data.dates)
-                }
-                else{
-                    this.showAlert(res.data.msg, 'danger')
-                }
-                this.$bvModal.hide('modal-date')
-            })
-            .catch( (res) => {
-                console.log(res);
-                this.showAlert('Request Error.', 'danger')
-                this.$bvModal.hide('modal-date')
-            })
+                .then((res) => {
+                    if (res.data.success === true) {
+                        this.showAlert('Game successfully deleted.', 'success');
+                        this.$emit('update-dates', res.data.dates);
+                    } else { this.showAlert(res.data.msg, 'danger'); }
+                    this.$emit('close-dialog');
+                })
+                .catch((res) => { console.log(res); this.showAlert('Request Error.', 'danger'); this.$emit('close-dialog'); });
         },
-        editDate(){
-
+        updateDates(dates) {
+            this.showAlert('Successfully registered.', 'success');
+            this.$emit('close-dialog');
+            this.$emit('update-dates', dates);
         },
-        updateDate(){
-            let data = new FormData()
-            data.append('step', this.s_date.step)
-            data.append('date', this.s_date.date)
-            axios({
-                method: "post",
-                url: "/registration/date/update/" + this.date.id,
-                data: data,
-                headers: { "Content-Type": "application/json" },
-            })
-            .then( (res) => {
-                if(res.data.success === true){
-                    this.showAlert('Game successfuly updated.', 'success')
-                    this.$emit('update-dates', res.data.dates)
-                }
-                else{
-                    this.showAlert(res.data.msg, 'danger')
-                }
-                this.$bvModal.hide('modal-date')
-            })
-            .catch( (res) => {
-                console.log(res);
-                this.showAlert('Request Error.', 'danger')
-                this.$bvModal.hide('modal-date')
-            })
-        },
-        updateDates(dates){
-            this.showAlert('Successfully registered.', 'success')
-            this.$bvModal.hide('modal-date')
-            this.$emit('update-dates', dates)
-        }
-    }
-}
+    },
+};
 </script>
-<style lang="scss">
-.b-icon{
-    cursor: pointer;
-}
+<style lang="scss" scoped>
+.el-icon { cursor: pointer; }
 </style>

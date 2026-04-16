@@ -1,200 +1,115 @@
 <template>
   <div>
-    <b-row>
-      <b-col><h3>Pages</h3></b-col>
-      <b-col class="text-right text-primary h1">
-        <span v-b-tooltip.hover title="Add Page">
-          <b-icon-plus
-            @click="newPage"
-          ></b-icon-plus>
-        </span>
-      </b-col>
-    </b-row>
-    <b-card v-if="npage">
-      <page-edit-component
-        v-if="npage"
-        :page="npage"
-        @close-me="close"
-      ></page-edit-component>
-    </b-card>
-    <b-row class="mb-3">
-      <b-col>
-        <b-table
-          v-if="rpages && rpages.length"
-          striped
-          hover
-          :items="rpages"
-          :fields="fields"
-        >
-          <template #cell(active)="data">
-            <div v-if="data.item.active == 1">yes</div>
-            <div v-else>no</div>
-          </template>
-          <template #cell(actions)="data">
-            <b-row>
-              <b-col class="text-right">
-                <b-button
-                  size="sm"
-                  variant="info"
-                  v-b-tooltip.hover
-                  title="Show Page"
-                  @click="toggleDetails(data, false)"
-                  ><b-icon-eye-fill></b-icon-eye-fill
-                ></b-button>
-                <b-button
-                  size="sm"
-                  variant="primary"
-                  v-b-tooltip.hover
-                  title="Edit Page"
-                  @click="toggleDetails(data, true)"
-                  ><b-icon-pencil-fill></b-icon-pencil-fill
-                ></b-button>
-                <b-button
-                  v-if="data.item.slug !== 'home' && arole === 's'"
-                  size="sm"
-                  variant="danger"
-                  v-b-tooltip.hover
-                  title="Delete Page"
-                  @click="delConfirm(data.item);"
-                  ><b-icon-trash-fill></b-icon-trash-fill
-                ></b-button>
-              </b-col>
-            </b-row>
-          </template>
-          <template #row-details="data">
-            <b-card>
-              <page-edit-component
-                v-if="edit"
-                :page="data.item"
-                @close-me="close"
-                :data="data"
-              ></page-edit-component>
-              <page-component v-if="!edit" :page="data.item"></page-component>
-            </b-card>
-          </template>
-        </b-table>
-      </b-col>
-    </b-row>
-    <b-modal vi-if="dpage" ref="delete" id="delete" :title="'Delete Page ' + dpage.title + '?'" ok-disabled hide-footer>
-        Are you sure to delete Page <strong class="text-warning">{{ dpage.title }}</strong>?<br />
-        <b-row class="mt-3">
-            <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
-        </b-row> 
-        <b-button class="mt-3" variant="outline-info" block @click="$refs['delete'].hide()">Cancel</b-button>
-        <b-button class="mt-2" variant="outline-danger" block @click="deletePage(dpage, true)">Yes, Delete!</b-button>
-    </b-modal>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem;">
+      <h3 style="margin-bottom:0;">Pages</h3>
+      <el-tooltip content="Add Page" placement="top">
+        <el-icon style="color:#409eff;font-size:1.5rem;cursor:pointer" @click="newPage"><Plus /></el-icon>
+      </el-tooltip>
+    </div>
+
+    <el-card v-if="npage" style="margin-bottom:0.75rem;">
+      <page-edit-component :page="npage" @close-me="close" />
+    </el-card>
+
+    <el-table v-if="rpages && rpages.length" :data="rpages" stripe style="width:100%" row-key="id" :expand-row-keys="expandedKeys">
+      <el-table-column prop="id" label="ID" width="60" />
+      <el-table-column prop="title" label="Title" />
+      <el-table-column prop="slug" label="Slug" />
+      <el-table-column prop="order" label="Order" width="70" />
+      <el-table-column label="Published" width="100">
+        <template #default="scope">{{ scope.row.active == 1 ? 'yes' : 'no' }}</template>
+      </el-table-column>
+      <el-table-column label="" width="110">
+        <template #default="scope">
+          <div style="display:flex;gap:0.25rem;margin-right:0.5rem;">
+            <el-button size="small" type="info" @click="toggleView(scope.row, false)"><el-icon><View /></el-icon></el-button>
+            <el-button size="small" type="primary" @click="toggleView(scope.row, true)"><el-icon><Edit /></el-icon></el-button>
+            <el-button v-if="scope.row.slug !== 'home' && arole === 's'" size="small" type="danger" @click="delConfirm(scope.row)"><el-icon><Delete /></el-icon></el-button>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column type="expand" width="1" class-name="hidden-expand">
+        <template #default="scope">
+          <el-card>
+            <page-edit-component v-if="editMode && expandedId === scope.row.id" :page="scope.row" @close-me="closeRow" />
+            <page-component v-else-if="!editMode && expandedId === scope.row.id" :page="scope.row" />
+          </el-card>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <el-dialog append-to-body v-model="showDelete" :title="'Delete Page ' + (dpage ? dpage.title : '') + '?'" width="420px">
+      Are you sure to delete <strong style="color:#e6a817;">{{ dpage && dpage.title }}</strong>?
+      <div style="margin-top:0.75rem;"><el-input v-model="reason" placeholder="Enter a reason" /></div>
+      <template #footer>
+        <el-button @click="showDelete = false">Cancel</el-button>
+        <el-button type="danger" @click="doDeletePage">Yes, Delete!</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 <script>
-import PageEditComponent from "./PageEditComponent.vue";
+import { ElMessage } from 'element-plus';
+import PageEditComponent from './PageEditComponent.vue';
+import PageComponent from './PageComponent.vue';
 export default {
-  props: ["pages"],
-  components: {
-    PageEditComponent,
-  },
+  components: { PageEditComponent, PageComponent },
+  props: ['pages'],
   data() {
     return {
-      pedit: null,
-      edit: false,
+      rpages: [],
       npage: null,
-      dpage: false,
-      rpages: null,
-      reason: "",
+      dpage: null,
+      reason: '',
+      showDelete: false,
+      expandedId: null,
+      expandedKeys: [],
+      editMode: false,
       arole: window.arole,
-      fields: [
-        {
-          key: "id",
-          sortable: false,
-        },
-        {
-          key: "title",
-          sortable: false,
-        },
-        {
-          key: "slug",
-          sortable: false,
-        },
-        {
-          key: "order",
-          sortable: false,
-        },
-        {
-          key: "active",
-          label: "Published",
-          sortable: false,
-        },
-        {
-          key: "actions",
-          label: "",
-          sortable: false,
-        },
-      ],
     };
   },
   mounted() {
-    this.rpages = JSON.parse(this.pages);
+    this.rpages = JSON.parse(this.pages || '[]');
   },
   methods: {
-    toggleDetails(data, edit) {
-      let show = data.detailsShowing;
-      if (show && edit != this.edit) {
-        this.edit = edit;
-      } else if (!show && edit != this.edit) {
-        this.edit = edit;
-        data.toggleDetails();
-      } else if (edit == this.edit) {
-        data.toggleDetails();
+    toggleView(row, edit) {
+      const isOpen = this.expandedId === row.id && this.editMode === edit;
+      if (isOpen) {
+        this.expandedId = null;
+        this.expandedKeys = [];
+      } else {
+        this.expandedId = row.id;
+        this.editMode = edit;
+        this.expandedKeys = [row.id];
       }
     },
     newPage() {
-      this.npage = {
-        slug: "",
-        title: "",
-        markdown: "",
-        order: 0,
-        active: 0,
-      };
+      this.npage = { slug: '', title: '', markdown: '', order: 0, active: 0 };
     },
-    close(data) {
-      this.rpages = JSON.parse(this.pages);
-      this.npage = null;
-      if (typeof data !== "undefined") data.toggleDetails();
-    },
-    delConfirm(p) {
-        this.dpage = p
-        this.$nextTick(() => {
-            this.$refs['delete'].show()
-        })
-    },
-    deletePage(data, edit) {
-      if(this.reason === ""){
-        this.$bvToast.toast("Please enter a reason!", {
-                      title: 'Error!',
-                      autoHideDelay: 3000,
-                      appendToast: true,
-                      variant: 'danger',
-                  })
-        return false;
-      }
-      let fd = new FormData()
-      fd.append('reason', this.reason)
-      axios({
-          method: "post",
-          url: "/page/delete/" + this.dpage.id,
-          data: fd,
-          headers: { "Content-Type": "application/json" },
-      }).then(function (response) {
-          if (response.data.status && response.data.status === true) {
-            window.location.reload();
-          } else {
-            console.log(response.data.msg);
-          }
-        })
-        .catch(function (response) {
-          //handle error
-          console.log(response);
-        });
+    close() { window.location.reload(); },
+    closeRow() { window.location.reload(); },
+    delConfirm(p) { this.dpage = p; this.reason = ''; this.showDelete = true; },
+    doDeletePage() {
+      if (!this.reason) { ElMessage({ message: 'Please enter a reason!', type: 'error' }); return; }
+      const fd = new FormData();
+      fd.append('reason', this.reason);
+      axios.post('/page/delete/' + this.dpage.id, fd).then((res) => {
+        if (res.data.status === true) window.location.reload();
+      });
     },
   },
 };
 </script>
+
+<style scoped>
+:deep(.hidden-expand .cell),
+:deep(.el-table__expand-icon) {
+    display: none !important;
+}
+:deep(.hidden-expand) {
+    padding: 0 !important;
+    width: 0 !important;
+    min-width: 0 !important;
+    overflow: hidden !important;
+}
+</style>

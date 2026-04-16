@@ -1,15 +1,15 @@
 <template>
-  <div>
-    <vue-markdown :html="true" :source="markdown"></vue-markdown>
-  </div>
+  <div v-html="renderedMarkdown"></div>
 </template>
+
 <script>
-import VueMarkdown from 'vue-markdown'
+import { marked } from 'marked';
 export default {
-  components: {
-    VueMarkdown,
-  },
   props: ['markdown'],
-  mounted() {},
+  computed: {
+    renderedMarkdown() {
+      return marked(this.markdown || '');
+    },
+  },
 };
 </script>

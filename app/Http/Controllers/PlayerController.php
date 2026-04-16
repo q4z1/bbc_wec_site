@@ -91,13 +91,19 @@ class PlayerController extends Controller
       $sort = $request->input('sort');
 
       $new = (!empty($filters) && $filters['new']) ? 1 : 0;
-      $total = Player::where('new', $new)->count();
+      $searchValue = (!empty($filters) && !empty($filters['value'])) ? $filters['value'] : null;
+
+      $baseQuery = Player::where('new', $new);
+      if ($searchValue) {
+        $baseQuery->where('nickname', 'LIKE', $searchValue . '%');
+      }
+      $total = $baseQuery->count();
 
       $query = Player::where('new', $new)->orderBy(
         $sort['prop'], (($sort['order'] == 'descending') ? 'DESC' : 'ASC')
       )->offset(($page - 1) * $pagesize)->limit($pagesize);
-      if (!empty($filters)) {
-        $query->where('nickname', 'LIKE', $filters['value'] . '%');
+      if ($searchValue) {
+        $query->where('nickname', 'LIKE', $searchValue . '%');
       }
 
       $players = $query->get()->map(function ($player) {

@@ -1,191 +1,101 @@
 <template>
-    <div class="container-fluid users">
-        <h5>Users</h5>
-        <div class="row justify-content-center">
-            <div class="col-md-12">
-                <div class="card">
-                    <div class="card-body" id="vtable">
-                        <b-table striped responsive :items="tusers" :fields="fields">
-                            <template #cell(actions)="data">
-                                <div class="row actions float-right">
-                                    <div class="col">
-                                        <b-icon-pencil-fill variant="warning" @click="edit(data.item.id)"></b-icon-pencil-fill>
-                                        <b-icon-trash-fill variant="danger" @click="del(data.item.id)"></b-icon-trash-fill>
-                                    </div>
-                                </div>
-                            </template>
-                        </b-table>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <b-modal v-if="user" ref="delete" id="delete" :title="'Delete User' + this.user.name" ok-disabled hide-footer>
-            Are you sure to delete User <strong class="text-warning">{{ this.user.name }}</strong>?<br />
-            <b-row class="mt-3">
-                <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
-            </b-row> 
-            <b-button class="mt-3" variant="outline-info" block @click="$refs['delete'].hide()">Cancel</b-button>
-            <b-button class="mt-2" variant="outline-danger" block @click="doDelete">Yes, Delete!</b-button>
-        </b-modal>
-        <b-modal v-if="user" ref="edit" id="edit" :title="'Edit '+this.user.name+'\'s role'" ok-disabled hide-footer>
-            <b-form-select v-model="role" :options="roleOpts"></b-form-select>
-            <b-row class="mt-3">
-                <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
-            </b-row> 
-            <b-button class="mt-3" variant="outline-info" block @click="$refs['edit'].hide()">Cancel</b-button>
-            <b-button class="mt-2" variant="outline-danger" block @click="doUpdate">Update User!</b-button>
-        </b-modal>
-    </div>
+  <div class="users">
+    <h5>Users</h5>
+    <el-table striped :data="tusers" style="width:100%">
+      <el-table-column prop="id" label="ID" width="60" sortable />
+      <el-table-column prop="name" label="Name" sortable />
+      <el-table-column prop="role" label="Role" sortable />
+      <el-table-column label="Actions" width="100">
+        <template #default="scope">
+          <el-icon style="color:#e6a817;margin-right:0.5rem;cursor:pointer" @click="openEdit(scope.row.id)"><Edit /></el-icon>
+          <el-icon style="color:#f56c6c;cursor:pointer" @click="openDelete(scope.row.id)"><Delete /></el-icon>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <!-- Delete Dialog -->
+    <el-dialog append-to-body v-model="showDelete" :title="user ? 'Delete User ' + user.name : 'Delete'" width="400px">
+      Are you sure to delete <strong style="color:#e6a817;">{{ user && user.name }}</strong>?
+      <div style="margin-top:0.75rem;"><el-input v-model="reason" placeholder="Enter a reason" /></div>
+      <template #footer>
+        <el-button @click="showDelete = false">Cancel</el-button>
+        <el-button type="danger" @click="doDelete">Yes, Delete!</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- Edit Dialog -->
+    <el-dialog append-to-body v-model="showEdit" :title="user ? 'Edit ' + user.name + '\'s role' : 'Edit'" width="400px">
+      <el-select v-model="role" style="width:100%">
+        <el-option v-for="o in roleOpts" :key="o.value" :label="o.text" :value="o.value" />
+      </el-select>
+      <div style="margin-top:0.75rem;"><el-input v-model="reason" placeholder="Enter a reason" /></div>
+      <template #footer>
+        <el-button @click="showEdit = false">Cancel</el-button>
+        <el-button type="primary" @click="doUpdate">Update User!</el-button>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 <script>
-    export default {
-        props: ['users'],
-        components: {
-
-        },
-        data: function() { 
-            return {
-                user_id: null,
-                tusers: null,
-                user: null,
-                fields: [{key: 'id', sortable: true},{key: 'name', sortable: true},{key: 'role', sortable: true},{key: 'actions', class: 'actions'}],
-                roles: {'s': 'Super Admin', a: 'Admin', u: 'User'},
-                roleOpts: [
-                    { value: 'u', text: 'User' },
-                    { value: 'a', text: 'Admin' },
-                    { value: 's', text: 'Super Admin' },
-                ],
-                role: null,
-                reason: "",
-            }
-        },
-        mounted() {
-            this.tusers = this.formatUsers(this.users)
-        },
-        methods: {
-            formatUsers(users){
-                return users.map((user) => {
-                    let u = {
-                        id: user.id,
-                        name: user.name,
-                        role: this.roles[user.role]
-                    }
-                    return u
-                })
-            },
-            edit(id) {
-                this.user_id = id
-                for(let i in this.tusers){
-                    if(this.users[i].id == this.user_id){
-                        this.user = this.users[i]
-                        break
-                    }
-                }
-                this.role = this.user.role
-                this.$nextTick(() => {
-                    this.$refs['edit'].show()
-                })
-            },
-            doUpdate(){
-                if(this.reason === ""){
-                  this.$bvToast.toast("Please enter a reason!", {
-                                title: 'Error!',
-                                autoHideDelay: 3000,
-                                appendToast: true,
-                                variant: 'danger',
-                            })
-                  return false;
-                }
-                let data = new FormData()
-                data.append('role', this.role)
-                data.append('reason', this.reason)
-                axios({
-                    method: "post",
-                    url: "/user/update/" + this.user_id,
-                    data: data,
-                    headers: { "Content-Type": "application/json" },
-                })
-                .then(response => {
-                    if(response.data.success === true){
-                        let users = response.data.users
-                        this.tusers = this.formatUsers(users)
-                        this.$refs['edit'].hide()
-                    }
-                }, (error) => {
-                    console.log(error)
-                })
-            },
-            del(id){
-                this.user_id = id
-                for(let i in this.tusers){
-                    if(this.users[i].id == this.user_id){
-                        this.user = this.users[i]
-                    }
-                }
-                this.$nextTick(() => {
-                    this.$refs['delete'].show()
-                })
-            },
-            doDelete(){
-                if(this.reason === ""){
-                  this.$bvToast.toast("Please enter a reason!", {
-                                title: 'Error!',
-                                autoHideDelay: 3000,
-                                appendToast: true,
-                                variant: 'danger',
-                            })
-                  return false;
-                }
-                let data = new FormData()
-                data.append('reason', this.reason)
-                axios({
-                    method: "post",
-                    url: "/user/delete/" + this.user_id,
-                    data: data,
-                    headers: { "Content-Type": "application/json" },
-                })
-                .then(response => {
-                    if(response.data.success === true){
-                        for(let i in this.tusers){
-                            if(this.tusers[i].id == this.user_id){
-                                this.tusers.splice(i, 1)
-                            }
-                        }
-                        this.$refs['delete'].hide()
-                    }
-                }, (error) => {
-                    console.log(error)
-                })
-            },
+import { ElMessage } from 'element-plus';
+export default {
+  props: ['users'],
+  data() {
+    return {
+      user_id: null,
+      tusers: [],
+      user: null,
+      roles: { s: 'Super Admin', a: 'Admin', u: 'User' },
+      roleOpts: [
+        { value: 'u', text: 'User' },
+        { value: 'a', text: 'Admin' },
+        { value: 's', text: 'Super Admin' },
+      ],
+      role: null,
+      reason: '',
+      showDelete: false,
+      showEdit: false,
+    };
+  },
+  mounted() {
+    this.tusers = this.formatUsers(this.users || []);
+  },
+  methods: {
+    formatUsers(users) {
+      return users.map((u) => ({ id: u.id, name: u.name, role: this.roles[u.role] }));
+    },
+    openEdit(id) {
+      this.user_id = id;
+      this.user = this.users.find((u) => u.id == id);
+      this.role = this.user.role;
+      this.reason = '';
+      this.showEdit = true;
+    },
+    openDelete(id) {
+      this.user_id = id;
+      this.user = this.users.find((u) => u.id == id);
+      this.reason = '';
+      this.showDelete = true;
+    },
+    doUpdate() {
+      if (!this.reason) { ElMessage({ message: 'Please enter a reason!', type: 'error' }); return; }
+      const data = new FormData();
+      data.append('role', this.role); data.append('reason', this.reason);
+      axios.post('/user/update/' + this.user_id, data).then((res) => {
+        if (res.data.success) { this.tusers = this.formatUsers(res.data.users); this.showEdit = false; }
+      });
+    },
+    doDelete() {
+      if (!this.reason) { ElMessage({ message: 'Please enter a reason!', type: 'error' }); return; }
+      const data = new FormData();
+      data.append('reason', this.reason);
+      axios.post('/user/delete/' + this.user_id, data).then((res) => {
+        if (res.data.success) {
+          this.tusers = this.tusers.filter((u) => u.id != this.user_id);
+          this.showDelete = false;
         }
-    }
+      });
+    },
+  },
+};
 </script>
-<style lang="scss">
-.users{
-    table{
-        overflow-x: scroll;
-        td, th{
-            &.actions{
-                width: 75px;
-            }
-        }
-    }
-}
-</style>
-<style lang="scss" scoped>
-.users{
-    .row{
-        &.actions{
-            .col{
-                display: flex;
-                flex-shrink: 2;
-                justify-content: flex-end;
-                align-items: center;
-                .bi-trash-fill{
-                    margin-left: 0.5em;
-                }
-            }
-        }
-    }
-}
-</style>

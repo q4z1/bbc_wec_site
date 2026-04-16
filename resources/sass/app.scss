@@ -1,39 +1,573 @@
 // Fonts
 @import url('https://fonts.googleapis.com/css?family=Nunito');
 
-// Variables
-@import 'variables';
-
-// Bootstrap
-@import '~bootstrap/scss/bootstrap';
-
-// Custom
-@import 'table';
-
-body{
+body {
+    font-family: 'Nunito', sans-serif;
     position: relative;
 }
 
-#app{
+#app {
     position: absolute;
-    right: 0px;
-    left: 0px;
+    right: 0;
+    left: 0;
 }
 
-div.calender.col{
-  padding-right: 0;
-}
+// Navbar: responsiv mit CSS/Vue (kein Bootstrap-Collapse, kein JS)
+// DOM-Reihenfolge: Brand → End → Collapse
+// Auf Desktop: CSS order:2 auf Collapse, order:3 auf End → Brand | Collapse | End
+// Navbar: CSS Grid — collapse bekommt exakt den Platz zwischen Brand und End
+// Desktop: [brand] [collapse = 1fr] [end]
+// Mobile:  [brand] [end] / [collapse volle Breite]
+.main-navbar {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+        "brand end"
+        "collapse collapse";
+    align-items: center;
+    padding: 0 1rem;
+    border-bottom: 1px solid var(--el-menu-border-color, #e6e6e6);
 
-footer{
-  height: 1.4em;
-  line-height: 1em;
-  font-size: 1em;
-  overflow-x: hidden;
-  .row{
-    .col{
-      padding: 0.4em;
-      text-align: center;
-      border-top: 1px solid var(--secondary);
+    @media (min-width: 992px) {
+        grid-template-columns: auto 1fr auto;
+        grid-template-areas: "brand collapse end";
     }
-  }
+
+    .navbar-brand {
+        grid-area: brand;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-height: 60px;
+        a { display: flex; align-items: center; }
+    }
+
+    // Rechte Seite: immer sichtbar, bekommt seinen natürlichen Platz
+    .main-navbar-end {
+        grid-area: end;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        justify-content: flex-end;
+        min-height: 60px;
+        white-space: nowrap;
+    }
+
+    // Hamburger-Button: nur auf Mobile sichtbar
+    .main-navbar-toggler {
+        border: 1px solid var(--el-border-color, #dcdfe6);
+        background: transparent;
+        cursor: pointer;
+        padding: 6px 10px;
+        border-radius: 4px;
+        color: var(--el-text-color-regular, #606266);
+        line-height: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        &:hover { background-color: var(--el-fill-color-light, #f5f7fa); }
+        span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background-color: currentColor;
+            border-radius: 2px;
+            & + span { margin-top: 5px; }
+        }
+        @media (min-width: 992px) { display: none; }
+    }
+
+    // Kollabierbare Nav-Items
+    // Auf Desktop: grid-area "collapse" = exakt der 1fr-Bereich zwischen brand und end
+    .main-navbar-collapse {
+        grid-area: collapse;
+        display: none;
+
+        &.is-open {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 992px) {
+            display: flex !important;
+            align-items: stretch;
+            overflow: hidden;  // El-Menu bleibt innerhalb des 1fr-Bereichs
+            min-width: 0;
+        }
+    }
+
+    // el-menu Nav-Items
+    .main-navbar-items {
+        border-bottom: none !important;
+        border-right: none !important;
+        background: transparent !important;
+        width: 100%;    // El-Menu muss die volle 1fr-Breite kennen für Ellipsis-Berechnung
+
+        @media (max-width: 991.98px) {
+            flex-direction: column !important;
+            height: auto !important;
+
+            .el-menu-item,
+            .el-sub-menu__title {
+                height: 48px;
+                line-height: 48px;
+                width: 100%;
+            }
+        }
+    }
+
+    // Schriftgröße und Font einheitlich (unabh. vom Theme-CSS)
+    .el-menu-item,
+    .el-sub-menu__title {
+        font-size: 14px;
+        font-family: 'Nunito', sans-serif;
+        a { color: inherit; text-decoration: none; }
+    }
+}
+
+// Shoutbox-Icon-Link
+.navbar-icon-link {
+    display: flex;
+    align-items: center;
+    padding: 0 0.75rem;
+    height: 60px;
+    color: var(--el-text-color-regular, #606266);
+    font-size: 1.2rem;
+    text-decoration: none;
+
+    svg {
+        width: 1.4rem;
+        height: 1.4rem;
+        fill: currentColor;
+    }
+
+    &:hover {
+        background-color: var(--el-fill-color-light, #f5f7fa);
+        color: var(--el-color-primary, #409eff);
+    }
+}
+
+// User-Dropdown-Trigger
+.navbar-user-trigger {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0 1rem;
+    height: 60px;
+    color: var(--el-text-color-regular, #606266);
+    user-select: none;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+
+    &:hover {
+        background-color: var(--el-fill-color-light, #f5f7fa);
+    }
+
+    @media (max-width: 991.98px) {
+        height: auto;
+        padding: 0.5rem 0;
+    }
+}
+
+body[data-theme="dark"] {
+    // Bootstrap 5 CSS-Variablen für Listen und Text (BS4-Theme überschreibt diese nicht)
+    --bs-body-color: #839496;
+    --bs-list-group-color: #839496;
+    --bs-list-group-bg: transparent;
+    --bs-list-group-border-color: #073642;
+    --bs-list-group-action-hover-color: #fdf6e3;
+    --bs-list-group-action-hover-bg: #073642;
+
+    // Element Plus: globale Dark-Variablen
+    --el-color-white: #002b36;
+    --el-color-black: #fdf6e3;
+    --el-bg-color: #073642;
+    --el-bg-color-page: #002b36;
+    --el-bg-color-overlay: #073642;
+    --el-text-color-primary: #93a1a1;
+    --el-text-color-regular: #839496;
+    --el-text-color-secondary: #657b83;
+    --el-text-color-placeholder: #586e75;
+    --el-text-color-disabled: #586e75;
+    --el-border-color: #0a4052;
+    --el-border-color-light: #093a4a;
+    --el-border-color-lighter: #073642;
+    --el-border-color-extra-light: #062d38;
+    --el-fill-color: #073642;
+    --el-fill-color-light: #0a4052;
+    --el-fill-color-lighter: #093a4a;
+    --el-fill-color-extra-light: #073642;
+    --el-fill-color-dark: #002b36;
+    --el-fill-color-darker: #001e27;
+    --el-fill-color-blank: #073642;
+    --el-disabled-bg-color: #062d38;
+    --el-disabled-text-color: #4a6270;
+    --el-disabled-border-color: #073642;
+    --el-overlay-color: rgba(0, 0, 0, 0.8);
+    --el-mask-color: rgba(0, 43, 54, 0.8);
+
+    // Input / Textarea
+    --el-input-text-color: #839496;
+    --el-input-border-color: #0a4052;
+    --el-input-hover-border-color: #268bd2;
+    --el-input-focus-border-color: #268bd2;
+    --el-input-transparent-border: 0 0 0 1px #0a4052 inset;
+    --el-input-bg-color: #073642;
+
+    // Select Dropdown
+    --el-select-input-color: #93a1a1;
+    --el-select-disabled-border: #073642;
+    --el-select-font-size: 14px;
+    --el-select-close-hover-color: #839496;
+    --el-select-option-selected-font-weight: 600;
+
+    // Pagination
+    --el-pagination-bg-color: transparent;
+    --el-pagination-text-color: #839496;
+    --el-pagination-button-color: #839496;
+    --el-pagination-button-bg-color: #073642;
+    --el-pagination-button-disabled-color: #4a6270;
+    --el-pagination-button-disabled-bg-color: #062d38;
+    --el-pagination-hover-color: #b58900;
+
+    // Popper / Dropdown-Popups
+    .el-popper {
+        --el-bg-color-overlay: #073642;
+        background-color: #073642;
+        border-color: #0a4052;
+        color: #839496;
+    }
+    .el-dropdown-menu {
+        background-color: #073642;
+        border-color: #0a4052;
+        .el-dropdown-menu__item {
+            color: #839496;
+            &:hover, &:focus {
+                background-color: #002b36;
+                color: #fdf6e3;
+            }
+        }
+    }
+    .el-select-dropdown__item {
+        color: #839496;
+        &:hover, &.hover { background-color: #002b36; color: #fdf6e3; }
+        &.selected { color: #b58900; }
+        &.is-disabled { color: #4a6270; }
+    }
+
+    // El-Menu (Navbar — invertiert hell auf dunkler Seite)
+    .main-navbar .el-menu {
+        --el-menu-bg-color: #839496;
+        --el-menu-text-color: #002b36;
+        --el-menu-active-color: #b58900;
+        --el-menu-hover-bg-color: #93a1a1;
+        --el-menu-hover-text-color: #002b36;
+        --el-menu-border-color: #657b83;
+        --el-menu-item-hover-fill: #93a1a1;
+    }
+
+    // El-Menu (restliche Bereiche — dunkel wie gehabt)
+    .el-menu {
+        --el-menu-bg-color: #002b36;
+        --el-menu-text-color: #839496;
+        --el-menu-active-color: #b58900;
+        --el-menu-hover-bg-color: #073642;
+        --el-menu-hover-text-color: #fdf6e3;
+        --el-menu-border-color: #073642;
+        --el-menu-item-hover-fill: #073642;
+    }
+
+    .main-navbar {
+        background-color: #839496;
+        border-bottom-color: #657b83;
+
+        .main-navbar-toggler {
+            border-color: #586e75;
+            color: #002b36;
+            &:hover { background-color: #93a1a1; }
+        }
+
+        .navbar-icon-link {
+            color: #002b36;
+            &:hover { background-color: #93a1a1; color: #002b36; }
+        }
+
+        .navbar-user-trigger {
+            color: #002b36;
+            &:hover { background-color: #93a1a1; }
+        }
+
+        // Auth-Seiten Dark Mode
+        .auth-card {
+            background: #073642;
+            border-color: #0a4052;
+
+            &__header {
+                background: #002b36;
+                border-bottom-color: #0a4052;
+                color: #93a1a1;
+            }
+        }
+
+        .bbc-input {
+            background-color: #073642;
+            border-color: #0a4052;
+            color: #839496;
+
+            &:focus { border-color: #268bd2; }
+        }
+
+        .el-menu-item.is-active,
+        .el-sub-menu.is-active > .el-sub-menu__title {
+            border-bottom-color: #b58900;
+        }
+
+        .el-menu-item:not(.is-disabled):hover,
+        .el-sub-menu__title:hover {
+            background-color: #93a1a1 !important;
+            color: #002b36 !important;
+        }
+
+        .el-menu-item,
+        .el-sub-menu__title {
+            outline: none !important;
+            border: none !important;
+            box-shadow: none !important;
+            &:hover, &:focus, &:focus-visible {
+                outline: none !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+        }
+    }
+}
+
+body[data-theme="light"] {
+    .main-navbar {
+        .el-menu-item:not(.is-disabled):hover,
+        .el-sub-menu__title:hover {
+            color: var(--el-menu-active-color) !important;
+        }
+    }
+}
+
+// Kein Outline/Border beim Hovern der Nav-Einträge (alle Themes)
+.main-navbar {
+    .el-menu-item,
+    .el-sub-menu__title {
+        &, &:hover, &:focus, &:focus-visible, &:focus-within {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        a, a:hover, a:focus, a:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+    }
+    // Kein border-bottom beim Hover auf horizontalen Menu-Items
+    &.el-menu--horizontal > .el-menu-item:not(.is-active):hover,
+    .el-menu--horizontal > .el-menu-item:not(.is-active):hover {
+        border-bottom-color: transparent !important;
+    }
+}
+// Kein Focus-Ring auf den El-Menu-Container selbst
+.main-navbar .el-menu {
+    &:focus, &:focus-visible { outline: none !important; }
+}
+
+// Fix: Dropdown-Popup wird per append-to-body aus .main-navbar teleportiert
+// → globale Regel nötig für das erste fokussierte Item beim Öffnen
+.el-menu--popup {
+    .el-menu-item,
+    .el-sub-menu__title {
+        &:focus, &:focus-visible, &:focus-within {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        a:focus, a:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+    }
+}
+
+// Element Plus Tabellen-Transparenz + Hover + Cursor
+.el-table th,
+.el-table tr {
+    background-color: transparent;
+}
+
+.el-table,
+.el-table__expanded-cell {
+    background-color: transparent;
+}
+
+// Striped rows: transparent, aber Hover überschreiben
+.el-table--striped .el-table__body tr.el-table__row--striped td {
+    background: transparent;
+}
+
+// Hover immer anzeigen (überschreibt striped und normal)
+.el-table__body tr.el-table__row:hover > td {
+    background-color: var(--el-table-row-hover-bg-color) !important;
+}
+
+// Pointer auf klickbaren Zeilen
+.el-table__body tr.el-table__row {
+    cursor: pointer;
+}
+
+.el-pagination {
+    margin-top: 15px;
+}
+
+div.calender.col {
+    padding-right: 0;
+}
+
+footer.page-footer {
+    line-height: 1em;
+    font-size: 1em;
+    overflow-x: hidden;
+    padding: 0.4em 1rem;
+    border-top: 1px solid var(--el-border-color, #dcdfe6);
+}
+
+// Auth-Seiten (Login, Register, Passwort-Reset)
+.auth-page {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 480px;
+    background: var(--el-bg-color, #fff);
+    border: 1px solid var(--el-border-color, #dcdfe6);
+    border-radius: 4px;
+    box-shadow: var(--el-box-shadow-light, 0 2px 12px 0 rgba(0,0,0,.1));
+
+    &__header {
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid var(--el-border-color, #dcdfe6);
+        font-weight: 600;
+        font-size: 1rem;
+        background: var(--el-fill-color-light, #f5f7fa);
+        border-radius: 4px 4px 0 0;
+    }
+
+    &__body {
+        padding: 1.5rem;
+    }
+}
+
+.auth-form-item {
+    margin-bottom: 1rem;
+
+    label {
+        display: block;
+        margin-bottom: 0.35rem;
+        font-size: 0.875rem;
+        color: var(--el-text-color-regular, #606266);
+    }
+
+    .el-input {
+        width: 100%;
+    }
+
+    &--inline {
+        label {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            cursor: pointer;
+        }
+    }
+}
+
+.auth-form-error {
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    color: var(--el-color-danger, #f56c6c);
+}
+
+.auth-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    a {
+        color: var(--el-color-primary, #409eff);
+        text-decoration: none;
+        font-size: 0.875rem;
+        &:hover { text-decoration: underline; }
+    }
+}
+
+// Native Inputs + Buttons für Auth-Seiten (El-Plus-Look)
+.bbc-input {
+    display: block;
+    width: 100%;
+    height: 32px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-family: 'Nunito', sans-serif;
+    color: var(--el-input-text-color, #606266);
+    background-color: var(--el-input-bg-color, #fff);
+    border: 1px solid var(--el-border-color, #dcdfe6);
+    border-radius: 4px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color .2s cubic-bezier(.645,.045,.355,1);
+
+    &:focus {
+        border-color: var(--el-color-primary, #409eff);
+    }
+
+    &::placeholder {
+        color: var(--el-text-color-placeholder, #a8abb2);
+    }
+
+    &.is-error {
+        border-color: var(--el-color-danger, #f56c6c);
+    }
+}
+
+.bbc-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding: 0 16px;
+    font-size: 14px;
+    font-family: 'Nunito', sans-serif;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background .2s, border-color .2s;
+    text-decoration: none;
+
+    &--primary {
+        color: #fff;
+        background-color: var(--el-color-primary, #409eff);
+        border-color: var(--el-color-primary, #409eff);
+        &:hover {
+            background-color: var(--el-color-primary-light-3, #79bbff);
+            border-color: var(--el-color-primary-light-3, #79bbff);
+        }
+    }
+
+    &--link {
+        color: var(--el-color-primary, #409eff);
+        background: transparent;
+        border-color: transparent;
+        padding: 0;
+        height: auto;
+        &:hover { text-decoration: underline; }
+    }
 }

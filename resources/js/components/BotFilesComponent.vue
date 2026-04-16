@@ -1,161 +1,85 @@
 <template>
     <div>
-        <b-card title="Botfiles" class="mb-2">
-            <b-card-text>
-                <b-form v-if="show">
-                    <b-form-group id="input-group-1" label="BotFile:" label-for="input-1">
-                        <b-form-select
-                        id="input-1"
-                        v-model="selected"
-                        :options="files"
-                        @change="fetchBotFile">
-                        </b-form-select>
-                    </b-form-group>
-                    <b-form-group id="input-group-2" label="Content:" label-for="input-2" v-if="content">
-                      <b-form-textarea
-                        id="textarea"
-                        v-model="content"
-                        rows="20"
-                        max-rows="20"
-                      ></b-form-textarea>
-                      <div class="pt-2">
-                        <b-button variant="primary" @click="saveConfirm">Save File</b-button>&nbsp;
-                        <b-button variant="danger" @click="onReset">Cancel</b-button>
-                      </div>
-                    </b-form-group>
-                </b-form>
-            </b-card-text>
-        </b-card>
-    <b-modal ref="save" id="save" :title="'Save Botfile ' + selected + '?'" ok-disabled hide-footer>
-        Are you sure to save Page <strong class="text-warning">{{ selected }}</strong>?<br />
-        <b-row class="mt-3">
-            <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
-        </b-row> 
-        <b-button class="mt-3" variant="outline-info" block @click="$refs['save'].hide()">Cancel</b-button>
-        <b-button class="mt-2" variant="outline-danger" block @click="doSave">Yes, Save!</b-button>
-    </b-modal>
+        <el-card style="margin-bottom:0.5rem;">
+            <template #header><strong>Botfiles</strong></template>
+            <div v-if="show">
+                <div style="margin-bottom:0.75rem;">
+                    <label class="form-label">BotFile:</label>
+                    <el-select v-model="selected" @change="fetchBotFile" placeholder="Please select a Botfile" style="width:100%">
+                        <el-option v-for="f in files" :key="f" :label="f" :value="f" />
+                    </el-select>
+                </div>
+                <div v-if="content">
+                    <label class="form-label">Content:</label>
+                    <el-input type="textarea" v-model="content" :rows="20" />
+                    <div style="padding-top:0.5rem;">
+                        <el-button type="primary" @click="saveConfirm">Save File</el-button>
+                        <el-button type="danger" @click="onReset">Cancel</el-button>
+                    </div>
+                </div>
+            </div>
+        </el-card>
+        <el-dialog append-to-body v-model="showSaveDialog" :title="'Save Botfile ' + selected + '?'">
+            Are you sure to save <strong style="color:#e6a817;">{{ selected }}</strong>?<br />
+            <div style="margin-top:0.75rem;">
+                <el-input v-model="reason" placeholder="Enter a reason" />
+            </div>
+            <template #footer>
+                <el-button @click="showSaveDialog = false">Cancel</el-button>
+                <el-button type="danger" @click="doSave">Yes, Save!</el-button>
+            </template>
+        </el-dialog>
     </div>
 </template>
 <script>
+import { ElMessage } from 'element-plus';
 export default {
     props: ['files'],
     data() {
         return {
-            selected: "Please select a Botfile",
+            selected: null,
             content: null,
-            arole: window.arole,
             show: true,
-            reason: ""
-        }
-    },
-    mounted() {
-
-    },
-    created() {
-
+            reason: '',
+            showSaveDialog: false,
+        };
     },
     methods: {
-        saveConfirm(){
-          this.$nextTick(() => {
-              this.$refs['save'].show()
-          })
+        saveConfirm() {
+            this.showSaveDialog = true;
         },
-        fetchBotFile(){
-          if(this.selected == "Please select a Botfile") return
-          this.content = null;
-          axios({
-                method: 'post',
-                url: '/botfiles/get',
-                data: { file: this.selected },
-                headers: {'Content-Type': 'application/json' }
-                })
+        fetchBotFile() {
+            if (!this.selected) return;
+            this.content = null;
+            axios({ method: 'post', url: '/botfiles/get', data: { file: this.selected }, headers: { 'Content-Type': 'application/json' } })
                 .then(response => {
-                    if(response.data.status){
-                      this.content = response.data.msg
-                    }else{
-                      this.$bvToast.toast(response, {
-                        title: response.data.msg,
-                        autoHideDelay: 5000,
-                        appendToast: true,
-                        variant: 'danger',
-                    })
-                    }
+                    if (response.data.status) { this.content = response.data.msg; }
+                    else { ElMessage({ message: response.data.msg, type: 'error' }); }
                 })
-                .catch(response => {
-                    this.$bvToast.toast(response, {
-                        title: 'Fetching BotFile failed!',
-                        autoHideDelay: 5000,
-                        appendToast: true,
-                        variant: 'danger',
-                    })
-                });
+                .catch(() => { ElMessage({ message: 'Fetching BotFile failed!', type: 'error' }); });
         },
         doSave() {
-            if(this.reason === ""){
-              this.$bvToast.toast("Please enter a reason!", {
-                            title: 'Error!',
-                            autoHideDelay: 3000,
-                            appendToast: true,
-                            variant: 'danger',
-                        })
-              return false;
-            }
-            axios({
-                method: 'post',
-                url: '/botfiles/update',
-                data: { file: this.selected, content: this.content, reason: this.reason },
-                headers: {'Content-Type': 'application/json' }
-                })
+            if (!this.reason) { ElMessage({ message: 'Please enter a reason!', type: 'error' }); return; }
+            axios({ method: 'post', url: '/botfiles/update', data: { file: this.selected, content: this.content, reason: this.reason }, headers: { 'Content-Type': 'application/json' } })
                 .then(response => {
-                  if(response.data.status){
-                        this.$bvToast.toast(response.data.msg, {
-                            title: 'Success!',
-                            autoHideDelay: 5000,
-                            appendToast: true,
-                            variant: 'success',
-                        })
-                        window.location.href = window.location.origin + "/botfiles";
-                    }else{
-                        this.$bvToast.toast(response.data.msg, {
-                            title: 'Error!',
-                            autoHideDelay: 5000,
-                            appendToast: true,
-                            variant: 'danger',
-                        })
-                    }
+                    if (response.data.status) {
+                        ElMessage({ message: response.data.msg, type: 'success' });
+                        window.location.href = window.location.origin + '/botfiles';
+                    } else { ElMessage({ message: response.data.msg, type: 'error' }); }
                 })
-                .catch(response => {
-                    this.$bvToast.toast(response.data.msg, {
-                        title: 'Error!',
-                        autoHideDelay: 5000,
-                        appendToast: true,
-                        variant: 'danger',
-                    })
-                 })
-                this.content = null
-                this.selected = "Please select a Botfile"
-                this.show = false
-                this.$nextTick(() => {
-                    this.show = true
-                })
+                .catch(() => { ElMessage({ message: 'Error saving BotFile!', type: 'error' }); });
+            this.content = null;
+            this.selected = null;
+            this.showSaveDialog = false;
+            this.show = false;
+            this.$nextTick(() => { this.show = true; });
         },
-        onReset(evt) {
-            // Reset our form values
-            // Trick to reset/clear native browser form validation state
-            this.content = null
-            this.selected = "Please select a Botfile"
-            this.show = false
-            this.$nextTick(() => {
-                this.show = true
-            })
+        onReset() {
+            this.content = null;
+            this.selected = null;
+            this.show = false;
+            this.$nextTick(() => { this.show = true; });
         },
-        hideModal() {
-            this.$bvModal.hide('modal-preview')
-            this.form.preview = true
-        },
-    }
-}
+    },
+};
 </script>
-<style lang="scss" scoped>
-
-</style>

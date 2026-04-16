@@ -1,176 +1,94 @@
 <template>
-    <div class="awards">
-        <b-row>
-            <b-col><h3>Awards</h3></b-col>
-            <b-col class="text-right h3 text-primary"><b-icon-plus-circle v-b-modal.modal-upload role="button"></b-icon-plus-circle></b-col>
-        </b-row>
-        <b-row>
-            <b-col>
-                <b-table responsive :fields="fields" :items="award_items">
-                    <template #cell(award)="data">
-                        <img class="img-col" :src="data.value" />
-                    </template>
-                    <template #cell(actions)="row">
-                        <b-row>
-                            <b-col class="text-warning h5"><b-icon-pencil-fill class="actions" role="button" @click="editAward(row.item, row.index, $event.target)"></b-icon-pencil-fill></b-col>
-                            <b-col class="text-primary h5"><b-icon-people-fill class="actions" role="button" @click="assignAward(row.item, row.index, $event.target)"></b-icon-people-fill></b-col>
-                            <b-col class="text-danger h5"><b-icon-trash-fill class="actions" role="button" @click="deleteAward(row.item, row.index, $event.target)"></b-icon-trash-fill></b-col>
-                        </b-row>
-                    </template>
-                </b-table>
-            </b-col>
-        </b-row>
-        <b-modal id="modal-upload" title="Upload Award"  hide-footer>
-            <award-upload-component @update-awards="updateAwards"></award-upload-component>
-        </b-modal>
-        <b-modal id="modal-assign" title="Assign Award"  hide-footer>
-            <award-assign-component :award="award" :players="players" @update-awards="updateAwards"></award-assign-component>
-        </b-modal>
-        <b-modal id="modal-edit" title="Edit Award"  hide-footer>
-            <award-edit-component :award="award" @update-awards="updateAwards"></award-edit-component>
-        </b-modal>
-        <b-modal  ref="delete" id="delete" title="Delete Award">
-            <b-row v-if="award">
-                <b-col class="text-center"><img :src="award.award" :alt="award.title" class="img-col"></b-col>
-            </b-row>
-            <b-row v-if="award">
-                <b-col class="text-center">{{ award.title }}</b-col>
-            </b-row>
-            <hr />
-            <b-row class="mt-3">
-                <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
-            </b-row> 
-            <b-row>
-                <b-col class="text-center"><strong class="text-danger">Are you sure to delete this award?</strong> </b-col>
-            </b-row>
-            <b-row>
-              <b-col class="text-center"><b-button @click="handleYes" variant="primary">Yes - Delete!</b-button>&nbsp;<b-button @click="closeModal" variant="danger">Cancel</b-button></b-col>
-            </b-row>
-        </b-modal>
+  <div class="awards">
+    <div style="margin-bottom:0.75rem;">
+      <el-button type="primary" @click="showUpload = true"><el-icon><Plus /></el-icon>&nbsp;Upload New Award</el-button>
     </div>
+    <el-table :data="award_items" style="width:100%">
+      <el-table-column prop="id" label="ID" width="80" sortable />
+      <el-table-column label="Award" width="200">
+        <template #default="scope">
+          <img :src="scope.row.award" style="width:175px" />
+        </template>
+      </el-table-column>
+      <el-table-column prop="title" label="Title" sortable />
+      <el-table-column label="Actions" width="130">
+        <template #default="scope">
+          <el-icon style="color:#409eff;margin-right:0.5rem;cursor:pointer" @click="editAward(scope.row)"><Edit /></el-icon>
+          <el-icon style="color:#67c23a;margin-right:0.5rem;cursor:pointer" @click="assignAward(scope.row)"><User /></el-icon>
+          <el-icon style="color:#f56c6c;cursor:pointer" @click="openDelete(scope.row)"><Delete /></el-icon>
+        </template>
+      </el-table-column>
+    </el-table>
+
+    <el-dialog append-to-body v-model="showUpload" title="Upload Award" width="600px">
+      <award-upload-component @update-awards="updateAwards" @close-dialog="showUpload = false" />
+    </el-dialog>
+
+    <el-dialog append-to-body v-model="showAssign" title="Assign Award" width="600px">
+      <award-assign-component v-if="award && showAssign" :award="award" :players="players" @close-dialog="showAssign = false" />
+    </el-dialog>
+
+    <el-dialog append-to-body v-model="showEdit" title="Edit Award" width="600px">
+      <award-edit-component v-if="award && showEdit" :award="award" @update-awards="updateAwards" @close-dialog="showEdit = false" />
+    </el-dialog>
+
+    <el-dialog append-to-body v-model="showDelete" title="Delete Award" width="420px">
+      <div style="text-align:center;color:#f56c6c;font-weight:600;margin-bottom:0.75rem;">Are you sure to delete this award?</div>
+      <el-input v-model="reason" placeholder="Enter a reason" />
+      <template #footer>
+        <el-button @click="showDelete = false">Cancel</el-button>
+        <el-button type="danger" @click="handleYes">Yes – Delete!</el-button>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 <script>
-import AwardAssignComponent from './AwardAssignComponent.vue'
-import AwardEditComponent from './AwardEditComponent.vue'
-import AwardUploadComponent from './AwardUploadComponent.vue'
+import { ElMessage } from 'element-plus';
+import AwardAssignComponent from './AwardAssignComponent.vue';
+import AwardEditComponent from './AwardEditComponent.vue';
+import AwardUploadComponent from './AwardUploadComponent.vue';
 export default {
-    components: { AwardUploadComponent, AwardAssignComponent, AwardEditComponent },
-    props: ['awards'],
-    data() {
-        return {
-            award_items: null,
-            fields: [
-                { key: 'id', sortable: true, class: 'col-id' },
-                { key: 'award', class: 'col-award' },
-                { key: 'title', sortable: true },
-                { key: 'actions', class: 'col-actions' }
-            ],
-            award: null,
-            players: null,
-            reason: "",
-        }
+  components: { AwardUploadComponent, AwardAssignComponent, AwardEditComponent },
+  props: ['awards'],
+  data() {
+    return {
+      award_items: [],
+      award: null,
+      players: null,
+      reason: '',
+      showUpload: false,
+      showAssign: false,
+      showEdit: false,
+      showDelete: false,
+    };
+  },
+  mounted() {
+    this.updateAwards(this.awards || []);
+    this.fetchPlayers();
+  },
+  methods: {
+    fetchPlayers() {
+      axios.get('/players/list').then((res) => { this.players = res.data; });
     },
-    mounted() {
-        this.updateAwards(this.awards)
-        this.fetchPlayers()
+    updateAwards(awards) {
+      this.award_items = awards.map((item) => ({ id: item.id, award: item.filename, title: item.title }));
     },
-    methods: {
-        fetchPlayers(){
-            axios.get('/players/list')
-            .then(response => {
-                this.players = response.data
-            }, (error) => {
-                console.log(error)
-            });
-        },
-        updateAwards(awards){
-            this.award_items = []
-            for(let i=0;i<awards.length;i++){
-                let item = awards[i]
-                this.award_items.push(
-                    {
-                        id: item.id,
-                        award: item.filename, 
-                        title: item.title
-                    }
-                )
-            }
-        },
-        editAward(item, index, target){
-            this.award = item
-            this.$bvModal.show('modal-edit')
-        },
-        assignAward(item, index, target){
-            this.award = item
-            this.$bvModal.show('modal-assign')
-        },
-        closeModal(){
-            this.$refs['delete'].hide()
-        },
-        deleteAward(item, index, target){
-            this.award = item
-            this.$nextTick(() => {
-                this.$refs['delete'].show()
-            })
-        },
-        handleYes(){
-            if(this.reason === ""){
-              this.$bvToast.toast("Please enter a reason!", {
-                            title: 'Error!',
-                            autoHideDelay: 3000,
-                            appendToast: true,
-                            variant: 'danger',
-                        })
-              return false;
-            }
-            axios.post('/awards/delete/' + this.award.id, { reason: this.reason })
-            .then(response => {
-                if(response.data.success === true){
-                    this.updateAwards(response.data.awards)
-                    this.$nextTick(() => {
-                        this.$refs['delete'].hide()
-                    })
-                    this.$bvToast.toast("Award deleted!", {
-                            title: 'Success!',
-                            autoHideDelay: 3000,
-                            appendToast: true,
-                            variant: 'success',
-                        })
-                }else{
-                    console.log(response.data)
-                }
-            }, (error) => {
-                console.log(error)
-            });
+    editAward(item) { this.award = item; this.showEdit = true; },
+    assignAward(item) { this.award = item; this.showAssign = true; },
+    openDelete(item) { this.award = item; this.reason = ''; this.showDelete = true; },
+    handleYes() {
+      if (!this.reason) { ElMessage({ message: 'Please enter a reason!', type: 'error' }); return; }
+      axios.post('/awards/delete/' + this.award.id, { reason: this.reason }).then((res) => {
+        if (res.data.success) {
+          this.updateAwards(res.data.awards);
+          this.showDelete = false;
+          ElMessage({ message: 'Award deleted!', type: 'success' });
         }
-    }
-}
+      });
+    },
+  },
+};
 </script>
-<style lang="scss" scoped>
-img.img-col{
-    width: 175px;
-}
-</style>
-<style lang="scss">
-.awards {
-    [role=button] {
-        outline: none;
-        filter: brightness(80%);
-        &:hover{
-            filter: brightness(100%);
-        }
-        &:hover,&:active,&:visited,&:focus{
-            outline: none;
-        }
-    }
-    .col-id{
-        width: 75px!important;
-    }
-    .col-award{
-        width: 190px;
-    }
-    .col-actions{
-        width: 150px;
-    }
-}
+<style scoped>
+img { width: 175px; }
 </style>

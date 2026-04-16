@@ -1,78 +1,59 @@
 <template>
   <div>
     <h3>Action-Log</h3>
-    <b-pagination
-      v-if="result"
-      v-model="page"
-      :total-rows="total"
-      :per-page="50"
-      aria-controls="actions_table"
-      @page-click="paginate"
-    ></b-pagination>
-    <b-table responsive striped hover
-      v-if="result"
-      id="actions_table"
-      :items="result"
-    ></b-table>
+    <template v-if="result && result.length">
+      <el-pagination
+        v-model:current-page="page"
+        :page-size="50"
+        :total="total"
+        layout="prev, pager, next"
+        @current-change="filter"
+        class="mb-2"
+      />
+      <el-table :data="result" stripe border style="width:100%">
+        <el-table-column v-for="col in columns" :key="col" :prop="col" :label="col" />
+      </el-table>
+      <el-pagination
+        v-model:current-page="page"
+        :page-size="50"
+        :total="total"
+        layout="prev, pager, next"
+        class="mt-2"
+        @current-change="filter"
+      />
+    </template>
     <p v-else class="mt-4">No Action-Log entries found!</p>
-    <b-pagination
-      v-if="result"
-      v-model="page"
-      :total-rows="total"
-      :per-page="50"
-      aria-controls="actions_table"
-      @page-click="paginate"
-    ></b-pagination>
   </div>
 </template>
 <script>
 export default {
-  props: ["actions", "totals"],
+  props: ['actions', 'totals'],
   data() {
     return {
-      alltime: false,
-      renderTable: true,
       result: null,
-      page: 1, // we always start with page 1
-      total: null,
+      page: 1,
+      total: 0,
     };
   },
+  computed: {
+    columns() {
+      if (!this.result || !this.result.length) return [];
+      return Object.keys(this.result[0]);
+    },
+  },
   mounted() {
-    this.result = this.formatResult(this.actions);
+    this.result = this.actions;
     this.total = this.totals;
   },
-  created() {
-
-  },
   methods: {
-    formatResult(result) {
-      let actions = result;
-      return actions;
-    },
-    filter(page=1) {
+    filter(page = 1) {
       this.page = page;
-      axios
-        .post("/actions", {
-          page: this.page,
-        })
-        .then(
-          (response) => {
-            if (response.data.success === true) {
-              this.result = this.formatResult(response.data.result);
-              this.total = response.data.total;
-            }
-          },
-          (error) => {
-            console.log(error);
-          }
-        );
-    },
-    paginate(bvEvt, page) {
-      bvEvt.preventDefault();
-      this.filter(page);
-    },
-    reset() {
-      this.filter();
+      axios.post('/actions', { page: this.page }).then((res) => {
+        if (res.data.success === true) {
+          this.result = res.data.result;
+          this.total = res.data.total;
+        }
+      });
     },
   },
 };

@@ -1,188 +1,107 @@
 <template>
     <div class="shoutbox">
         <h3>Shoutbox</h3>
-        <b-row v-if="alert">
-            <b-col>
-                <b-alert
-                    :show="alert"
-                    dismissible
-                    :variant="alertVar"
-                    @dismissed="alert = false"
-                >
-                {{ alertMsg }}
-                </b-alert>
-            </b-col>
-        </b-row>
-        <b-row class="box">
-            <b-col v-if="posts">
-                <b-card no-body no-header v-if="show">
-                    <infinite-loading direction="top" @infinite="infiniteHandler">
-                        <span slot="no-more"></span>
-                        <span slot="no-results"></span>
-                        <span slot="spinner"></span>
-                    </infinite-loading>
-                    <b-list-group flush v-if="show">
-                        <b-list-group-item v-for="(post, index) in posts" :key="post.id" :class="{ 'admin': post.active === 3, 'warning': post.active === 4 }">
-                            <b-row class="head">
-                                <b-col >
-                                    <h6 class="float-left mr-2 mb-0 pb-0">#{{ post.id }}</h6>
-                                    <h6 :class="'float-left mb-0 pb-0 ' + ((post.active > 1) ? 'text-danger' : 'text-info')">{{ post.nickname }}</h6>
-                                    <h6><small class="ml-2">{{ date(index) }}</small></h6>
-                                </b-col>
-                                <b-col v-if="arole === 's'" class="data">
-                                    <b-row>
-                                        <b-col sm="4"><small class="text-success font-weight-bolder">IP:</small></b-col>
-                                        <b-col><small>{{ post.ip }}</small></b-col>
-                                    </b-row>
-                                    <b-row>
-                                        <b-col sm="4"><small class="text-primary font-weight-bolder">Fingerprint:</small></b-col>
-                                        <b-col><small>{{ post.fp }}</small></b-col>
-                                    </b-row>
-                                </b-col>
-                                <b-col v-if="arole === 'a'" class="data">
-                                    <b-row>
-                                        <b-col sm="4"><small class="text-primary font-weight-bolder">Fingerprint:</small></b-col>
-                                        <b-col><small>{{ post.fp }}</small></b-col>
-                                    </b-row>
-                                </b-col>                                
-                                <b-col class="text-right actions">
-                                    <b-row>
-                                        <b-col class="text-warning" v-if="user !== null && post.user_id === user.id">
-                                            <b-icon-pencil-fill class="actions" role="button" @click="edit(post.id)"></b-icon-pencil-fill>
-                                        </b-col>
-                                        <b-col class="text-danger ml-2" v-if="arole === 'a' || arole === 's'">
-                                            <b-icon-trash-fill class="actions" role="button" @click="del(post.id)"></b-icon-trash-fill>
-                                        </b-col>
-                                    </b-row>
-                                </b-col>
-                            </b-row>
-                            <b-row>
-                                <b-col><hr /></b-col>
-                            </b-row>
-                            <b-row>
-                                <b-col v-html="post.message"></b-col>
-                            </b-row>
-                            <b-row v-if="post.created_at < post.updated_at">
-                                <b-col><small class="font-italic">Last edited: {{ date(index, true) }}</small></b-col>
-                            </b-row>
-                        </b-list-group-item>
-                    </b-list-group>
-                </b-card>
-            </b-col>
-        </b-row>
-        <b-row class="actions mt-2">
-            <b-col>
-                <b-card>
-                    <b-row>
-                        <b-col md="4" cols="12" class="nick_admin">
-                                <b-row>
-                                    <b-col class="nickname">
-                                        <b-input-group>
-                                            <b-input-group-prepend>
-                                                <b-button variant="warning" :disabled="true"><b-icon-people-fill variant="white"></b-icon-people-fill></b-button>
-                                            </b-input-group-prepend>
-                                            <b-form-input
-                                                id="nickname"
-                                                placeholder="PokerTH Nickname"
-                                                v-model="nickname"
-                                                :disabled="arole !== ''"
-                                            ></b-form-input>
-                                        </b-input-group>
-                                    </b-col>
-                                </b-row>
-                                <b-row v-if="arole === 'a' || arole === 's'">
-                                    <b-col class="admin">
-                                        <b-form-group
-                                            label="Admin-post:"
-                                            label-for="check-button"
-                                            label-cols="6"
-                                            label-size="lg"
-                                            label-align-sm="left"
-                                        >
-                                            <b-form-checkbox size="lg" class="mt-2 text-right" v-model="admin_post" name="check-button" switch></b-form-checkbox>
-                                        </b-form-group>
-                                        <b-form-group
-                                            label="Global Notice:"
-                                            label-for="warning-button"
-                                            label-cols="6"
-                                            label-size="lg"
-                                            label-align-sm="left"
-                                        >
-                                            <b-form-checkbox size="lg" class="mt-2 text-right" v-model="global_warning" name="warning-button" switch></b-form-checkbox>
-                                        </b-form-group>
-                                    </b-col>
-                                </b-row>
-                            </b-col>
-                            <b-col class="message">
-                                <b-row>
-                                    <b-col class="msg">
-                                        <b-form-textarea
-                                            id="sbmsg"
-                                            placeholder="Type your message"
-                                            rows="3"
-                                            max-rows="8"
-                                            v-model="sbmsg"
-                                        ></b-form-textarea>
-                                    </b-col>
-                                    <b-col class="send">
-                                        <b-button variant="success" @click="post" class="send"><b-icon-cursor-fill></b-icon-cursor-fill></b-button>
-                                    </b-col>
-                                </b-row>
-                            </b-col>
-                    </b-row>
-                </b-card>
-            </b-col>
-        </b-row>
-        <b-modal ref="delete" id="delete" :title="'Delete Post #' + this.sbid" ok-disabled hide-footer>
-            Are you sure to delete post <strong class="text-warning">#{{ this.sbid }}</strong>?<br />
-            <b-row class="mt-3">
-                <div class="col-md-12"><b-form-input v-model="reason" placeholder="Enter a reason"></b-form-input></div>
-            </b-row> 
-            <b-button class="mt-3" variant="outline-info" block @click="$refs['delete'].hide()">Cancel</b-button>
-            <b-button class="mt-2" variant="outline-danger" block @click="doDel">Yes, Delete!</b-button>
-        </b-modal>
-        <b-modal ref="edit" id="edit" :title="'Edit Post #' + this.sbid" ok-disabled hide-footer>
-            <b-form-textarea
-                id="sbmsg"
-                rows="3"
-                max-rows="8"
-                v-model="sbmsg"
-            ></b-form-textarea>
-            <b-form-group
-                label="Admin-post:"
-                label-for="check-button"
-                label-cols="6"
-                label-size="lg"
-                label-align-sm="left"
-            >
-                <b-form-checkbox size="lg" class="mt-2 text-right" v-model="admin_post" name="check-button" switch></b-form-checkbox>
-            </b-form-group>
-            <b-form-group
-                v-if="arole === 'a' || arole === 's'"
-                label="Global Notice:"
-                label-for="warning-button"
-                label-cols="6"
-                label-size="lg"
-                label-align-sm="left"
-            >
-                <b-form-checkbox size="lg" class="mt-2 text-right" v-model="global_warning" name="warning-button" switch></b-form-checkbox>
-            </b-form-group>
-            <b-button class="mt-3" variant="outline-info" block @click="$refs['edit'].hide()">Cancel</b-button>
-            <b-button class="mt-2" variant="outline-danger" block @click="doUpdate">Update Post!</b-button>
-        </b-modal>
+        <div v-if="alert" style="margin-bottom:0.75rem;">
+            <el-alert :title="alertMsg" :type="alertTypeEl" show-icon closable @close="alert = false" />
+        </div>
+        <div class="box">
+            <div v-if="posts" class="card" ref="scrollBox">
+                <InfiniteLoading v-if="initialLoaded" direction="top" @infinite="infiniteHandler">
+                    <template #no-more><span></span></template>
+                    <template #no-results><span></span></template>
+                    <template #spinner><span></span></template>
+                </InfiniteLoading>
+                <ul class="sb-list" v-if="show">
+                    <li v-for="(post, index) in posts" :key="post.id" class="sb-post-item"
+                        :class="{ 'admin-post': post.active === 3, 'warning-post': post.active === 4 }">
+                        <div class="sb-post-head">
+                            <div class="sb-post-meta">
+                                <span style="margin-right:0.5rem;font-weight:600;">#{{ post.id }}</span>
+                                <span :style="'font-weight:600;color:' + (post.active > 1 ? '#f56c6c' : '#409eff')">{{ post.nickname }}</span>
+                                <small style="margin-left:0.5rem;">{{ date(index) }}</small>
+                            </div>
+                            <div class="sb-post-info" v-if="arole === 's'">
+                                <div class="sb-post-info-row"><small style="color:#67c23a;font-weight:600;">IP:&nbsp;</small><small>{{ post.ip }}</small></div>
+                                <div class="sb-post-info-row"><small style="color:#409eff;font-weight:600;">Fingerprint:&nbsp;</small><small>{{ post.fp }}</small></div>
+                            </div>
+                            <div class="sb-post-info" v-if="arole === 'a'">
+                                <div class="sb-post-info-row"><small style="color:#409eff;font-weight:600;">Fingerprint:&nbsp;</small><small>{{ post.fp }}</small></div>
+                            </div>
+                            <div class="sb-post-actions">
+                                <el-icon v-if="user !== null && post.user_id === user.id" style="color:#e6a817;margin-right:0.5rem;cursor:pointer" @click="editPost(post.id)"><EditPen /></el-icon>
+                                <el-icon v-if="arole === 'a' || arole === 's'" style="color:#f56c6c;cursor:pointer" @click="del(post.id)"><Delete /></el-icon>
+                            </div>
+                        </div>
+                        <hr />
+                        <div v-html="post.message"></div>
+                        <div v-if="post.created_at < post.updated_at">
+                            <small style="font-style:italic;">Last edited: {{ date(index, true) }}</small>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="sb-form-wrap">
+            <div class="sb-form-inner">
+                <div class="sb-form-left">
+                    <el-input placeholder="PokerTH Nickname" v-model="nickname" :disabled="arole !== ''" />
+                    <div v-if="arole === 'a' || arole === 's'" class="sb-toggles">
+                        <div class="sb-toggle-row">
+                            <span>Admin-post:</span>
+                            <el-switch v-model="admin_post" />
+                        </div>
+                        <div class="sb-toggle-row">
+                            <span>Global Notice:</span>
+                            <el-switch v-model="global_warning" />
+                        </div>
+                    </div>
+                </div>
+                <div class="sb-form-right">
+                    <div style="flex:1;">
+                        <el-input type="textarea" :rows="3" placeholder="Type your message" v-model="sbmsg" />
+                    </div>
+                    <div class="sb-send">
+                        <el-button type="success" @click="postMsg"><el-icon><Promotion /></el-icon></el-button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Delete Post Dialog -->
+        <el-dialog append-to-body v-model="showDeleteDialog" :title="'Delete Post #' + sbid">
+            Are you sure to delete post <strong style="color:#e6a817;">#{{ sbid }}</strong>?<br />
+            <div style="margin-top:0.75rem;"><el-input v-model="reason" placeholder="Enter a reason" /></div>
+            <template #footer>
+                <el-button @click="showDeleteDialog = false">Cancel</el-button>
+                <el-button type="danger" @click="doDel">Yes, Delete!</el-button>
+            </template>
+        </el-dialog>
+
+        <!-- Edit Post Dialog -->
+        <el-dialog append-to-body v-model="showEditDialog" :title="'Edit Post #' + sbid">
+            <el-input type="textarea" :rows="3" v-model="sbmsg" />
+            <div style="margin-top:0.5rem;display:flex;align-items:center;justify-content:space-between;" v-if="arole !== ''">
+                <span>Admin-post:</span><el-switch v-model="admin_post" />
+            </div>
+            <div style="margin-top:0.5rem;display:flex;align-items:center;justify-content:space-between;" v-if="arole === 'a' || arole === 's'">
+                <span>Global Notice:</span><el-switch v-model="global_warning" />
+            </div>
+            <template #footer>
+                <el-button @click="showEditDialog = false">Cancel</el-button>
+                <el-button type="danger" @click="doUpdate">Update Post!</el-button>
+            </template>
+        </el-dialog>
     </div>
 </template>
 <script>
-import FingerprintJS from '@fingerprintjs/fingerprintjs'
-import InfiniteLoading from 'vue-infinite-loading';
+import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import InfiniteLoading from 'v3-infinite-loading';
 export default {
-    components: {
-        InfiniteLoading,
-    },
+    components: { InfiniteLoading },
     props: ['user'],
     data() {
         return {
-            reason: "",
+            reason: '',
             fp: null,
             arole: window.arole,
             total: 0,
@@ -194,318 +113,232 @@ export default {
             admin_post: false,
             global_warning: false,
             show: true,
+            initialLoaded: false,
             alertVar: 'danger',
             alertMsg: '',
             alert: false,
-        }
+            showDeleteDialog: false,
+            showEditDialog: false,
+        };
     },
     watch: {
-        admin_post(val) { if(val) this.global_warning = false },
-        global_warning(val) { if(val) this.admin_post = false },
+        admin_post(val) { if (val) this.global_warning = false; },
+        global_warning(val) { if (val) this.admin_post = false; },
     },
     computed: {
-
+        alertTypeEl() {
+            const map = { danger: 'error', success: 'success', warning: 'warning', info: 'info' };
+            return map[this.alertVar] || 'error';
+        },
     },
     mounted() {
-        const fpPromise = FingerprintJS.load();(async () => {
-            let fp = await fpPromise
-            let result = await fp.get()
-            this.fp = result.visitorId
-        })()
-        if(this.user !== null){
-            this.nickname = this.user.name
-        }
-        window.document.getElementsByTagName('footer')[0].style.display = 'none';
-        setInterval(() => { 
-            this.filter(null, true)
-        }, 10000)
+        const fpPromise = FingerprintJS.load();
+        (async () => {
+            const fp = await fpPromise;
+            const result = await fp.get();
+            this.fp = result.visitorId;
+        })();
+        if (this.user !== null) this.nickname = this.user.name;
+        const footer = window.document.getElementsByTagName('footer')[0];
+        if (footer) footer.style.display = 'none';
+        // Initiales Laden: neueste Posts holen und danach nach unten scrollen
+        this.filter(null, false);
+        setInterval(() => { this.filter(null, true); }, 10000);
     },
     methods: {
-        date(index, updated=false) {
-            let d = new Date(Date.parse((updated) ? this.posts[index].updated_at : this.posts[index].created_at))
-            return d.getFullYear() + '-' + this.pad((d.getMonth() + 1)) + '-' + this.pad(d.getDate()) + ' ' + this.pad(d.getHours()) + ':' + this.pad(d.getMinutes()) + ':' + this.pad(d.getSeconds())
+        date(index, updated = false) {
+            const d = new Date(Date.parse(updated ? this.posts[index].updated_at : this.posts[index].created_at));
+            return d.getFullYear() + '-' + this.pad(d.getMonth() + 1) + '-' + this.pad(d.getDate()) + ' ' + this.pad(d.getHours()) + ':' + this.pad(d.getMinutes()) + ':' + this.pad(d.getSeconds());
         },
-        pad(num) {
-            num = num.toString()
-            while (num.length < 2) num = "0" + num
-            return num
-        },
-        filter(state=null, update=false){
-            let data = new FormData()
-            if(this.sbid !== null) data.append('id', this.sbid)
-            data.append('offset', (update) ? 0 : this.offset)
-            axios({
-                method: "post",
-                url: "/shoutbox",
-                data: data,
-                headers: { "Content-Type": "application/json" },
-            })
-            .then(response => {
-                if(response.data.success === true){
-                    if(state === null){ 
-                        let scroll = true
-                        let posts = response.data.posts
-                        if(!update){
-                            this.posts = posts
-                        }else{
-                            scroll = false
-                            for(let i in posts){
-                                if(posts[i].id > this.posts[this.posts.length - 1].id){
-                                    this.posts.push(posts[i])
-                                    scroll = true
+        pad(num) { return String(num).padStart(2, '0'); },
+        filter(state = null, update = false) {
+            const data = new FormData();
+            if (this.sbid !== null) data.append('id', this.sbid);
+            data.append('offset', update ? 0 : this.offset);
+            axios({ method: 'post', url: '/shoutbox', data, headers: { 'Content-Type': 'application/json' } })
+                .then(response => {
+                    if (response.data.success === true) {
+                        if (state === null) {
+                            const posts = response.data.posts;
+                            let scroll = true;
+                            if (!update) {
+                                // Server liefert DESC (neueste zuerst) → umkehren zu ASC damit neueste unten landen
+                                this.posts = [...posts].reverse();
+                                // Offset setzen damit InfiniteLoader ältere Posts lädt
+                                this.offset = posts.length;
+                            } else {
+                                scroll = false;
+                                for (const i in posts) {
+                                    if (posts[i].id > this.posts[this.posts.length - 1].id) {
+                                        this.posts.push(posts[i]);
+                                        scroll = true;
+                                    }
                                 }
                             }
-                        }
-                        if(scroll){
-                            this.$nextTick(() => {
-                                $( ".shoutbox .box .card" ).prop('scrollTop', $( ".shoutbox .box .card" ).prop('scrollHeight'))
-                            })
-                        }
-                    }
-                    else{
-                        if(response.data.posts.length !== 0){
-                            this.offset += 200;
-                            this.posts.unshift(...response.data.posts.reverse())
-                            state.loaded()
-                        }else{
-                            state.complete()
-                        }
-                    } 
-                }
-            }, (error) => {
-                console.log(error)
-            })
-        },
-        post(){
-            if(this.nickname === null){
-                this.alertMsg = "A nickname is mandatory!"
-                this.alert = true
-                return
-            }
-            if(this.sbmsg === null){
-                this.alertMsg = "A message is mandatory!"
-                this.alert = true
-                return
-
-            }
-            let data = new FormData()
-            data.append('message', this.sbmsg)
-            data.append('fp', this.fp)
-            data.append('nickname', this.nickname)
-            data.append('admin_post', (this.admin_post) ? 1 : 0)
-            data.append('global_warning', (this.global_warning) ? 1 : 0)
-            axios({
-                method: "post",
-                url: "/shoutbox/new",
-                data: data,
-                headers: { "Content-Type": "application/json" },
-            })
-            .then(response => {
-                if(response.data.success === true){
-                    window.location.href = window.location.href
-                }
-            }, (error) => {
-                console.log(error)
-            })
-            this.sbmsg = null
-        },
-        edit(id){
-            this.sbid = id
-            axios.get("/shoutbox/map/" + this.sbid)
-            .then(response => {
-                if(response.data.success === true){
-                    let post = response.data.post
-                    this.sbmsg = post.message
-                    this.admin_post = (post.active === 3) ? true : false
-                    this.global_warning = (post.active === 4) ? true : false
-                    this.$refs['edit'].show()
-                }else{
-                    console.log(response.data.msg)
-                }
-            }, (error) => {
-                console.log(error)
-            })
-        },
-        doUpdate(){
-            let data = new FormData()
-            data.append('message', this.sbmsg)
-            data.append('admin_post', (this.admin_post) ? 1 : 0)
-            data.append('global_warning', (this.global_warning) ? 1 : 0)
-            axios({
-                method: "post",
-                url: "/shoutbox/update/" + this.sbid,
-                data: data,
-                headers: { "Content-Type": "application/json" },
-            })
-            .then(response => {
-                if(response.data.success === true){
-                    let post = response.data.post
-                    for(let i in this.posts){
-                        if(this.posts[i].id == post.id){
-                            this.posts[i] = post
-                            break
+                            if (scroll) {
+                                this.$nextTick(() => {
+                                    const box = this.$refs.scrollBox;
+                                    if (box) box.scrollTop = box.scrollHeight;
+                                    // InfiniteLoader erst einblenden nachdem Scroll ganz unten ist
+                                    if (!update) this.initialLoaded = true;
+                                });
+                            }
+                        } else {
+                            if (response.data.posts.length !== 0) {
+                                this.offset += 200;
+                                this.posts.unshift(...response.data.posts.reverse());
+                                state.loaded();
+                            } else {
+                                state.complete();
+                            }
                         }
                     }
-                    this.$refs['edit'].hide()
-                    this.sbid = null
-                }
-            }, (error) => {
-                console.log(error)
-            })
-            this.sbmsg = null
+                }, (error) => { console.log(error); });
         },
-        del(id){
-            this.sbid = id
-            this.$refs['delete'].show()
-        },
-        doDel(){
-            if(this.reason === ""){
-              this.$bvToast.toast("Please enter a reason!", {
-                            title: 'Error!',
-                            autoHideDelay: 3000,
-                            appendToast: true,
-                            variant: 'danger',
-                        })
-              return false;
-            }
-            axios.post("/shoutbox/delete/" + this.sbid, {
-              reason: this.reason
-            })
-            .then(response => {
-                if(response.data.success === true){
-                  this.$bvToast.toast("Shoutbox Message deleted!", {
-                            title: 'Success!',
-                            autoHideDelay: 3000,
-                            appendToast: true,
-                            variant: 'success',
-                        })
-                    for(let i in this.posts){
-                        if(this.posts[i].id == this.sbid){
-                            this.posts.splice(i, 1)
-                        }
+        postMsg() {
+            if (!this.nickname) { this.alertMsg = 'A nickname is mandatory!'; this.alertVar = 'danger'; this.alert = true; return; }
+            if (!this.sbmsg) { this.alertMsg = 'A message is mandatory!'; this.alertVar = 'danger'; this.alert = true; return; }
+            const data = new FormData();
+            data.append('message', this.sbmsg);
+            data.append('fp', this.fp);
+            data.append('nickname', this.nickname);
+            data.append('admin_post', this.admin_post ? 1 : 0);
+            data.append('global_warning', this.global_warning ? 1 : 0);
+            axios({ method: 'post', url: '/shoutbox/new', data, headers: { 'Content-Type': 'application/json' } })
+                .then(response => {
+                    if (response.data.success === true) {
+                        this.sbmsg = null;
+                        // Neuen Post direkt einfügen statt page-reload
+                        this.filter(null, true);
                     }
-                    this.$refs['delete'].hide()
+                }, (error) => { console.log(error); });
+        },
+        editPost(id) {
+            this.sbid = id;
+            axios.get('/shoutbox/map/' + id).then(response => {
+                if (response.data.success === true) {
+                    const post = response.data.post;
+                    this.sbmsg = post.message;
+                    this.admin_post = post.active === 3;
+                    this.global_warning = post.active === 4;
+                    this.showEditDialog = true;
                 }
-            }, (error) => {
-                console.log(error)
-            })
+            }, (error) => { console.log(error); });
         },
-        infiniteHandler($state) {
-            this.filter($state)
+        doUpdate() {
+            const data = new FormData();
+            data.append('message', this.sbmsg);
+            data.append('admin_post', this.admin_post ? 1 : 0);
+            data.append('global_warning', this.global_warning ? 1 : 0);
+            axios({ method: 'post', url: '/shoutbox/update/' + this.sbid, data, headers: { 'Content-Type': 'application/json' } })
+                .then(response => {
+                    if (response.data.success === true) {
+                        const post = response.data.post;
+                        for (const i in this.posts) {
+                            if (this.posts[i].id == post.id) { this.posts[i] = post; break; }
+                        }
+                        this.showEditDialog = false;
+                        this.sbid = null;
+                    }
+                }, (error) => { console.log(error); });
+            this.sbmsg = null;
         },
-    }
-}
+        del(id) { this.sbid = id; this.showDeleteDialog = true; },
+        doDel() {
+            if (!this.reason) { this.alertMsg = 'Please enter a reason!'; this.alertVar = 'danger'; this.alert = true; return; }
+            axios.post('/shoutbox/delete/' + this.sbid, { reason: this.reason })
+                .then(response => {
+                    if (response.data.success === true) {
+                        this.alertMsg = 'Shoutbox Message deleted!'; this.alertVar = 'success'; this.alert = true;
+                        this.posts = this.posts.filter(p => p.id != this.sbid);
+                        this.showDeleteDialog = false;
+                    }
+                }, (error) => { console.log(error); });
+        },
+        infiniteHandler($state) { this.filter($state); },
+    },
+};
 </script>
 <style lang="scss" scoped>
-.shoutbox{
-    height: calc(100vh - 150px);
-    width: 100%;
-    .btn{
-        &.disabled, &:disabled{
-            opacity: 1;
+.shoutbox {
+    .box {
+        .card {
+            height: 400px;
+            overflow-y: auto;
         }
     }
-
-    .row{
-        &.box{
-            height: calc(100vh - 300px);
-            .col{
-                .card{
-                    height: calc(100vh - 300px);
-                    overflow-y: auto;
-                    .list-group{
-                        .list-group-item{
-                            &.admin{
-                                background-color: var(--admin);
-                            }
-                            &.warning{
-                                background-color: rgba(255, 140, 0, 0.35);
-                            }
-                            .row{
-                                hr{
-                                    border: 1px solid var(--secondary);
-                                    margin: 0 0 0.1em 0;
-                                    opacity: 0.1;
-                                }
-                                &.head{
-                                    .col{
-                                        &.actions{
-                                            display: flex;
-                                            flex-shrink: 2;
-                                            justify-content: flex-end;
-                                            .row{
-                                                margin-left: 0;
-                                                margin-right: 0;
-                                                .col{
-                                                    padding-left: 0;
-                                                    padding-right: 0;
-                                                }
-                                            }
-                                        }
-                                        &.data{
-                                            .row{
-                                                margin-top: -0.75em;
-                                            }
-                                            opacity: 0.6;
-                                        }
-                                    }
-                                }
-                                
-                            }
-                        }
-                    }
-                }
-            }
-        }
-        &.actions{
-            .col{
-                .card{
-                    .row {
-                        .col{
-                            &.nick_admin{
-                                .row{
-                                    .col{
-                                        button{
-                                            cursor: default;
-                                            .b-icon {
-                                                cursor: default;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            &.message{
-                                .row{
-                                    margin-left: 0;
-                                    margin-right: 0;
-                                    .col{
-                                        padding-right: 0px;
-                                        padding-left: 0px;
-                                        &.msg{
-                                            display: flex;
-                                            flex-grow: 10;
-                                        }
-                                        &.send{
-                                            display: flex;
-                                            flex-shrink: 2;
-                                            justify-content: flex-end;
-                                            align-items: flex-start;
-                                            margin-left: 5px;
-                                            button{
-                                                svg{
-                                                    transform: rotate(45deg);
-                                                }
-                                            }
-                                        }
-
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
+    .sb-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
     }
+    .sb-post-item {
+        padding: 0.5rem 1rem;
+    }
+    .sb-post-head {
+        display: flex;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+    .sb-post-meta {
+        flex: 1;
+        min-width: 0;
+    }
+    .sb-post-info {
+        flex: 1;
+        min-width: 0;
+    }
+    .sb-post-info-row {
+        display: flex;
+    }
+    .sb-post-actions {
+        flex-shrink: 0;
+        text-align: right;
+    }
+    .sb-form-wrap {
+        margin-top: 0.5rem;
+    }
+    .sb-form-inner {
+        display: flex;
+        gap: 0.75rem;
+        border: 1px solid var(--el-border-color);
+        border-radius: 4px;
+        padding: 0.75rem;
+        background: var(--el-bg-color);
+    }
+    .sb-form-left {
+        flex: 0 0 auto;
+        min-width: 160px;
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    .sb-toggles {
+        display: flex;
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+    .sb-toggle-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    .sb-form-right {
+        flex: 1;
+        display: flex;
+        gap: 0.5rem;
+        align-items: flex-end;
+    }
+    .sb-send {
+        flex-shrink: 0;
+        display: flex;
+        align-items: flex-end;
+    }
+    hr {
+        margin: 0.5rem 0;
+    }
+    li.admin-post { background-color: rgba(240, 173, 78, 0.15); }
+    li.warning-post { background-color: rgba(217, 83, 79, 0.15); }
+    .el-icon { font-size: 1.1em; }
 }
 </style>

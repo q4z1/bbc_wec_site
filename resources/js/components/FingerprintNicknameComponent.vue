@@ -5,10 +5,9 @@
               <div class="card">
                   <div class="card-body" id="vtable">
                       <el-row :gutter="20" type="flex" justify="space-between" align="middle">
-                          <el-col :lg="4" :md="4" :sm="6" :xs="12">
-                            <b-form-checkbox v-model="target" name="check-button" switch>
-                              Search for <span v-if="target === false">Fingerprint</span><span v-if="target === true">Nickname</span>:
-                            </b-form-checkbox>
+                          <el-col :lg="4" :md="4" :sm="6" :xs="12" class="d-flex align-items-center gap-2">
+                            <el-switch v-model="target" />
+                            <span>Search for <span v-if="!target">Fingerprint</span><span v-if="target">Nickname</span>:</span>
                           </el-col>
                           <el-col :lg="4" :md="4" :sm="6" :xs="12" v-if="target === false">
                               <el-input :disabled="target === true" v-model="fingerprint" placeholder="Fingerprint"></el-input>
@@ -17,7 +16,7 @@
                               <el-input :disabled="target === false" v-model="nickname" placeholder="Nickname"></el-input>
                           </el-col>
                           <el-col :lg="2" :md="2" :sm="6" :xs="12">
-                            <b-button @click="doSearch" type="submit" variant="primary">Search</b-button>
+                            <el-button type="primary" @click="doSearch">Search</el-button>
                           </el-col>
                       </el-row>
                       <hr />
@@ -59,10 +58,8 @@
 
         },
         methods: {
-          doSearch(evt) {
+          doSearch() {
               this.result = null
-              evt.preventDefault()
-              evt.stopPropagation()
               let data = new FormData()
               if(this.target === true) data.append('nickname', this.nickname)
               else data.append('fp', this.fingerprint)

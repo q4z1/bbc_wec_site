@@ -1,86 +1,53 @@
 <template>
-    <div class="award-upload">
-        <b-card class="mb-2">
-            <b-card-text>
-                <div class="preview-area mb-2" v-if="preview"><img id="preview" src="#" :alt="title" class="img-fluid mx-auto d-block" /></div>
-                <b-form @submit="doUpload" @reset="doReset" v-if="show">
-                    <b-form-group id="input-group-1" label="Image File:" label-for="input-1">
-                        <b-form-file
-                            accept="image/jpeg, image/png, image/gif"
-                            v-model="award_file"
-                            :state="Boolean(award_file)"
-                            placeholder="Choose an image-file or drop it here..."
-                            drop-placeholder="Drop image-file here..."
-                            @input="genPreview"
-                            ></b-form-file>
-                    </b-form-group>
-                    <b-form-group id="input-group-2" label="Title:" label-for="input-2">
-                        <b-form-input v-model="title"></b-form-input>
-                    </b-form-group>
-                    <b-button type="submit" variant="primary">Upload</b-button>
-                    <b-button type="reset" variant="danger">Reset</b-button>
-                </b-form>
-            </b-card-text>
-        </b-card>
+  <el-card>
+    <div v-if="preview" class="text-center mb-3">
+      <img :id="'preview'" :src="previewSrc" alt="preview" style="max-width:175px" />
     </div>
+    <div class="mb-3">
+      <label class="form-label">Image File:</label>
+      <input type="file" class="form-control" accept="image/jpeg,image/png,image/gif"
+        @change="genPreview" ref="fileInput" />
+    </div>
+    <div class="mb-3">
+      <label class="form-label">Title:</label>
+      <el-input v-model="title" />
+    </div>
+    <el-button type="primary" @click="doUpload">Upload</el-button>
+    <el-button type="danger" @click="doReset">Reset</el-button>
+  </el-card>
 </template>
 <script>
 export default {
-    data() {
-        return {
-            show: true,
-            award_file: null,
-            title: null,
-            preview: false,
+  emits: ['update-awards', 'close-dialog'],
+  data() {
+    return { award_file: null, title: null, preview: false, previewSrc: null };
+  },
+  methods: {
+    doUpload() {
+      if (!this.award_file || !this.title) return;
+      const data = new FormData();
+      data.append('title', this.title);
+      data.append('award', this.award_file);
+      axios.post('/awards/upload', data).then((res) => {
+        if (res.data.success) {
+          this.$emit('update-awards', res.data.awards);
+          this.doReset();
+          this.$emit('close-dialog');
         }
+      });
     },
-    mounted() {
-
+    doReset() {
+      this.award_file = null; this.title = null; this.preview = false; this.previewSrc = null;
+      if (this.$refs.fileInput) this.$refs.fileInput.value = '';
     },
-    methods: {
-        doUpload(evt) {
-            evt.preventDefault()
-            evt.stopPropagation()
-            let data = new FormData();
-            data.append('title', this.title);
-            data.append('award', this.award_file);
-            axios.post('/awards/upload', data)
-            .then(response => {
-                if(response.data.success === true){
-                    this.$emit('update-awards', response.data.awards)
-                    this.doReset()
-                    this.$root.$emit('bv::hide::modal', 'modal-upload')
-                }else{
-                    console.log(response.data)
-                }
-            }, (error) => {
-                console.log(error)
-            });
-        },
-        doReset(evt) {
-            this.award_file = this.preview = this.title = null
-
-            // Trick to reset/clear native browser form validation state
-            this.show = false
-            this.$nextTick(() => {
-                this.show = true
-            })
-        },
-        genPreview(af){
-            if(this.award_file !== null){
-                this.preview = true
-                var reader = new FileReader();
-                reader.onload = e => {
-                    $('#preview').attr('src', e.target.result);
-                };
-                reader.readAsDataURL(this.award_file);
-            }else{
-                this.preview = false;
-            }
-        },
-    }
-}
+    genPreview(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+      this.award_file = file;
+      const reader = new FileReader();
+      reader.onload = (ev) => { this.previewSrc = ev.target.result; this.preview = true; };
+      reader.readAsDataURL(file);
+    },
+  },
+};
 </script>
-<style scoped>
-
-</style>

@@ -1,56 +1,36 @@
 <template>
   <div>
     <h3>Ranking</h3>
-    <b-row class="mb-3">
-      <b-col>
-        <b-overlay
-        :show="loading"
-        rounded
-        opacity="0.6"
-        spinner-small
-        spinner-variant="primary"
-        class="d-inline-block"
-        >
-          <b-form-select :disabled="loading||alltime" v-model="season_select" @change="filter" :options="seasons"></b-form-select>
-        </b-overlay>
-      </b-col>
-      <b-col></b-col>
-      <b-col class="text-right">
-        <b-overlay
-        :show="loading"
-        rounded
-        opacity="0.6"
-        spinner-small
-        spinner-variant="primary"
-        class="d-inline-block"
-        >
-          <b-form-checkbox :disabled="loading" class="mt-2" @change="filter" v-model="alltime" switch>
-            All-Time
-          </b-form-checkbox>
-        </b-overlay>
-      </b-col>
-    </b-row>
-    <b-table responsive striped hover
-      id="results_table"
-      :items="result"
-      :fields="fields"
-      @row-clicked="showPlayer"
-    >
-      <template #cell(nickname)="data">
-        <span v-html="data.value"></span>
-      </template>
-      <template #cell(games)="data" v-if="(season_select == 9) && step1_visible">
-        <span v-if="data.value < 40" class="text-danger" v-html="data.value"></span>
-        <span v-else class="text-success" v-html="data.value"></span>
-      </template>
-      <template #cell(step1)="data" v-if="step1_visible">
-        <span v-if="((season_select == 9) && (data.value < 20)) || ((season_select == 10) && (data.value < 45))" class="text-danger" v-html="data.value"></span>
-        <span v-else class="text-success" v-html="data.value"></span>
-      </template>
-    </b-table>
-    <b-row class="mb-3" v-if="avg_games">
-      <b-col class="text-center font-italic">a={{ avg_games }}</b-col>
-    </b-row>
+    <div class="row mb-3 g-2">
+      <div class="col" v-loading="loading">
+        <el-select v-model="season_select" :disabled="loading || alltime" @change="filter" style="width:100%">
+          <el-option v-for="s in seasons" :key="s.value" :label="s.text" :value="s.value" />
+        </el-select>
+      </div>
+      <div class="col-auto d-flex align-items-center">
+        <el-checkbox v-model="alltime" :disabled="loading" @change="filter">All-Time</el-checkbox>
+      </div>
+    </div>
+    <div v-loading="loading">
+      <el-table :data="result" stripe style="width:100%" @row-click="showPlayer">
+        <el-table-column prop="position" label="#" width="60" />
+        <el-table-column prop="nickname" label="Nickname">
+          <template #default="scope"><span v-html="scope.row.nickname"></span></template>
+        </el-table-column>
+        <el-table-column prop="score" label="Score" sortable />
+        <el-table-column prop="games" label="Games" sortable>
+          <template #default="scope">
+            <span :class="(season_select == 9 && !alltime && scope.row.games < 40) ? 'text-danger' : 'text-success'">{{ scope.row.games }}</span>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="step1_visible" prop="step1" label="Step1" sortable>
+          <template #default="scope">
+            <span :class="shouldHighlightStep1(scope.row) ? 'text-danger' : 'text-success'">{{ scope.row.step1 }}</span>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
+    <div v-if="avg_games" class="text-center fst-italic mt-2">a={{ avg_games }}</div>
   </div>
 </template>
 <script>
@@ -59,90 +39,49 @@ export default {
   data() {
     return {
       season_select: null,
-      renderTable: true,
       result: null,
       loading: false,
       alltime: false,
       step1_visible: false,
       avg_games: 0,
-      fields: [{
-          key: 'position'
-        },
-        {
-          key: 'nickname',
-          sortable: true
-        },
-        {
-          key: 'score',
-          sortable: true
-        },
-        {
-          key: 'games',
-          sortable: true
-        }
-      ],
-    }
+    };
   },
   computed: {
-    seasons: function () {
-      let l = this.allseasons.length
-      let s = []
-      for (let i = 0; i < l; i++) {
-        s.push(
-          { value: this.allseasons[i], text: 'Season ' + this.allseasons[i] }
-        )
-      }
-      return s
-    }
+    seasons() {
+      return (this.allseasons || []).map((s) => ({ value: s, text: 'Season ' + s }));
+    },
   },
   mounted() {
-    this.season_select = this.season
-    this.result = this.formatResult(this.results)
+    this.season_select = this.season;
+    this.result = this.formatResult(this.results || []);
   },
   methods: {
-    showPlayer(item, index, event) {
-      window.location.href = '/player/' + encodeURIComponent(item.nickname)
+    showPlayer(row) {
+      window.location.href = '/player/' + encodeURIComponent(row.nickname);
+    },
+    shouldHighlightStep1(row) {
+      return (this.season_select == 9 && row.step1 < 20) || (this.season_select == 10 && row.step1 < 45);
     },
     formatResult(stats) {
-      let stats_formatted = []
-      let l = stats.length
-      if(((this.season_select == 9 || this.season_select == 10) && !this.alltime) && !this.step1_visible){
-        this.fields.push({key: 'step1', sortable: true})
-        this.step1_visible = true
-      }else if((this.season_select < 9 || this.season_select > 10 || this.alltime) && this.step1_visible){
-        this.fields.pop()
-        this.step1_visible = false
-      }
-      let i = 0, games = 0
-      for(i; i<l; i++){
-        let s = stats[i]
-        stats_formatted.push({
-          'position': i + 1,
-          'nickname': s.nickname,
-          'score': s.score,
-          'games': s.games,
-          'step1': s.step1
-        })
-        games += s.games
-      }
-      this.avg_games = (i > 0) ? (games / i).toFixed() : 0
-      return stats_formatted
+      this.step1_visible = (this.season_select == 9 || this.season_select == 10) && !this.alltime;
+      let games = 0;
+      const result = stats.map((s, i) => {
+        games += s.games;
+        return { position: i + 1, nickname: s.nickname, score: s.score, games: s.games, step1: s.step1 };
+      });
+      this.avg_games = stats.length > 0 ? (games / stats.length).toFixed() : 0;
+      return result;
     },
     filter() {
-      this.loading = true
-      axios.post('/results/ranking', {
-        season: (!this.alltime) ? this.season_select : 0
-      })
-        .then(response => {
-          if (response.data.success === true) {
-            this.result = this.formatResult(response.data.stats)
-            this.loading = false
+      this.loading = true;
+      axios.post('/results/ranking', { season: !this.alltime ? this.season_select : 0 })
+        .then((res) => {
+          if (res.data.success === true) {
+            this.result = this.formatResult(res.data.stats);
+            this.loading = false;
           }
-        }, (error) => {
-          console.log(error)
-          this.loading = true
         });
     },
-  }
-}
+  },
+};
 </script>

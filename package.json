@@ -1,45 +1,31 @@
 {
     "private": true,
+    "type": "module",
     "scripts": {
-        "dev": "npm run development",
-        "development": "cross-env NODE_ENV=development node_modules/webpack/bin/webpack.js --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "watch": "npm run development -- --watch",
-        "watch-poll": "npm run watch -- --watch-poll",
-        "hot": "cross-env NODE_ENV=development node_modules/webpack-dev-server/bin/webpack-dev-server.js --inline --hot --disable-host-check --config=node_modules/laravel-mix/setup/webpack.config.js",
-        "prod": "npm run production",
-        "production": "cross-env NODE_ENV=production node_modules/webpack/bin/webpack.js --config=node_modules/laravel-mix/setup/webpack.config.js"
+        "dev": "vite",
+        "build": "vite build",
+        "preview": "vite preview"
     },
     "devDependencies": {
-        "axios": "^0.21.4",
-        "bootstrap": "^4.6.2",
-        "cross-env": "^7.0.3",
-        "jquery": "^3.6.2",
-        "laravel-mix": "^6.0.6",
-        "lodash": "^4.17.21",
-        "popper.js": "^1.12",
-        "resolve-url-loader": "^2.3.1",
-        "sass": "^1.56.2",
-        "sass-loader": "^8.0.0",
-        "vue": "^2.7.14",
-        "vue-loader": "^15.10.1",
-        "vue-template-compiler": "^2.7.14"
+        "@vitejs/plugin-vue": "^5.0",
+        "laravel-vite-plugin": "^1.0",
+        "sass": "^1.70",
+        "vite": "^5.0"
     },
     "dependencies": {
-        "@fingerprintjs/fingerprintjs": "^3.3.6",
-        "@fullcalendar/daygrid": "^5.11.3",
-        "@fullcalendar/interaction": "^5.11.3",
-        "@fullcalendar/vue": "^5.11.3",
-        "bootstrap-vue": "^2.23.1",
-        "chart.js": "^2.9.4",
-        "i": "^0.3.7",
-        "jquery-powertip": "^1.3.2",
-        "marked": "^2.1.3",
-        "npm": "^6.14.17",
-        "remove": "^0.1.5",
-        "tooltipster": "^4.2.8",
-        "vue-chartjs": "^3.5.1",
-        "vue-data-tables": "^3.4.5",
-        "vue-infinite-loading": "^2.4.5",
-        "vue-markdown": "^2.2.4"
+        "@element-plus/icons-vue": "^2.3",
+        "@fingerprintjs/fingerprintjs": "^4.2",
+        "@fullcalendar/core": "^6.1",
+        "@fullcalendar/daygrid": "^6.1",
+        "@fullcalendar/interaction": "^6.1",
+        "@fullcalendar/vue3": "^6.1",
+        "axios": "^1.6",
+        "chart.js": "^4.4",
+        "element-plus": "^2.7",
+        "marked": "^12.0",
+        "v3-infinite-loading": "^1.3.2",
+        "vue": "^3.4",
+        "vue-chartjs": "^5.3.3",
+        "vue3-infinite-loading": "^1.0.0"
     }
 }

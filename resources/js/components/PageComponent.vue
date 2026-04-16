@@ -2,22 +2,18 @@
   <div>
     <h3>{{ page.title }}</h3>
     <el-row>
-      <el-col><vue-markdown :html="true">{{ page.markdown }}</vue-markdown></el-col>
+      <el-col><div v-html="renderedMarkdown"></div></el-col>
     </el-row>
   </div>
 </template>
 <script>
-import VueMarkdown from 'vue-markdown'
+import { marked } from 'marked';
 export default {
-  props: ["page"],
-  components: {
-    VueMarkdown,
+  props: ['page'],
+  computed: {
+    renderedMarkdown() {
+      return marked(this.page?.markdown || '');
+    },
   },
-  data() {
-    return {
-
-    };
-  },
-  mounted() {},
 };
 </script>
