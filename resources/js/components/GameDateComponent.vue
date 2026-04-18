@@ -5,7 +5,7 @@
             <strong class="text-success"><u>Table {{ table }}</u></strong>
             <div class="row" v-if="showT">
                 <div class="col">
-                    <el-table v-if="regs[table]" :data="regs[table]" stripe size="small" style="width:100%">
+                    <el-table v-if="regs[table]" :data="regs[table]" stripe size="default" style="width:100%">
                         <el-table-column prop="pos" label="Pos" width="60" />
                         <el-table-column label="Nickname">
                             <template #default="{ row }">
@@ -162,4 +162,5 @@ export default {
 </script>
 <style lang="scss" scoped>
 .el-icon { cursor: pointer; }
+
 </style>
