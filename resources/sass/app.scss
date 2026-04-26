@@ -375,6 +375,10 @@ body[data-theme="light"] {
             outline: none !important;
             box-shadow: none !important;
         }
+        &:focus, &:focus-visible, &:focus-within {
+            color: var(--el-menu-text-color) !important;
+            background-color: transparent !important;
+        }
         a, a:hover, a:focus, a:focus-visible {
             outline: none !important;
             box-shadow: none !important;
