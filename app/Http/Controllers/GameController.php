@@ -221,38 +221,10 @@ class GameController extends Controller
 
         if(is_null($payload)) return ["status" => false, 'msg' => "Parameter missing!"];
 
-        for($i=1;$i<=10;$i++){
-            $p = "pos" . $i;
-            if(array_key_exists($i-1, $payload['player'])){
-                $player = Player::where('nickname', $payload['player'][$i-1])->first();
-                if($player) $game->{$p} = $player->id;
-            }
-        }
         $game->started = $payload["date"] . " " . $payload["time"];
         $game->type = $payload['gametype'];
         $game->number = $payload['gameno'];
         $game->save();
-        // score
-        Point::where('game_id', $game->id)->delete();
-        for($i=1;$i<=10;$i++){
-            if(array_key_exists($i-1, $payload['player'])){
-                $player = Player::where('nickname', $payload['player'][$i-1])->first();
-                if($player){
-                    $pt = new Point();
-                    $pt->points = 0;
-                    if($i<8){
-                        $points = [10,9,8,7,6,5,4,3,2,1];
-                        $pt->points = $points[$i-1] * $game->type;
-                    }
-                    $pt->game_started = $payload["date"] . " " . $payload["time"];
-                    $pt->game_id = $game->id;
-                    $pt->pos = $i;
-                    $pt->type = $game->type;
-                    $pt->player_id = $player->id;
-                    $pt->save();
-                }
-            }
-        }
         $action = new Action();
         $action->action = "Step" . $game->type . " game #" . $game->number . " updated.";
         $action->reason = $request->input('reason', "n/a");
