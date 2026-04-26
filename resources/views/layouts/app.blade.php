@@ -24,7 +24,7 @@
 
             <!-- Rechte Seite: immer sichtbar -->
             <div class="main-navbar-end">
-                <el-tooltip content="Theme wechseln" placement="bottom">
+                <el-tooltip content="Theme switch" placement="bottom">
                     <el-button class="theme-toggle-btn" :icon="Sunny" circle />
                 </el-tooltip>
                 <el-tooltip content="Shoutbox" placement="bottom">
