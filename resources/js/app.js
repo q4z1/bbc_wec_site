@@ -3,7 +3,7 @@ import { createApp } from 'vue';
 import ElementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
 import * as ElementPlusIconsVue from '@element-plus/icons-vue';
-import de from 'element-plus/dist/locale/de.mjs';
+import en from 'element-plus/dist/locale/en.mjs';
 
 const app = createApp({
     data() {
@@ -19,7 +19,7 @@ for (const [key, component] of Object.entries(ElementPlusIconsVue)) {
     app.component(key, component);
 }
 
-app.use(ElementPlus, { locale: de });
+app.use(ElementPlus, { locale: en });
 
 // Alle Vue-Komponenten aus dem components-Verzeichnis automatisch registrieren
 const modules = import.meta.glob('./components/*.vue', { eager: true });

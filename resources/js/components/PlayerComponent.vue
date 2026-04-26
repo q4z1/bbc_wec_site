@@ -16,14 +16,13 @@
                 <div style="display:flex;gap:0.5rem;"><div style="min-width:160px;"><strong>Score:</strong></div><div>{{ stats.season.score }}</div></div>
             </div>
             <div v-if="stats.season.games" style="margin-top:0.5rem;">
-                <div style="margin-bottom:0.75rem;">
+                <div style="margin-bottom:0.75rem;display:flex;align-items:center;gap:0.75rem;">
                     <strong>Results:</strong>
-                    <a style="margin-left:0.25rem;" v-if="stats.season.places[0]" @click.prevent="showSeasonStep(1)" href="#">Step 1</a>
-                    <a style="margin-left:0.25rem;" v-if="stats.season.places[1]" @click.prevent="showSeasonStep(2)" href="#">Step 2</a>
-                    <a style="margin-left:0.25rem;" v-if="stats.season.places[2]" @click.prevent="showSeasonStep(3)" href="#">Step 3</a>
-                    <div style="margin-top:0.5rem;text-align:center;" v-show="seasonS1"><strong>Step 1</strong></div>
-                    <div style="margin-top:0.5rem;text-align:center;" v-show="seasonS2"><strong>Step 2</strong></div>
-                    <div style="margin-top:0.5rem;text-align:center;" v-show="seasonS3"><strong>Step 3</strong></div>
+                    <el-radio-group v-model="seasonStepSelected" @change="showSeasonStep" size="small">
+                        <el-radio-button v-if="stats.season.places[0]" :value="1">Step 1</el-radio-button>
+                        <el-radio-button v-if="stats.season.places[1]" :value="2">Step 2</el-radio-button>
+                        <el-radio-button v-if="stats.season.places[2]" :value="3">Step 3</el-radio-button>
+                    </el-radio-group>
                 </div>
                 <div v-if="stats.season.places[0]" v-show="seasonS1" style="display:flex;flex-wrap:wrap;gap:0.5rem;">
                     <div v-show="seasonBarS1" style="flex:0 1 200px;margin-bottom:0.75rem;"><BarChart :chartData="stats.season.places[0]" :height="100"/></div>
@@ -51,16 +50,14 @@
                 <div style="display:flex;gap:0.5rem;"><div style="min-width:160px;"><strong>Score:</strong></div><div>{{ stats.alltime.score }}</div></div>
             </div>
             <div v-if="stats.alltime.games" style="margin-top:0.5rem;">
-                <div style="margin-bottom:0.75rem;">
+                <div style="margin-bottom:0.75rem;display:flex;align-items:center;gap:0.75rem;">
                     <strong>Results:</strong>
-                    <a style="margin-left:0.25rem;" v-if="stats.alltime.places[0]" @click.prevent="showAlltimeStep(1)" href="#">Step 1</a>
-                    <a style="margin-left:0.25rem;" v-if="stats.alltime.places[1]" @click.prevent="showAlltimeStep(2)" href="#">Step 2</a>
-                    <a style="margin-left:0.25rem;" v-if="stats.alltime.places[2]" @click.prevent="showAlltimeStep(3)" href="#">Step 3</a>
-                    <a style="margin-left:0.25rem;" v-if="stats.alltime.places[3]" @click.prevent="showAlltimeStep(4)" href="#">Step 4</a>
-                    <div style="margin-top:0.5rem;text-align:center;" v-show="alltimeS1"><strong>Step 1</strong></div>
-                    <div style="margin-top:0.5rem;text-align:center;" v-show="alltimeS2"><strong>Step 2</strong></div>
-                    <div style="margin-top:0.5rem;text-align:center;" v-show="alltimeS3"><strong>Step 3</strong></div>
-                    <div style="margin-top:0.5rem;text-align:center;" v-show="alltimeS4"><strong>Step 4</strong></div>
+                    <el-radio-group v-model="alltimeStepSelected" @change="showAlltimeStep" size="small">
+                        <el-radio-button v-if="stats.alltime.places[0]" :value="1">Step 1</el-radio-button>
+                        <el-radio-button v-if="stats.alltime.places[1]" :value="2">Step 2</el-radio-button>
+                        <el-radio-button v-if="stats.alltime.places[2]" :value="3">Step 3</el-radio-button>
+                        <el-radio-button v-if="stats.alltime.places[3]" :value="4">Step 4</el-radio-button>
+                    </el-radio-group>
                 </div>
                 <div v-if="stats.alltime.places[0]" v-show="alltimeS1" style="display:flex;flex-wrap:wrap;gap:0.5rem;">
                     <div v-show="alltimeBarS1" style="flex:0 1 200px;margin-bottom:0.75rem;"><BarChart :chartData="stats.alltime.places[0]" :height="100"/></div>
@@ -184,6 +181,7 @@ export default {
             s2: 0, s3: 0, s4: 0,
             gameTypes: [{ text: 'Step 1', value: 1 },{ text: 'Step 2', value: 2 },{ text: 'Step 3', value: 3 },{ text: 'Step 4', value: 4 },{ text: 'All', value: 0 }],
             alltime: false, season_select: null, type: 0, page: 1, total: null, games: null,
+            seasonStepSelected: 1, alltimeStepSelected: 1,
             seasonS1: true, seasonBarS1: true, seasonPieS1: false,
             seasonS2: false, seasonBarS2: true, seasonPieS2: false,
             seasonS3: false, seasonBarS3: true, seasonPieS3: false,
@@ -218,8 +216,8 @@ export default {
         this.filter();
     },
     methods: {
-        showSeasonStep(n) { this.seasonS1 = n===1; this.seasonS2 = n===2; this.seasonS3 = n===3; },
-        showAlltimeStep(n) { this.alltimeS1 = n===1; this.alltimeS2 = n===2; this.alltimeS3 = n===3; this.alltimeS4 = n===4; },
+        showSeasonStep(n) { this.seasonS1 = n===1; this.seasonS2 = n===2; this.seasonS3 = n===3; this.seasonStepSelected = n; },
+        showAlltimeStep(n) { this.alltimeS1 = n===1; this.alltimeS2 = n===2; this.alltimeS3 = n===3; this.alltimeS4 = n===4; this.alltimeStepSelected = n; },
         switchSeasonChartS1(item, e) { const i = this.getPlacesFormatted(this.stats.season.places[0]).indexOf(item); this.seasonBarS1 = i===0; this.seasonPieS1 = i!==0; },
         switchSeasonChartS2(item, e) { const i = this.getPlacesFormatted(this.stats.season.places[1]).indexOf(item); this.seasonBarS2 = i===0; this.seasonPieS2 = i!==0; },
         switchSeasonChartS3(item, e) { const i = this.getPlacesFormatted(this.stats.season.places[2]).indexOf(item); this.seasonBarS3 = i===0; this.seasonPieS3 = i!==0; },
