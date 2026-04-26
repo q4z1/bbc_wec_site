@@ -230,7 +230,10 @@ export default {
         placesKeys(data) { return this.getPlacesFormatted(data).length ? Object.keys(this.getPlacesFormatted(data)[0]) : []; },
         getPlacesFormatted(stats) {
             const total = stats.reduce((sum, num) => sum + num, 0);
-            return [stats.reduce((acc, v, i) => { acc[i+1+'.']=v; return acc; }, {}), stats.reduce((acc, v, i) => { acc[i+1+'.%']=((v/total)*100).toFixed()+'%'; return acc; }, {})];
+            return [
+                stats.reduce((acc, v, i) => { acc[i+1+'.']=v; return acc; }, {}),
+                stats.reduce((acc, v, i) => { acc[i+1+'.']=total > 0 ? ((v/total)*100).toFixed()+'%' : '0%'; return acc; }, {}),
+            ];
         },
         formatResult(result) {
             return result.map(entry => {
