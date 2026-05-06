@@ -10,7 +10,6 @@ use App\Models\Action;
 use App\Http\Controllers\LogFileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
@@ -120,6 +119,8 @@ class GameController extends Controller
                 $pt->type = $g->type;
                 $pt->player_id = $player->id;
                 $pt->save();
+
+
             }
         }
         if($g->type == 4){
@@ -144,7 +145,7 @@ class GameController extends Controller
         $action->reason = "n/a"; // @TODO: reason handling
         $action->user = Auth::id();
         $action->save();
-        Artisan::call('tickets:sync');
+        $this->syncTickets();
         Cache::flush();
         return ["status" => true, 'msg' => $g];
     }
@@ -153,6 +154,31 @@ class GameController extends Controller
         $log = new LogFileController();
         $game = $log->process_log($url);
         return ["status" => true, "msg" => $game['player_list']];
+    }
+
+    private function syncTickets(): void
+    {
+        $rows = Player::select(
+                'players.nickname',
+                'players.s2_tickets',
+                'players.s3_tickets',
+                'players.s4_tickets',
+                'players.id'
+            )
+            ->join('points', 'players.id', '=', 'points.player_id')
+            ->distinct()
+            ->orderBy('players.nickname')
+            ->get();
+
+        $lines = $rows
+            ->map(fn($p) => "{$p->nickname}\t{$p->s2_tickets}\t{$p->s3_tickets}\t{$p->s4_tickets}\t{$p->id}\t{$p->id}")
+            ->unique()
+            ->values();
+
+        file_put_contents(
+            public_path('/exp3/bbcbot/minidb.txt'),
+            $lines->implode("\n")
+        );
     }
 
     /**
@@ -206,7 +232,7 @@ class GameController extends Controller
         $action->save();
         Point::where('game_id', $game->id)->delete();
         $game->delete();
-        Artisan::call('tickets:sync');
+        $this->syncTickets();
         Cache::flush();
         return ["status" => true, 'msg' => "Game deleted!"];
     }
@@ -230,7 +256,7 @@ class GameController extends Controller
         $action->reason = $request->input('reason', "n/a");
         $action->user = Auth::id();
         $action->save();    
-        Artisan::call('tickets:sync');
+        $this->syncTickets();
         Cache::flush();
         return ["status" => true, 'msg' => "Game succesfully saved!"];
     }
