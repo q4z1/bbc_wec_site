@@ -38,7 +38,7 @@
                             <el-icon><avatar></avatar></el-icon>
                             @auth&nbsp;<strong>{{ Auth::user()->name }}</strong>@endauth
                         </button>
-                    <template #dropdown>
+                    <template v-slot:dropdown>
                         <el-dropdown-menu>
                             @guest
                                 @if(Route::has('login'))
@@ -62,7 +62,7 @@
                     @auth
                     @if(auth()->user()->role === 's' || auth()->user()->role === 'a')
                     <el-sub-menu index="admin">
-                        <template #title><el-icon><tools></tools></el-icon>&nbsp;<strong>Admin</strong></template>
+                        <template v-slot:title><el-icon><tools></tools></el-icon>&nbsp;<strong>Admin</strong></template>
                         <el-menu-item index="admin-upload"><a href="{{ route('upload.game.view') }}"><el-icon><upload></upload></el-icon>&nbsp;Upload Game</a></el-menu-item>
                         <el-menu-item index="admin-awards"><a href="{{ route('award.view') }}"><el-icon><medal></medal></el-icon>&nbsp;Awards</a></el-menu-item>
                         <el-menu-item index="admin-users"><a href="{{ route('user.view') }}"><el-icon><user></user></el-icon>&nbsp;Users</a></el-menu-item>
