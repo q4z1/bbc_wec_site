@@ -5,7 +5,9 @@ public/css
 public/js
 public/exp3/
 public/fonts/
-public/psqlmy/tmp/*
+# phpMyAdmin — third-party, deployed on the server, not part of this app
+public/psqlmy/
+public/psqlma/
 bootstrap/cache/*
 public/build/assets/*
 storage/*.key

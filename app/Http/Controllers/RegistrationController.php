@@ -39,12 +39,23 @@ class RegistrationController extends Controller
 
   public function register(Request $request, GameDate $date)
   {
-    $fp = $request->input('fp', '');
-    if($fp == "8498c820060b7eccee8f52b9d652bf27"){
+    $fp = trim((string) $request->input('fp', ''));
+    // FormData stringifies null/undefined, so those arrive as literal strings -> no fingerprint
+    if (in_array(strtolower($fp), ['null', 'undefined'], true)) $fp = '';
+    if($fp == "8498c820060b7eccee8f52b9d652bf27"
+    /* || 
+      $fp == "eb5c7e758aa46050dca275cf4a52e9f6" ||
+      $fp == "1c11210e85a5300389ecf33a4fee0342" ||
+      $fp == "0e30d84adb7be068e96a1a1deb5aeb8f"
+      */
+      ){
       return ['success' => false, 'msg' => 'Access forbidden!'];
     }
-    $nickname = $request->input('nickname', "");
-    if ($nickname === "") return ['success' => false, 'msg' => 'Username empty!'];
+    $nickname = trim((string) $request->input('nickname', ""));
+    // FormData stringifies null/undefined, so "null"/"undefined" arrive as literal nicknames
+    if ($nickname === "" || in_array(strtolower($nickname), ['null', 'undefined'], true)) {
+      return ['success' => false, 'msg' => 'Username empty!'];
+    }
     if (time() > (strtotime($date->date) - 20 * 60)) return ['success' => false, 'msg' => 'Registration too late (less than 20 minutes before the game)!'];
     $p = Player::where('nickname', $nickname)->first();
     if (!$p && $date->step < 2) {
@@ -80,16 +91,17 @@ class RegistrationController extends Controller
       }
     } else {
       if (Registration::where('game_date_id', $date->id)
-          ->where(function($query) use ($p, $request) {
+          ->where(function($query) use ($p, $request, $fp) {
               $query->where('player_id', $p->id)
-                  ->orWhere('ip', $request->ip())
-                  ->orWhere('fp', $request->input('fp'));
+                  ->orWhere('ip', $request->ip());
+              // only a real fingerprint identifies a device; a blank one would match every other blank
+              if ($fp !== '') $query->orWhere('fp', $fp);
           })->first()) return ['success' => false, 'msg' => 'Already registered!'];
     }
     $reg = new Registration();
     $reg->game_date_id = $date->id;
     $reg->player_id = $p->id;
-    $reg->fp = $request->input('fp', '');
+    $reg->fp = $fp;
     $reg->ip = $request->ip();
     $reg->save();
     return ['success' => true, 'dates' => GameDate::getUpcomingGames()];

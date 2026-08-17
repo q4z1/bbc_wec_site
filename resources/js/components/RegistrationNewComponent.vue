@@ -21,7 +21,7 @@ export default {
     emits: ['show-alert', 'update-dates'],
     data() {
         return {
-            nickname: null,
+            nickname: '',
             showReg: false,
             alertVar: 'danger',
             alertMsg: '',
@@ -36,9 +36,14 @@ export default {
     },
     methods: {
         register() {
+            const nickname = (this.nickname || '').trim();
+            if (nickname === '') {
+                this.showAlert('Username empty!', 'danger');
+                return;
+            }
             const data = new FormData();
-            data.append('fp', this.fp);
-            data.append('nickname', this.nickname);
+            data.append('fp', this.fp || '');
+            data.append('nickname', nickname);
             axios({ method: 'post', url: '/registration/register/' + this.date.id, data, headers: { 'Content-Type': 'application/json' } })
                 .then((res) => {
                     if (res.data.success === true) {
@@ -50,13 +55,13 @@ export default {
                         this.showAlert(res.data.msg, 'danger');
                     }
                     this.showReg = false;
-                    this.nickname = null;
+                    this.nickname = '';
                 })
                 .catch((res) => {
                     console.log(res);
                     this.showAlert('Request Error.', 'danger');
                     this.showReg = false;
-                    this.nickname = null;
+                    this.nickname = '';
                 });
         },
         showAlert(msg, variant, duration = 5) {

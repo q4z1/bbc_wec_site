@@ -172,15 +172,19 @@ class ShoutBoxMessageController extends Controller
 
     public function post(Request $request)
     {
-        $fp = $request->input('fp', null);
+        // FormData stringifies null/undefined, so those arrive as literal strings.
+        // A blank fp is legitimate: it means the fingerprint script was blocked client-side.
+        $fp = trim((string) $request->input('fp', ''));
+        if (in_array(strtolower($fp), ['null', 'undefined'], true)) $fp = '';
         $msg = $request->input('message', null);
-        $nickname = $request->input('nickname', null);
+        $nickname = trim((string) $request->input('nickname', ''));
+        if (in_array(strtolower($nickname), ['null', 'undefined'], true)) $nickname = '';
         $user_id = (!is_null($request->user())) ? $request->user()->id : null;
         $active = (!is_null($request->user())) ? 2 : 1;
         $admin_post = $request->input('admin_post', 0);
         $post_active = $active;
 
-        if(is_null($fp) || is_null($msg) || (is_null($nickname) && is_null($user_id))) return ['success' => false, 'msg' => ' Missing parameter!'];
+        if(is_null($msg) || ($nickname === '' && is_null($user_id))) return ['success' => false, 'msg' => ' Missing parameter!'];
         if(!is_null($user_id)){
             $nickname = $request->user()->name;
             $post_active = 2;
@@ -191,7 +195,14 @@ class ShoutBoxMessageController extends Controller
          || $fp == "0fd772a0c8088640f94a4e4229e00095"
          || $fp == "c15fca655ad793d947b2478d62e74649"
          || $fp == "18bf9147080862f874a346d8be5a82ab"
-        //  || $fp == "9b0b8c9abfc2292a1c1326d753c65937" // sweets
+         || $fp == "0b5b5fd776a69e9e0df34d8a1950a903"
+        || $fp == "8e41c30429b8e368909002504e00d729" // bear
+        || $fp == "43111048476bf2ce0b59bcc70d0b5fe8"
+        /*
+        || $fp == "eb5c7e758aa46050dca275cf4a52e9f6" ||
+        $fp == "1c11210e85a5300389ecf33a4fee0342" ||
+        $fp == "0e30d84adb7be068e96a1a1deb5aeb8f"
+        */
         ){
           $post_active = 0;
         }

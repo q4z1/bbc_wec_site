@@ -221,7 +221,7 @@ export default {
             if (!this.sbmsg) { this.alertMsg = 'A message is mandatory!'; this.alertVar = 'danger'; this.alert = true; return; }
             const data = new FormData();
             data.append('message', this.sbmsg);
-            data.append('fp', this.fp);
+            data.append('fp', this.fp || '');
             data.append('nickname', this.nickname);
             data.append('admin_post', this.admin_post ? 1 : 0);
             data.append('global_warning', this.global_warning ? 1 : 0);
