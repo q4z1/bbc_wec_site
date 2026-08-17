@@ -15,6 +15,9 @@ return new class extends Migration
     {
         Schema::create('actions', function (Blueprint $table) {
             $table->id();
+            $table->string('action', 128);
+            $table->string('reason', 128)->nullable();
+            $table->bigInteger('user');
             $table->timestamps();
         });
     }
