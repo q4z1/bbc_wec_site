@@ -1,2 +1,38 @@
+# wec.pokerth.net — Week-End Cup
+#
+# Gepflegt am 2026-08-18. Zuvor stand hier Laravels Vorgabe (alles erlaubt),
+# unveraendert seit September 2023.
+#
+# Regeln abgeleitet aus "php artisan route:list": 14 oeffentliche gegen
+# 8 login-pflichtige GET-Routen.
+
 User-agent: *
-Disallow:
+
+# Login-pflichtig — Crawler bekommen dort nur ein 302 auf /login
+Disallow: /api/
+Disallow: /awards
+Disallow: /delete/
+Disallow: /home$
+Disallow: /upload/
+Disallow: /password/confirm
+
+# Anmeldung und Kontoverwaltung, keine Inhalte fuer den Index.
+# Die $-Anker sind Absicht, damit kuenftige Pfade wie /registration nicht
+# versehentlich mitgesperrt werden.
+Disallow: /login$
+Disallow: /register$
+Disallow: /password/reset
+
+# Umschalter fuer das Farbschema, keine Seite
+Disallow: /user/theme
+
+# Bearbeitungsformular fuer Spiele. Liegt im ResultController, in dem die
+# auth-Middleware auskommentiert ist, und ist deshalb oeffentlich erreichbar.
+# Gespeichert wird ueber POST /update/game/* im GameController, und der ist
+# geschuetzt — es geht also nur um eine Seite, die nicht in den Index gehoert.
+Disallow: /results/game/edit/
+
+# Bewusst offen: / /results /results/ranking /results/halloffame
+# /results/game/* /players /player/* /shoutbox
+#
+# Kein Sitemap-Eintrag: es gibt noch keine sitemap.xml.

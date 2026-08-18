@@ -45,7 +45,13 @@ Route::get('/results', [App\Http\Controllers\ResultController::class, 'index'])-
 Route::post('/results', [App\Http\Controllers\ResultController::class, 'filter'])->name('results.filter');
 Route::post('/results/player/{player}', [App\Http\Controllers\ResultController::class, 'filter'])->name('player.results.filter');
 Route::get('/results/game/{game}', [App\Http\Controllers\ResultController::class, 'game'])->name('results.game');
-Route::get('/results/game/edit/{game}', [App\Http\Controllers\ResultController::class, 'game_edit'])->name('results.game.edit');
+// Einzeln geschuetzt: der ResultController haelt $this->middleware('auth')
+// auskommentiert, weil /results, /ranking und /halloffame oeffentlich sein
+// muessen. Das Bearbeitungsformular erbt diese Offenheit sonst mit — und es
+// parst bei jedem Aufruf das Spiel-Log, ist also nicht nur eine Anzeige.
+// Gespeichert wurde ohnehin nie ungeschuetzt: POST /update/game/* liegt im
+// GameController, der die Middleware aktiv hat.
+Route::get('/results/game/edit/{game}', [App\Http\Controllers\ResultController::class, 'game_edit'])->middleware('auth')->name('results.game.edit');
 Route::get('/results/halloffame', [App\Http\Controllers\ResultController::class, 'halloffame'])->name('results.halloffame');
 Route::get('/results/ranking', [App\Http\Controllers\ResultController::class, 'ranking'])->name('results.ranking');
 Route::post('/results/ranking', [App\Http\Controllers\ResultController::class, 'ranking']);
