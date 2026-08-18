@@ -1,2 +1,45 @@
+# bbc.pokerth.net — Best Brainies Cup
+#
+# Gepflegt am 2026-08-18. Zuvor stand hier Laravels Vorgabe (alles erlaubt),
+# unveraendert seit der Installation im Januar 2023.
+#
+# Grundsatz: indexieren lassen, was Inhalt traegt — Ergebnisse, Ranglisten,
+# Hall of Fame, Spielerprofile, Seiten, Shoutbox, Anmeldelisten. Gesperrt wird,
+# was hinter dem Login liegt: dort bekommt ein Crawler nur ein 302 auf /login
+# und verbrennt Crawl-Budget, ohne je Inhalt zu sehen.
+
 User-agent: *
-Disallow:
+
+# Login-pflichtige Bereiche (Middleware "auth" laut route:list)
+Disallow: /actions
+Disallow: /api/
+Disallow: /awards
+Disallow: /botfiles
+Disallow: /fpnicksearch
+Disallow: /pages
+Disallow: /page/create
+Disallow: /users
+Disallow: /upload/
+Disallow: /user/theme
+Disallow: /password/confirm
+Disallow: /registration/date/delete
+Disallow: /registration/delete
+Disallow: /results/game/edit/
+Disallow: /*/edit$
+
+# Anmeldung und Kontoverwaltung — keine Inhalte fuer den Index.
+# Die $-Anker sind noetig: ohne sie wuerde "/register" per Praefix-Regel
+# auch "/registration" sperren, und das ist eine Inhaltsseite.
+Disallow: /login$
+Disallow: /register$
+Disallow: /password/reset
+
+# Verwaltungsansicht geloeschter Shoutbox-Beitraege, ohne eigenen Inhalt
+Disallow: /sbdel
+
+# Bewusst offen: / /home /results /results/ranking /results/halloffame
+# /results/game/* /players /players/list /player/* /page/* /shoutbox
+# /registration /registration/date/get/*
+#
+# Kein Sitemap-Eintrag: es gibt noch keine sitemap.xml (/sitemap.xml -> 404).
+# Sobald eine existiert, gehoert hier "Sitemap: https://bbc.pokerth.net/sitemap.xml" hin.
