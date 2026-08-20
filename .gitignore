@@ -20,3 +20,5 @@ yarn-error.log
 .vscode/
 public/fonts/
 public/sitemap.xml
+bootstrap/cache/*
+public/build/assets/*
