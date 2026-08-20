@@ -7,6 +7,7 @@ use App\Models\Player;
 use App\Models\PlayerAward;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class AwardController extends Controller
@@ -65,13 +66,24 @@ class AwardController extends Controller
     }
 
     public function assign(Request $request, Award $award){
-        PlayerAward::where('award_id', $award->id)->delete();
-        foreach($request->player as $player_id){
-            $pa = new PlayerAward();
-            $pa->award_id = $award->id;
-            $pa->player_id = $player_id;
-            $pa->save();
-        }
+        // Wird der letzte Spieler entfernt, schickt das Formular gar kein
+        // player[] mehr. Ohne den Default lief das foreach auf null und
+        // brach ab - nach dem delete(), die Zuordnungen waren also schon
+        // weg, obwohl die Oberflaeche einen Fehler meldete.
+        $players = $request->input('player', []);
+
+        // delete() und die Neuanlage gehoeren zusammen: bricht etwas
+        // dazwischen ab, darf der Award nicht ohne Zuordnungen zurueckbleiben.
+        DB::transaction(function () use ($award, $players) {
+            PlayerAward::where('award_id', $award->id)->delete();
+            foreach($players as $player_id){
+                $pa = new PlayerAward();
+                $pa->award_id = $award->id;
+                $pa->player_id = $player_id;
+                $pa->save();
+            }
+        });
+
         return ['success' => true];
     }
 
