@@ -1,33 +1,51 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Console\Commands;
 
 use App\Models\Game;
 use App\Models\Page;
 use App\Models\Player;
-use Illuminate\Http\Response;
-use Illuminate\Support\Facades\Cache;
+use Illuminate\Console\Command;
 
 /**
- * Sitemap of everything a guest can actually reach. The set mirrors the
- * "bewusst offen" list in public/robots.txt: pages behind the auth middleware
- * would only answer a crawler with a redirect to /login.
+ * Writes public/sitemap.xml. The set mirrors the "bewusst offen" list in
+ * public/robots.txt: anything behind the auth middleware would only answer a
+ * crawler with a redirect to /login.
+ *
+ * Built as a command rather than a route because the file holds ~10.000 URLs;
+ * the schedule lives in the pthranking application, which is driven by cron.
  */
-class SitemapController extends Controller
+class GenerateSitemap extends Command
 {
-    /** Rebuilding walks ~10.000 rows, so the result is cached. */
-    private const CACHE_MINUTES = 360;
+    protected $signature = 'sitemap:generate
+                            {--output= : target file, defaults to public/sitemap.xml}
+                            {--dry-run : only count, write nothing}';
 
-    public function index(): Response
+    protected $description = 'Generate sitemap.xml';
+
+    public function handle(): int
     {
-        $xml = Cache::remember('sitemap.xml', now()->addMinutes(self::CACHE_MINUTES), function () {
-            return view('sitemap', ['urls' => $this->urls()])->render();
-        });
+        $urls = $this->urls();
+        $this->line(count($urls).' URLs');
 
-        return response($xml, 200, [
-            'Content-Type' => 'application/xml; charset=UTF-8',
-            'Cache-Control' => 'public, max-age=3600',
-        ]);
+        if ($this->option('dry-run')) {
+            $this->line('dry run, nothing written');
+
+            return self::SUCCESS;
+        }
+
+        $target = $this->option('output') ?: public_path('sitemap.xml');
+        $xml = view('sitemap', ['urls' => $urls])->render();
+
+        if (file_put_contents($target, $xml) === false) {
+            $this->error("could not write $target");
+
+            return self::FAILURE;
+        }
+
+        $this->info($target.' written ('.number_format(strlen($xml) / 1024, 1).' KB)');
+
+        return self::SUCCESS;
     }
 
     private function urls(): array
