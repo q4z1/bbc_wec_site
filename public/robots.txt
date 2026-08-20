@@ -41,5 +41,10 @@ Disallow: /sbdel
 # /results/game/* /players /players/list /player/* /page/* /shoutbox
 # /registration /registration/date/get/*
 #
-# Kein Sitemap-Eintrag: es gibt noch keine sitemap.xml (/sitemap.xml -> 404).
-# Sobald eine existiert, gehoert hier "Sitemap: https://bbc.pokerth.net/sitemap.xml" hin.
+# Nachtrag 2026-08-18: die sitemap.xml existiert jetzt. Sie wird dynamisch
+# erzeugt (SitemapController) und deckt genau die oben als offen gefuehrten
+# Bereiche ab: Startseite, Ergebnisse, Rangliste, Hall of Fame, Spielerliste,
+# Anmeldung, Shoutbox, die aktiven Seiten sowie jedes Spieler- und Spiel-
+# Detail. Rund 10.400 URLs, serverseitig sechs Stunden zwischengespeichert.
+
+Sitemap: https://bbc.pokerth.net/sitemap.xml

@@ -4,8 +4,33 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'BBC') }}</title>
-    <link rel="dns-prefetch" href="//fonts.gstatic.com">
+
+    @php($pageTitle = trim($__env->yieldContent('title') ?: config('app.name', 'BBC')))
+    @php($pageDescription = $__env->yieldContent('description')
+        ?: 'Results, rankings and hall of fame of the Best Brainies Cup, the PokerTH tournament series.')
+
+    <title>{{ $pageTitle }}</title>
+    <meta name="description" content="{{ $pageDescription }}">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <meta property="og:site_name" content="{{ config('app.name', 'BBC') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ $pageTitle }}">
+    <meta property="og:description" content="{{ $pageDescription }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="{{ url('/logo.png') }}">
+    <meta name="twitter:card" content="summary">
+
+    {{-- The webfonts are served from /public/fonts, so no request ever leaves
+         for fonts.gstatic.com. Preloading them means the first paint already
+         uses the right face instead of swapping afterwards. --}}
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ asset('fonts/nunito-latin.woff2') }}">
+    @if(request()->cookie('theme', (auth()->user() ? auth()->user()->theme : 'light')) === 'dark')
+        <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ asset('fonts/sourcesans-normal-400-latin.woff2') }}">
+    @else
+        <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ asset('fonts/opensans-normal-400-700-latin.woff2') }}">
+    @endif
+
     @vite(['resources/js/app.js', 'resources/sass/app.scss'])
     <link id="theme-css" rel="stylesheet" href="{{ asset('css/theme.' . (request()->cookie('theme', (auth()->user() ? auth()->user()->theme : 'light'))) . '.css') }}">
 </head>
@@ -23,7 +48,7 @@
             </div>
 
             <!-- Rechte Seite: immer sichtbar -->
-            <div class="main-navbar-end">
+            <div class="main-navbar-end" v-cloak>
                 <el-tooltip content="Theme switch" placement="bottom-end">
                     <el-button class="theme-toggle-btn" :icon="Sunny" circle></el-button>
                 </el-tooltip>
@@ -57,7 +82,7 @@
             </div>
 
             <!-- Kollabierbare Nav-Items (per CSS order:2 auf Desktop zwischen Brand und End) -->
-            <div :class="['main-navbar-collapse', { 'is-open': mobileMenuOpen }]">
+            <div :class="['main-navbar-collapse', { 'is-open': mobileMenuOpen }]" v-cloak>
                 <el-menu mode="horizontal" :ellipsis="!mobileMenuOpen" style="width:100%;" class="main-navbar-items">
                     @auth
                     @if(auth()->user()->role === 's' || auth()->user()->role === 'a')

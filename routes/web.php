@@ -83,3 +83,4 @@ Route::post('/sbdel/filter', [App\Http\Controllers\ShoutBoxMessageController::cl
 
 Route::get('/fpnicksearch', [App\Http\Controllers\FingerprintNickname::class, 'index'])->name('fpnicksearch');
 Route::post('/fpnicksearch', [App\Http\Controllers\FingerprintNickname::class, 'search'])->name('fpnicksearch.search');
+Route::get('/sitemap.xml', [App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
