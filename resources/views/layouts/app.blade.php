@@ -7,7 +7,20 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ config('app.name', 'Laravel') }}</title>
+    @php($pageTitle = trim($__env->yieldContent('title') ?: config('app.name', 'Week-End Cup')))
+    @php($pageDescription = $__env->yieldContent('description')
+        ?: 'Results, rankings and hall of fame of the Week-End Cup, the PokerTH tournament series.')
+
+    <title>{{ $pageTitle }}</title>
+    <meta name="description" content="{{ $pageDescription }}">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    <meta property="og:site_name" content="{{ config('app.name', 'Week-End Cup') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="{{ $pageTitle }}">
+    <meta property="og:description" content="{{ $pageDescription }}">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta name="twitter:card" content="summary">
     
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3e%3ctext y='.9em' font-size='90'%3e🏆%3c/text%3e%3c/svg%3e">

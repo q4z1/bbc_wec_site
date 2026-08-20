@@ -35,4 +35,9 @@ Disallow: /results/game/edit/
 # Bewusst offen: / /results /results/ranking /results/halloffame
 # /results/game/* /players /player/* /shoutbox
 #
-# Kein Sitemap-Eintrag: es gibt noch keine sitemap.xml.
+# Nachtrag 2026-08-18: die sitemap.xml existiert jetzt. Sie wird von
+# "php artisan sitemap:generate" erzeugt und deckt genau die oben als
+# offen gefuehrten Bereiche ab. Der Aufruf haengt im Scheduler von
+# pthranking, weil dort der Cron laeuft.
+
+Sitemap: https://wec.pokerth.net/sitemap.xml
