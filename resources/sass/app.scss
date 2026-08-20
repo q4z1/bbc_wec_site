@@ -1,39 +1,562 @@
 // Fonts
-//@import url('https://fonts.googleapis.com/css?family=Nunito');
+//
+// Nunito liegt lokal unter /public/fonts; die beiden Themes bringen ihre
+// eigenen Schriften (Open Sans hell, Source Sans Pro dunkel) selbst mit.
 
-// Variables
-@import 'variables';
-
-// Bootstrap
-@import '~bootstrap/scss/bootstrap';
-
-// Custom
-@import 'table';
-
-body{
-    position: relative;
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/nunito-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Nunito';
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url('/fonts/nunito-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
 }
 
-#app{
-    position: absolute;
-    right: 0px;
-    left: 0px;
+html, body {
+    height: 100%;
+    margin: 0;
 }
 
-div.calender.col{
-  padding-right: 0;
+body {
+    font-family: 'Nunito', sans-serif;
 }
 
-footer{
-  height: 1.4em;
-  line-height: 1em;
-  font-size: 1em;
-  overflow-x: hidden;
-  .row{
-    .col{
-      padding: 0.4em;
-      text-align: center;
-      border-top: 1px solid var(--secondary);
+#app {
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+
+    main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        min-height: 0;
     }
-  }
+}
+
+// ---------------------------------------------------------------- Navbar
+// CSS Grid statt Bootstrap-Collapse: die Nav-Items bekommen exakt den Platz
+// zwischen Brand und rechter Seite.
+// Desktop: [brand] [collapse = 1fr] [end]
+// Mobil:   [brand] [end] / [collapse ueber die volle Breite]
+.main-navbar {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    grid-template-areas:
+        "brand end"
+        "collapse collapse";
+    align-items: center;
+    padding: 0 1rem;
+    border-bottom: 1px solid var(--el-menu-border-color, #e6e6e6);
+    min-height: 60px;
+
+    @media (min-width: 992px) {
+        grid-template-columns: auto 1fr auto;
+        grid-template-areas: "brand collapse end";
+    }
+
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .navbar-brand {
+        grid-area: brand;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        min-height: 60px;
+        a { display: flex; align-items: center; }
+    }
+
+    .main-navbar-end {
+        grid-area: end;
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        justify-content: flex-end;
+        min-height: 60px;
+        white-space: nowrap;
+    }
+
+    // Hamburger: nur mobil
+    .main-navbar-toggler {
+        border: 1px solid var(--el-border-color, #dcdfe6);
+        background: transparent;
+        cursor: pointer;
+        padding: 6px 10px;
+        border-radius: 4px;
+        color: var(--el-text-color-regular, #606266);
+        line-height: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+
+        &:hover { background-color: var(--el-fill-color-light, #f5f7fa); }
+
+        span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background-color: currentColor;
+            border-radius: 2px;
+            & + span { margin-top: 5px; }
+        }
+
+        @media (min-width: 992px) { display: none; }
+    }
+
+    .main-navbar-collapse {
+        grid-area: collapse;
+        display: none;
+
+        &.is-open {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (min-width: 992px) {
+            display: flex !important;
+            align-items: stretch;
+            overflow: hidden; // el-menu bleibt im 1fr-Bereich
+            min-width: 0;
+        }
+    }
+
+    .main-navbar-items {
+        border-bottom: none !important;
+        border-right: none !important;
+        background: transparent !important;
+        width: 100%; // el-menu braucht die Breite fuer die Ellipsis-Rechnung
+
+        @media (max-width: 991.98px) {
+            flex-direction: column !important;
+            height: auto !important;
+
+            .el-menu-item,
+            .el-sub-menu__title {
+                height: 48px;
+                line-height: 48px;
+                width: 100%;
+            }
+        }
+    }
+
+    .el-menu-item,
+    .el-sub-menu__title {
+        font-size: 14px;
+        font-family: 'Nunito', sans-serif;
+        a { color: inherit; text-decoration: none; }
+    }
+
+    // Kein Outline/Border beim Hovern oder Fokussieren der Nav-Eintraege
+    .el-menu-item,
+    .el-sub-menu__title {
+        &, &:hover, &:focus, &:focus-visible, &:focus-within {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        &:focus, &:focus-visible, &:focus-within {
+            color: var(--el-menu-text-color) !important;
+            background-color: transparent !important;
+        }
+        a, a:hover, a:focus, a:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+    }
+
+    .el-menu--horizontal > .el-menu-item:not(.is-active):hover {
+        border-bottom-color: transparent !important;
+    }
+
+    .el-menu {
+        &:focus, &:focus-visible { outline: none !important; }
+    }
+}
+
+// Das Dropdown-Popup wird per append-to-body aus .main-navbar teleportiert,
+// deshalb braucht das erste fokussierte Item eine globale Regel.
+.el-menu--popup {
+    .el-menu-item,
+    .el-sub-menu__title {
+        &:focus, &:focus-visible, &:focus-within {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        a:focus, a:focus-visible {
+            outline: none !important;
+            box-shadow: none !important;
+        }
+    }
+}
+
+.navbar-user-trigger {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    padding: 0 1rem;
+    height: 60px;
+    color: var(--el-text-color-regular, #606266);
+    user-select: none;
+    background: none;
+    border: none;
+    outline: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 14px;
+
+    &:hover, &:focus, &:focus-visible {
+        background-color: var(--el-fill-color-light, #f5f7fa);
+        outline: none;
+    }
+
+    @media (max-width: 991.98px) {
+        height: auto;
+        padding: 0.5rem 0;
+    }
+}
+
+// ------------------------------------------------------------ Dark Theme
+body[data-theme="dark"] {
+    // Bootstrap-Variablen fuer Listen und Text (das BS4-Theme setzt sie nicht)
+    --bs-body-color: #839496;
+    --bs-list-group-color: #839496;
+    --bs-list-group-bg: transparent;
+    --bs-list-group-border-color: #073642;
+    --bs-list-group-action-hover-color: #fdf6e3;
+    --bs-list-group-action-hover-bg: #073642;
+
+    // Element Plus: globale Dark-Variablen
+    --el-color-white: #002b36;
+    --el-color-black: #fdf6e3;
+    --el-bg-color: #073642;
+    --el-bg-color-page: #002b36;
+    --el-bg-color-overlay: #073642;
+    --el-text-color-primary: #93a1a1;
+    --el-text-color-regular: #839496;
+    --el-text-color-secondary: #657b83;
+    --el-text-color-placeholder: #586e75;
+    --el-text-color-disabled: #586e75;
+    --el-border-color: #0a4052;
+    --el-border-color-light: #093a4a;
+    --el-border-color-lighter: #073642;
+    --el-border-color-extra-light: #062d38;
+    --el-fill-color: #073642;
+    --el-fill-color-light: #0a4052;
+    --el-fill-color-lighter: #093a4a;
+    --el-fill-color-extra-light: #073642;
+    --el-fill-color-dark: #002b36;
+    --el-fill-color-darker: #001e27;
+    --el-fill-color-blank: #073642;
+    --el-disabled-bg-color: #062d38;
+    --el-disabled-text-color: #4a6270;
+    --el-disabled-border-color: #073642;
+    --el-overlay-color: rgba(0, 0, 0, 0.8);
+    --el-mask-color: rgba(0, 43, 54, 0.8);
+
+    --el-input-text-color: #839496;
+    --el-input-border-color: #0a4052;
+    --el-input-hover-border-color: #268bd2;
+    --el-input-focus-border-color: #268bd2;
+    --el-input-transparent-border: 0 0 0 1px #0a4052 inset;
+    --el-input-bg-color: #073642;
+
+    --el-select-input-color: #93a1a1;
+    --el-select-disabled-border: #073642;
+    --el-select-font-size: 14px;
+    --el-select-close-hover-color: #839496;
+    --el-select-option-selected-font-weight: 600;
+
+    --el-pagination-bg-color: transparent;
+    --el-pagination-text-color: #839496;
+    --el-pagination-button-color: #839496;
+    --el-pagination-button-bg-color: #073642;
+    --el-pagination-button-disabled-color: #4a6270;
+    --el-pagination-button-disabled-bg-color: #062d38;
+    --el-pagination-hover-color: #b58900;
+
+    .el-popper {
+        --el-bg-color-overlay: #073642;
+        background-color: #073642;
+        border-color: #0a4052;
+        color: #839496;
+    }
+
+    .el-dropdown-menu {
+        background-color: #073642;
+        border-color: #0a4052;
+
+        .el-dropdown-menu__item {
+            color: #839496;
+            &:hover, &:focus {
+                background-color: #002b36;
+                color: #fdf6e3;
+            }
+        }
+    }
+
+    .el-select-dropdown__item {
+        color: #839496;
+        &:hover, &.hover { background-color: #002b36; color: #fdf6e3; }
+        &.selected { color: #b58900; }
+        &.is-disabled { color: #4a6270; }
+    }
+
+    // el-menu ausserhalb der Navbar: dunkel
+    .el-menu {
+        --el-menu-bg-color: #002b36;
+        --el-menu-text-color: #839496;
+        --el-menu-active-color: #b58900;
+        --el-menu-hover-bg-color: #073642;
+        --el-menu-hover-text-color: #fdf6e3;
+        --el-menu-border-color: #073642;
+        --el-menu-item-hover-fill: #073642;
+    }
+
+    .main-navbar {
+        // Die Navbar wird bewusst invertiert (hell auf dunkler Seite)
+        background-color: #839496;
+        border-bottom-color: #657b83;
+
+        .el-menu {
+            --el-menu-bg-color: #839496;
+            --el-menu-text-color: #002b36;
+            --el-menu-active-color: #b58900;
+            --el-menu-hover-bg-color: #93a1a1;
+            --el-menu-hover-text-color: #002b36;
+            --el-menu-border-color: #657b83;
+            --el-menu-item-hover-fill: #93a1a1;
+        }
+
+        .main-navbar-toggler {
+            border-color: #586e75;
+            color: #002b36;
+            &:hover { background-color: #93a1a1; }
+        }
+
+        .navbar-user-trigger {
+            color: #002b36;
+            &:hover { background-color: #93a1a1; }
+        }
+
+        .el-menu-item.is-active,
+        .el-sub-menu.is-active > .el-sub-menu__title {
+            border-bottom-color: #b58900;
+        }
+
+        .el-menu-item:not(.is-disabled):hover,
+        .el-sub-menu__title:hover {
+            background-color: #93a1a1 !important;
+            color: #002b36 !important;
+        }
+    }
+
+    // Auth-Seiten
+    .auth-card {
+        background: #073642;
+        border-color: #0a4052;
+
+        &__header {
+            background: #002b36;
+            border-bottom-color: #0a4052;
+            color: #93a1a1;
+        }
+    }
+
+    .wec-input {
+        background-color: #073642;
+        border-color: #0a4052;
+        color: #839496;
+
+        &:focus { border-color: #268bd2; }
+    }
+}
+
+body[data-theme="light"] {
+    .main-navbar {
+        .el-menu-item:not(.is-disabled):hover,
+        .el-sub-menu__title:hover {
+            color: var(--el-menu-active-color) !important;
+        }
+    }
+}
+
+// ------------------------------------------------------------- Tabellen
+.el-table th,
+.el-table tr {
+    background-color: transparent;
+}
+
+.el-table,
+.el-table__expanded-cell {
+    background-color: transparent;
+}
+
+.el-table--striped .el-table__body tr.el-table__row--striped td {
+    background: transparent;
+}
+
+// Hover soll auch ueber striped gewinnen
+.el-table__body tr.el-table__row:hover > td {
+    background-color: var(--el-table-row-hover-bg-color) !important;
+}
+
+.el-table__body tr.el-table__row {
+    cursor: pointer;
+}
+
+.el-pagination {
+    margin-top: 15px;
+}
+
+footer.page-footer {
+    line-height: 1em;
+    font-size: 1em;
+    overflow-x: hidden;
+    padding: 0.4em 1rem;
+    text-align: center;
+    border-top: 1px solid var(--el-border-color, #dcdfe6);
+}
+
+// --------------------------------------- Auth-Seiten (Login, Register, Reset)
+.auth-page {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.auth-card {
+    width: 100%;
+    max-width: 480px;
+    background: var(--el-bg-color, #fff);
+    border: 1px solid var(--el-border-color, #dcdfe6);
+    border-radius: 4px;
+    box-shadow: var(--el-box-shadow-light, 0 2px 12px 0 rgba(0, 0, 0, .1));
+
+    &__header {
+        padding: 0.75rem 1.25rem;
+        border-bottom: 1px solid var(--el-border-color, #dcdfe6);
+        font-weight: 600;
+        font-size: 1rem;
+        background: var(--el-fill-color-light, #f5f7fa);
+        border-radius: 4px 4px 0 0;
+    }
+
+    &__body {
+        padding: 1.5rem;
+    }
+}
+
+.auth-form-item {
+    margin-bottom: 1rem;
+
+    label {
+        display: block;
+        margin-bottom: 0.35rem;
+        font-size: 0.875rem;
+        color: var(--el-text-color-regular, #606266);
+    }
+
+    &--inline label {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+    }
+}
+
+.auth-form-error {
+    margin-top: 0.25rem;
+    font-size: 0.8rem;
+    color: var(--el-color-danger, #f56c6c);
+}
+
+.auth-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1.5rem;
+
+    a {
+        color: var(--el-color-primary, #409eff);
+        text-decoration: none;
+        font-size: 0.875rem;
+        &:hover { text-decoration: underline; }
+    }
+}
+
+// Native Inputs/Buttons auf den Auth-Seiten im Element-Plus-Look
+.wec-input {
+    display: block;
+    width: 100%;
+    height: 32px;
+    padding: 0 12px;
+    font-size: 14px;
+    font-family: 'Nunito', sans-serif;
+    color: var(--el-input-text-color, #606266);
+    background-color: var(--el-input-bg-color, #fff);
+    border: 1px solid var(--el-border-color, #dcdfe6);
+    border-radius: 4px;
+    box-sizing: border-box;
+    outline: none;
+    transition: border-color .2s cubic-bezier(.645, .045, .355, 1);
+
+    &:focus { border-color: var(--el-color-primary, #409eff); }
+    &::placeholder { color: var(--el-text-color-placeholder, #a8abb2); }
+    &.is-error { border-color: var(--el-color-danger, #f56c6c); }
+}
+
+.wec-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: 32px;
+    padding: 0 16px;
+    font-size: 14px;
+    font-family: 'Nunito', sans-serif;
+    border-radius: 4px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background .2s, border-color .2s;
+    text-decoration: none;
+
+    &--primary {
+        color: #fff;
+        background-color: var(--el-color-primary, #409eff);
+        border-color: var(--el-color-primary, #409eff);
+
+        &:hover {
+            background-color: var(--el-color-primary-light-3, #79bbff);
+            border-color: var(--el-color-primary-light-3, #79bbff);
+        }
+    }
+
+    // Inline-Button, der wie ein Link aussieht (Verify-Seite)
+    &--link {
+        color: var(--el-color-primary, #409eff);
+        background: transparent;
+        border-color: transparent;
+        padding: 0;
+        height: auto;
+        vertical-align: baseline;
+
+        &:hover { text-decoration: underline; }
+    }
+}
+
+// ------------------------------------------------- erster Paint ohne Flackern
+// Solange Vue nicht gemountet hat, steht in der Navbar noch das rohe Markup:
+// <el-menu> und Co. sind unbekannte Elemente und ihre Links wuerden als blau
+// unterstrichene Standard-Links aufblitzen. Die Hoehe bleibt erhalten, es
+// springt also nichts, sobald die App uebernimmt.
+[v-cloak] {
+    visibility: hidden;
 }

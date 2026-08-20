@@ -1,533 +1,469 @@
 <template>
-    <div>
-        <b-container v-if="!edit">
-            <b-row class="mt-3">
-                <b-col>
-                    <h3>Basic data</h3>
-                    <b-row>
-                        <b-col><strong>Game Number:</strong></b-col>
-                        <b-col>#{{ game.number }}</b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col><strong>Date/Time:</strong></b-col>
-                        <b-col>{{ game.started }}</b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col><strong>Type:</strong></b-col>
-                        <b-col>{{ type }}</b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col><strong>Winner:</strong></b-col>
-                        <b-col><a :href="'/player/' + encodeURIComponent(game.stats['player_list'][1][0])" :title="game.stats['player_list'][1][0]">{{ game.stats['player_list'][1][0] }}</a></b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col><strong>Number of Players:</strong></b-col>
-                        <b-col>{{ game.stats['player_list'][0].length }}</b-col>
-                    </b-row>
-                    <b-row>
-                        <b-col><strong>Hands:</strong></b-col>
-                        <b-col>{{ game.stats['player_list'][3][0] }}</b-col>
-                    </b-row>
-                    <b-row class="mt-5 ml-0 mb-3">
-                        <b-col>
-                            <b-row class="w-75">
-                                <b-button variant="warning" v-b-modal.bbcode class="w-100" v-if="arole !== ''">Get BB Code</b-button>
-                            </b-row>
-                            <b-row class="mt-2 w-75">
-                                <b-button variant="info" @click="edit = true" class="w-100" v-if="arole === 's'">Edit Game</b-button>
-                            </b-row>
-                            <b-row class="mt-2 w-75">
-                                <b-button variant="danger" v-b-modal.delete class="w-100" v-if="arole === 's'">Delete Game</b-button>
-                            </b-row>
-                        </b-col>
-                    </b-row>
-                </b-col>
-                <b-col>
-                    <h3>Ranking</h3>
-                    <b-table id="game_ranking" striped hover :items="ranking" @row-clicked="rowClick">
-                        <template #cell(_)="data">
-                            <span v-html="data.value"></span>
-                        </template>
-                    </b-table>
-                </b-col>
-            </b-row>
-            <b-row class="mt-3">
-                <b-col>
-                    <h3>Hand Cash</h3>
-                    <line-chart-component :chart-data="datacollection1" :options="options1"></line-chart-component>
-                </b-col>
-            </b-row>
-            <b-row class="mt-3">
-                <b-col>
-                    <h3>Pot Size</h3>
-                    <bar-chart-component :chart-data="datacollection2" :options="options2"></bar-chart-component>
-                </b-col>
-            </b-row>
-            <b-row class="mt-3">
-                <b-col>
-                    <h3>Most hands played</h3>
-                    <b-table striped :items="most_hands"></b-table>
-                </b-col>
-            </b-row>
-            <b-row class="mt-3">
-                <b-col>
-                    <h3>Best hands</h3>
-                    <b-table striped :items="best_hands"></b-table>
-                </b-col>
-            </b-row>
-            <b-row class="mt-3">
-                <b-col>
-                    <h3>Most wins</h3>
-                    <b-table striped :items="most_wins"></b-table>
-                </b-col>
-            </b-row>
-            <b-row class="mt-3">
-                <b-col>
-                    <h3>Highest wins</h3>
-                    <b-table striped :items="highest_wins"></b-table>
-                </b-col>
-            </b-row>
-            <b-row class="mt-3">
-                <b-col>
-                    <h3>Longest wins</h3>
-                    <b-table striped :items="longest_wins"></b-table>
-                </b-col>
-            </b-row>
-            <b-row class="mt-3">
-                <b-col>
-                    <h3>Longest losses</h3>
-                    <b-table striped :items="longest_losses"></b-table>
-                </b-col>
-            </b-row>
-            <b-row class="mt-3">
-                <b-col>
-                    <h3>Most bets/raises</h3>
-                    <b-table striped :items="most_bets"></b-table>
-                </b-col>
-            </b-row>
-            <b-row class="mt-3">
-                <b-col>
-                    <h3>Most all in</h3>
-                    <b-table striped :items="most_bingo"></b-table>
-                </b-col>
-            </b-row>
-            <b-row>
-                <b-col><small>
-                    *)	percental value: absolute value in relation to hands played<br>
-                    **)	percental value: number of hands with at least one bet/raise in relation to all hands played
-                </small></b-col>
-            </b-row>
-        </b-container>
-        <b-container v-else><game-edit-component :game="game" @back="back" @update="update"></game-edit-component></b-container>
-        <b-modal id="bbcode" title="Forum BB Code" :cancel-disabled="true" v-model="show_bb">
-            <b-form-textarea
-                id="bbcode_content"
-                v-model="bbcode"
-                rows="10"
-                max-rows="12"
-            ></b-form-textarea>
-            <template #modal-footer>
-                <div class="w-100">
-                    <b-button
-                        variant="primary"
-                        size="sm"
-                        class="float-right"
-                        @click="show_bb=false"
-                    >Close</b-button>
-                    <b-button
-                        variant="warning"
-                        size="sm"
-                        class="float-right mr-2"
-                        @click="bb2clipboard"
-                        title="Copy to Clipboard"
-                    ><b-icon-clipboard-plus></b-icon-clipboard-plus></b-button>
-                </div>
-            </template>
-        </b-modal>
-        <b-modal ref="delete" id="delete" title="Delete Game" ok-disabled>
-            Are you sure to delete game #{{ this.game.number }}?
-            <b-button class="mt-3" variant="outline-info" block @click="$refs['delete'].hide()">Cancel</b-button>
-            <b-button class="mt-2" variant="outline-danger" block @click="deleteGame">Delete</b-button>
-        </b-modal>
+  <div>
+    <div v-if="!edit">
+      <div class="game-top">
+        <div class="game-basic">
+          <h3>Basic data</h3>
+          <div class="stat-line"><strong>Game Number:</strong><span>#{{ game.number }}</span></div>
+          <div class="stat-line"><strong>Date/Time:</strong><span>{{ game.started }}</span></div>
+          <div class="stat-line"><strong>Type:</strong><span>{{ type }}</span></div>
+          <div class="stat-line">
+            <strong>Winner:</strong>
+            <span>
+              <a :href="'/player/' + encodeURIComponent(winner)" :title="winner">{{ winner }}</a>
+            </span>
+          </div>
+          <div class="stat-line"><strong>Number of Players:</strong><span>{{ game.stats['player_list'][0].length }}</span></div>
+          <div class="stat-line"><strong>Hands:</strong><span>{{ game.stats['player_list'][3][0] }}</span></div>
+
+          <div class="game-actions">
+            <el-button v-if="arole !== ''" type="warning" @click="show_bb = true">Get BB Code</el-button>
+            <el-button v-if="arole === 's'" type="info" @click="edit = true">Edit Game</el-button>
+            <el-button v-if="arole === 's'" type="danger" @click="show_delete = true">Delete Game</el-button>
+          </div>
+        </div>
+
+        <div class="game-ranking">
+          <h3>Ranking</h3>
+          <el-table :data="ranking" stripe style="width:100%" @row-click="rowClick">
+            <el-table-column prop="pos" label="Pos" width="70" />
+            <el-table-column prop="player" label="Player" min-width="140" />
+            <el-table-column prop="hand" label="Hand" width="80" />
+            <el-table-column label="" min-width="220">
+              <!-- Enthaelt die Kartensymbole als HTML aus der Log-Auswertung. -->
+              <template #default="scope"><span v-html="scope.row._"></span></template>
+            </el-table-column>
+          </el-table>
+        </div>
+      </div>
+
+      <div class="game-section">
+        <h3>Hand Cash</h3>
+        <line-chart-component :chart-data="datacollection1" :options="options1" />
+      </div>
+      <div class="game-section">
+        <h3>Pot Size</h3>
+        <bar-chart-component :chart-data="datacollection2" :options="options2" />
+      </div>
+
+      <div v-for="section in sections" :key="section.title" class="game-section">
+        <h3>{{ section.title }}</h3>
+        <el-table :data="section.rows" stripe style="width:100%">
+          <el-table-column v-for="col in section.columns" :key="col.prop"
+                           :prop="col.prop" :label="col.label"
+                           :width="col.width" :min-width="col.minWidth" />
+        </el-table>
+      </div>
+
+      <p class="game-footnotes">
+        <small>
+          *) percental value: absolute value in relation to hands played<br />
+          **) percental value: number of hands with at least one bet/raise in relation to all hands played
+        </small>
+      </p>
     </div>
+
+    <div v-else>
+      <game-edit-component :game="game" @back="back" @update="update" />
+    </div>
+
+    <el-dialog append-to-body v-model="show_bb" title="Forum BB Code" width="700px">
+      <el-input id="bbcode_content" v-model="bbcode" type="textarea" :rows="12" />
+      <template #footer>
+        <el-button type="warning" @click="bb2clipboard">
+          <el-icon><DocumentCopy /></el-icon>&nbsp;Copy to Clipboard
+        </el-button>
+        <el-button type="primary" @click="show_bb = false">Close</el-button>
+      </template>
+    </el-dialog>
+
+    <el-dialog append-to-body v-model="show_delete" title="Delete Game" width="420px">
+      <div>Are you sure to delete game #{{ game.number }}?</div>
+      <template #footer>
+        <el-button @click="show_delete = false">Cancel</el-button>
+        <el-button type="danger" @click="deleteGame">Delete</el-button>
+      </template>
+    </el-dialog>
+  </div>
 </template>
 <script>
-export default {
-    props: ['game'],
-    data () {
-        return {
-            datacollection1: null,
-            datacollection2: null,
-            options1: null,
-            options2: null,
-            most_hands: null,
-            best_hands: null,
-            most_wins: null,
-            highest_wins: null,
-            longest_wins: null,
-            longest_losses: null,
-            most_bets: null,
-            most_bingo: null,
-            basic_data: null,
-            ranking: null,
-            bbcode: null,
-            show_bb: false,
-            edit: false,
-            eGame: this.game,
-            type: 1,
-            types: [{ text: 'regular', value: 1 }, { text: 'monthly', value: 5 }, { text: 'yearly', value: 6 }],
-            arole: window.arole,
-        }
-    },
-    methods:{
-        init(){
-            let colors = [
-                'rgba(86, 226, 137, 1.0)',
-                'rgba(104, 226, 86, 1.0)',
-                'rgba(174, 226, 86, 1.0)',
-                'rgba(226, 297, 86, 1.0)',
-                'rgba(226, 137, 86, 1.0)',
-                'rgba(226, 84, 104, 1.0)',
-                'rgba(226, 86, 174, 1.0)',
-                'rgba(207, 86, 226, 1.0)',
-                'rgba(138, 86, 226, 1.0)',
-                'rgba(86, 104, 226, 1.0)'
-            ]
-            // hand cash
-            // console.log(this.game.stats.hand_cash)
-            let labels1 = []
-            for(let i=1;i<=this.game.stats.hand_cash[0].length;i++){
-                if(i === 1)  labels1.push("Hand: " + i);
-                else   labels1.push(i);
-            }
-            let datasets1 = []
-            try{
-                for(let index in this.game.stats.hand_cash){
-                    if(parseInt(index) >= this.game.stats.player_list[0].length) break;
-                    let hand = this.game.stats.hand_cash[index]
-                    let data = []
-                    for(let j=0;j<=hand.length;j++){
-                        data.push(Number(hand[j]));
-                    }
-                    let set = {
-                        label: this.game.stats.player_list[1][this.game.stats.player_list[0].indexOf((parseInt(index) + 1))],
-                        borderColor: colors[parseInt(index)],
-                        data: data
-                    }
-                    datasets1.push(set);
-                }
-            }catch(e){
-                console.log(e)
-            }
-            this.datacollection1 = {
-                labels: labels1,
-                datasets: datasets1
-            }
-            // pot size
-            let labels2 = []
-            let data2 = []
-            for(let i=0;i<this.game.stats.pot_size[0].length;i++){
-                data2.push(100000 - Number(this.game.stats.pot_size[0][i]));
-                labels2.push(labels1[i])
-            }
-            let set2 =[{
-                borderColor: colors[0],
-                data: data2,
-                label: 'Pot Size'
-            }]
-            this.datacollection2 = {
-                labels: labels2,
-                datasets: set2
-            },
-            // options
-            this.options1 = {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            min: 0
-                        }
-                    }]
-                },
-                responsive: true,
-                maintainAspectRatio: false
-            },
-            this.options2 = {
-                scales: {
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            min: 0
-                        }
-                    }]
-                },
-                legend: {
-                    display: false
-                },
-                responsive: true,
-                maintainAspectRatio: false
-            }
-            // console.log(this.game.stats['most hands played'])
-            this.most_hands = []
-            for(let i=0;i<this.game.stats['most hands played'][0].length;i++){
-                this.most_hands.push(
-                    {
-                        pos: i+1,
-                        player: this.game.stats['most hands played'][1][i],
-                        count: Math.round(this.game.stats['most hands played'][4][i]) +
-                                '% (' + this.game.stats['most hands played'][2][i] + '/' + this.game.stats['most hands played'][3][i] + ' hands)',
-                        _10_to_7_player: Math.round(this.game.stats['most hands played'][7][i]) +
-                                '% (' + this.game.stats['most hands played'][5][i] + '/' + this.game.stats['most hands played'][6][i] + ')',
-                        _6_to_4_player: Math.round(this.game.stats['most hands played'][10][i]) +
-                                '% (' + this.game.stats['most hands played'][8][i] + '/' + this.game.stats['most hands played'][9][i] + ')',
-                        _3_to_1_player: Math.round(this.game.stats['most hands played'][13][i]) +
-                                '% (' + this.game.stats['most hands played'][11][i] + '/' + this.game.stats['most hands played'][12][i] + ')',
-                    }
-                )
-            }
-            this.best_hands = []
-            for(let i=0;i<this.game.stats['best hands'][0].length;i++){
-                this.best_hands.push(
-                    {
-                        pos: i+1,
-                        cards: this.game.stats['best hands'][2][i],
-                        player: this.game.stats['best hands'][1][i],
-                        hand: this.game.stats['best hands'][3][i],
-                        result: this.game.stats['best hands'][4][i]
-                    }
-                )
-            }
-            this.most_wins = []
-            for(let i=0;i<this.game.stats['most wins'][0].length;i++){
-                this.most_wins.push(
-                    {
-                        pos: i+1,
-                        player: this.game.stats['most wins'][1][i],
-                        'count *': this.game.stats['most wins'][2][i] + ' (' + Math.round(this.game.stats['most wins'][3][i]) + '%)',
-                        highest: '$' + this.game.stats['most wins'][4][i]
-                    }
-                )
-            }
-            this.highest_wins = []
-            for(let i=0;i<this.game.stats['highest wins'][0].length;i++){
-                this.highest_wins.push(
-                    {
-                        pos: i+1,
-                        amount: '$' + this.game.stats['highest wins'][4][i],
-                        player: this.game.stats['highest wins'][1][i],
-                        hand: this.game.stats['highest wins'][2][i] + ((this.game.stats['highest wins'][3][i]) ? ' (side pot)' : ''),
-                    }
-                )
-            }
-            this.longest_wins = []
-            for(let i=0;i<10;i++){
-                this.longest_wins.push(
-                    {
-                        pos: i+1,
-                        duration: this.game.stats['longest series of wins'][2][i],
-                        player: this.game.stats['longest series of wins'][1][i],
-                        hands: this.game.stats['longest series of wins'][3][i] + '-' + this.game.stats['longest series of wins'][4][i],
-                        total_gain: this.game.stats['longest series of wins'][5][i],
-                    }
-                )
-            }
-            this.longest_losses = []
-            for(let i=0;i<10;i++){
-                this.longest_losses.push(
-                    {
-                        pos: i+1,
-                        duration: this.game.stats['longest series of losses'][2][i],
-                        player: this.game.stats['longest series of losses'][1][i],
-                        hands: this.game.stats['longest series of losses'][3][i] + '-' + this.game.stats['longest series of losses'][4][i],
-                        total_loss: '$' + this.game.stats['longest series of losses'][5][i],
-                    }
-                )
-            }
-            this.most_bets = []
-            for(let i=0;i<this.game.stats['most bet/raise'][0].length;i++){
-                this.most_bets.push(
-                    {
-                        pos: i+1,
-                        player: this.game.stats['most bet/raise'][1][i],
-                        'Count **': this.game.stats['most bet/raise'][2][i] + ' (' + Math.round(this.game.stats['most bet/raise'][4][i]) + '%)',
-                    }
-                )
-            }
-            this.most_bingo = []
-            for(let i=0;i<this.game.stats['most all in'][0].length;i++){
-                this.most_bingo.push(
-                    {
-                        pos: i+1,
-                        player: this.game.stats['most all in'][1][i],
-                        total_count: this.game.stats['most all in'][2][i] + ' (' + Math.round(this.game.stats['most all in'][3][i]) + '%)',
-                        in_preflop: this.game.stats['most all in'][4][i],
-                        first_5_hands: this.game.stats['most all in'][5][i],
-                        total_won: this.game.stats['most all in'][6][i],
-                    }
-                )
-            }
-            this.ranking = []
-            for(let i=0;i<this.game.stats['player_list'][0].length;i++){
-                let eliminated = this.game.stats['player_list'][7][i][0]
-                if(typeof eliminated !== 'undefined'){
-                    if(eliminated.indexOf('[') == -1){
-                        eliminated = 'eliminated by ' + eliminated
-                    }else{
-                        eliminated = 'wins with ' + eliminated
-                    }
-                }else{
-                    eliminated = ''
-                }
-                this.ranking.push(
-                    {
-                        pos: i+1,
-                        player: this.game.stats['player_list'][1][i],
-                        hand: this.game.stats['player_list'][3][i],
-                        _: eliminated
-                    }
-                )
-            }
-            this.types.map(typ => { 
-                if(typ.value == this.game.type) this.type = typ.text 
-            })
+import { ElMessage } from 'element-plus/es/components/message/index';
 
-            this.bbcode = '[indent][img]/images/Logo-WECUP_small.jpg[/img][/indent]\n'
-            this.bbcode += '[hr][b][size=85][color=black]♣ [/color][color=darkred]♥[/color][color=black] ♠[/color][color=darkred] ♦ [/color][/size][size=150][color=goldenrod][font=Palatino Linotype]'
-            //this.bbcode += 'WeCUP #' + this.game.number + ' - ' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(',', '')
-            this.bbcode += 'WeCUP #' + this.game.number + ' - ' + this.game.started.replace(':00', '')
-            this.bbcode += '[/font][/color][/size][size=85][color=darkred] ♦ [/color][color=black]♠ [/color][color=darkred] ♥[/color]'
-            this.bbcode += '[color=black] ♣[/color][/size][/b][br][br]'
-            for(let i=0;i<this.game.stats['player_list'][0].length;i++){
-                let eliminated = this.game.stats['player_list'][7][i][0]
-                if(typeof eliminated !== 'undefined'){
-                    if(eliminated.indexOf('[') == -1){
-                        eliminated = 'eliminated by ' + eliminated
-                    }else{
-                        eliminated = 'wins with ' + eliminated
-                    }
-                }else{
-                    eliminated = ''
-                }
-                try{
-                    if(i === 0){
-                        this.bbcode += '[indent][color=goldenrod]1. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' wins with ' + this.game.stats.player_list[7][0][0].replace(/(<([^>]+)>)/gi, "") + '[/color]' + "\n"
-                    }else if(i === 1){
-                        this.bbcode += '[color=silver]2. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + ' [/color]' + "\n"
-                    }else if(i === 2){
-                        this.bbcode += '[color=#cd7f32]3. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + ' [/color]' + "\n"
-                    }else if(i === 3){
-                        this.bbcode += '4. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + "\n"
-                    }else if(typeof this.game.stats.player_list[7][i-1] !== 'undefined'){
-                        this.bbcode += (i+1) + '. ' + this.game.stats['player_list'][1][i] + '  ' + this.game.stats['player_list'][3][i] + ' ' + eliminated + "\n"
-                    }  
-                }catch(e){
-                    console.log(e)
-                } 
-            }
-            this.bbcode += '[/indent]'
-            this.bbcode += '[br][indent][color=darkred][size=150] Congratulations to [b]' + this.game.stats['player_list'][1][0] + '[/b][/size][/color][/indent]'
-//            this.bbcode += '[hr][size=85][url=https://www.pokerth.net/log-file-analysis/?ID=' + this.game.pdb.replace('.pdb', '') + '&UniqueGameID=' + this.game.unique_game_id + '][color=darkred]Log-Analysis[/color][/url]'
-            this.bbcode += '[hr][size=85][url=https://wec.pokerth.net/results/game/' + this.game.number + '][color=darkred]Log-Analysis[/color][/url]'
-//            this.bbcode += ' of WeCup [font=Arial Narrow]#' + this.game.number + '#' + new Date(Date.parse(this.game.started.replace(/[-]/g,'/'))).toLocaleString().replace(', ', '#')
-            this.bbcode += ' of WeCup [font=Arial Narrow]#' + this.game.number + '#' + this.game.started.replace(' ', '#').replace(':00', '')
-            for(let i=0;i<=10;i++){
-                if(typeof this.game.stats.player_list[1][i] !== 'undefined'){
-                    if(this.game.stats.player_list[1][i] == this.game['pos'+(i+1)]){
-                        this.bbcode += '#' + this.game.stats.player_list[1][i]
-                    }else{
-                        this.bbcode += '#' + this.game['pos'+(i+1)]
-                    }
-                }
-                else if (i > 5 && i < 7)
-                    this.bbcode += '#disco_dummy'
-            }
-            this.bbcode += '[/font][/size][br]'
-            this.bbcode += '[size=85][url=https://www.pokerth.net/viewtopic.php?f=19&t=25][color=darkred][br]Ranking[/url] of WeCup[/color][/size][hr]'
-        },
-        rowClass(item, type) {
-            if (!item || type !== 'row') return
-            // console.log("rowClass", item, type)
-            return 'cplink'
-        },
-        rowAttr(item, type) {
-            if (!item || type !== 'row') return
-            return { "data-player": item.player }
-        },
-        rowClick(item, index, event){
-            window.location.href = window.location.origin + '/player/' + encodeURIComponent(item.player)
-        },
-        update(game){
-            this.eGame = game
-        },
-        async copy(s) {
-            await navigator.clipboard.writeText(s);
-            this.$bvToast.toast(`You can paste the BB Code into forum now.`, {
-                title: 'BB Code copied to clipboard.',
-                autoHideDelay: 2000,
-                appendToast: true,
-                variant: 'success',
-            })
-        },
-        bb2clipboard() {
-            this.copy(window.document.getElementById("bbcode_content").value)
-        },
-        back() {
-            window.location.href = window.location.href
-        },
-        deleteGame(){
-            axios({
-                method: 'get',
-                url: '/delete/game/' + this.game.number,
-            })
-            .then(response => {
-                if(response.data.status){
-                    this.$bvToast.toast(response.data.msg, {
-                        title: 'Success!',
-                        autoHideDelay: 5000,
-                        appendToast: true,
-                        variant: 'success',
-                    })
-                    window.location.href = '/results'
-                }else{
-                    this.$bvToast.toast(response.data.msg, {
-                        title: 'Game deletion failed!',
-                        autoHideDelay: 5000,
-                        appendToast: true,
-                        variant: 'danger',
-                    })
-                }
-            })
-            .catch(response => {
-                this.$bvToast.toast(response, {
-                    title: 'Game deletion failed!',
-                    autoHideDelay: 5000,
-                    appendToast: true,
-                    variant: 'danger',
-                })
-            })
-        },
+const SERIES_COLORS = [
+  'rgba(86, 226, 137, 1.0)',
+  'rgba(104, 226, 86, 1.0)',
+  'rgba(174, 226, 86, 1.0)',
+  'rgba(226, 297, 86, 1.0)',
+  'rgba(226, 137, 86, 1.0)',
+  'rgba(226, 84, 104, 1.0)',
+  'rgba(226, 86, 174, 1.0)',
+  'rgba(207, 86, 226, 1.0)',
+  'rgba(138, 86, 226, 1.0)',
+  'rgba(86, 104, 226, 1.0)',
+];
+
+const TYPES = [
+  { text: 'regular', value: 1 },
+  { text: 'monthly', value: 5 },
+  { text: 'yearly', value: 6 },
+];
+
+export default {
+  props: ['game'],
+  data() {
+    return {
+      datacollection1: null,
+      datacollection2: null,
+      options1: null,
+      options2: null,
+      sections: [],
+      ranking: [],
+      bbcode: '',
+      show_bb: false,
+      show_delete: false,
+      edit: false,
+      eGame: this.game,
+      type: 1,
+      arole: window.arole,
+    };
+  },
+  computed: {
+    winner() {
+      return this.game.stats.player_list[1][0];
     },
-    mounted(){
-        this.init()
+  },
+  mounted() {
+    this.init();
+  },
+  methods: {
+    init() {
+      this.buildCharts();
+      this.buildSections();
+      this.buildRanking();
+
+      const t = TYPES.find((typ) => typ.value == this.game.type);
+      if (t) this.type = t.text;
+
+      this.bbcode = this.buildBbCode();
     },
-}
+
+    buildCharts() {
+      const stats = this.game.stats;
+
+      // Hand Cash
+      const labels1 = [];
+      for (let i = 1; i <= stats.hand_cash[0].length; i++) {
+        labels1.push(i === 1 ? 'Hand: ' + i : i);
+      }
+      const datasets1 = [];
+      try {
+        for (const index in stats.hand_cash) {
+          if (parseInt(index) >= stats.player_list[0].length) break;
+          const hand = stats.hand_cash[index];
+          const data = [];
+          for (let j = 0; j <= hand.length; j++) data.push(Number(hand[j]));
+          datasets1.push({
+            label: stats.player_list[1][stats.player_list[0].indexOf(parseInt(index) + 1)],
+            borderColor: SERIES_COLORS[parseInt(index)],
+            data,
+          });
+        }
+      } catch (e) {
+        console.log(e);
+      }
+      this.datacollection1 = { labels: labels1, datasets: datasets1 };
+
+      // Pot Size
+      const labels2 = [];
+      const data2 = [];
+      for (let i = 0; i < stats.pot_size[0].length; i++) {
+        data2.push(100000 - Number(stats.pot_size[0][i]));
+        labels2.push(labels1[i]);
+      }
+      this.datacollection2 = {
+        labels: labels2,
+        datasets: [{ borderColor: SERIES_COLORS[0], data: data2, label: 'Pot Size' }],
+      };
+
+      // Chart.js 4 erwartet die Achsen als Objekt, nicht mehr als xAxes/yAxes-Array.
+      this.options1 = {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true, min: 0 } },
+      };
+      this.options2 = {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { display: false } },
+        scales: { y: { beginAtZero: true, min: 0 } },
+      };
+    },
+
+    buildSections() {
+      const s = this.game.stats;
+      const pct = (v) => Math.round(v);
+
+      const mostHands = [];
+      for (let i = 0; i < s['most hands played'][0].length; i++) {
+        mostHands.push({
+          pos: i + 1,
+          player: s['most hands played'][1][i],
+          count: pct(s['most hands played'][4][i]) + '% (' + s['most hands played'][2][i] + '/' + s['most hands played'][3][i] + ' hands)',
+          p10_7: pct(s['most hands played'][7][i]) + '% (' + s['most hands played'][5][i] + '/' + s['most hands played'][6][i] + ')',
+          p6_4: pct(s['most hands played'][10][i]) + '% (' + s['most hands played'][8][i] + '/' + s['most hands played'][9][i] + ')',
+          p3_1: pct(s['most hands played'][13][i]) + '% (' + s['most hands played'][11][i] + '/' + s['most hands played'][12][i] + ')',
+        });
+      }
+
+      const bestHands = [];
+      for (let i = 0; i < s['best hands'][0].length; i++) {
+        bestHands.push({
+          pos: i + 1,
+          cards: s['best hands'][2][i],
+          player: s['best hands'][1][i],
+          hand: s['best hands'][3][i],
+          result: s['best hands'][4][i],
+        });
+      }
+
+      const mostWins = [];
+      for (let i = 0; i < s['most wins'][0].length; i++) {
+        mostWins.push({
+          pos: i + 1,
+          player: s['most wins'][1][i],
+          count: s['most wins'][2][i] + ' (' + pct(s['most wins'][3][i]) + '%)',
+          highest: '$' + s['most wins'][4][i],
+        });
+      }
+
+      const highestWins = [];
+      for (let i = 0; i < s['highest wins'][0].length; i++) {
+        highestWins.push({
+          pos: i + 1,
+          amount: '$' + s['highest wins'][4][i],
+          player: s['highest wins'][1][i],
+          hand: s['highest wins'][2][i] + (s['highest wins'][3][i] ? ' (side pot)' : ''),
+        });
+      }
+
+      const longestWins = [];
+      const longestLosses = [];
+      for (let i = 0; i < 10; i++) {
+        longestWins.push({
+          pos: i + 1,
+          duration: s['longest series of wins'][2][i],
+          player: s['longest series of wins'][1][i],
+          hands: s['longest series of wins'][3][i] + '-' + s['longest series of wins'][4][i],
+          total_gain: s['longest series of wins'][5][i],
+        });
+        longestLosses.push({
+          pos: i + 1,
+          duration: s['longest series of losses'][2][i],
+          player: s['longest series of losses'][1][i],
+          hands: s['longest series of losses'][3][i] + '-' + s['longest series of losses'][4][i],
+          total_loss: '$' + s['longest series of losses'][5][i],
+        });
+      }
+
+      const mostBets = [];
+      for (let i = 0; i < s['most bet/raise'][0].length; i++) {
+        mostBets.push({
+          pos: i + 1,
+          player: s['most bet/raise'][1][i],
+          count: s['most bet/raise'][2][i] + ' (' + pct(s['most bet/raise'][4][i]) + '%)',
+        });
+      }
+
+      const mostBingo = [];
+      for (let i = 0; i < s['most all in'][0].length; i++) {
+        mostBingo.push({
+          pos: i + 1,
+          player: s['most all in'][1][i],
+          total_count: s['most all in'][2][i] + ' (' + pct(s['most all in'][3][i]) + '%)',
+          in_preflop: s['most all in'][4][i],
+          first_5_hands: s['most all in'][5][i],
+          total_won: s['most all in'][6][i],
+        });
+      }
+
+      const POS = { prop: 'pos', label: 'Pos', width: 70 };
+      const PLAYER = { prop: 'player', label: 'Player', minWidth: 140 };
+
+      this.sections = [
+        { title: 'Most hands played', rows: mostHands, columns: [
+          POS, PLAYER,
+          { prop: 'count', label: 'Count', minWidth: 170 },
+          { prop: 'p10_7', label: '10 to 7 Player', minWidth: 140 },
+          { prop: 'p6_4', label: '6 to 4 Player', minWidth: 140 },
+          { prop: 'p3_1', label: '3 to 1 Player', minWidth: 140 },
+        ] },
+        { title: 'Best hands', rows: bestHands, columns: [
+          POS,
+          { prop: 'cards', label: 'Cards', minWidth: 220 },
+          PLAYER,
+          { prop: 'hand', label: 'Hand', width: 90 },
+          { prop: 'result', label: 'Result', minWidth: 110 },
+        ] },
+        { title: 'Most wins', rows: mostWins, columns: [
+          POS, PLAYER,
+          { prop: 'count', label: 'Count *', minWidth: 130 },
+          { prop: 'highest', label: 'Highest', minWidth: 110 },
+        ] },
+        { title: 'Highest wins', rows: highestWins, columns: [
+          POS,
+          { prop: 'amount', label: 'Amount', minWidth: 110 },
+          PLAYER,
+          { prop: 'hand', label: 'Hand', minWidth: 130 },
+        ] },
+        { title: 'Longest wins', rows: longestWins, columns: [
+          POS,
+          { prop: 'duration', label: 'Duration', width: 100 },
+          PLAYER,
+          { prop: 'hands', label: 'Hands', minWidth: 110 },
+          { prop: 'total_gain', label: 'Total Gain', minWidth: 120 },
+        ] },
+        { title: 'Longest losses', rows: longestLosses, columns: [
+          POS,
+          { prop: 'duration', label: 'Duration', width: 100 },
+          PLAYER,
+          { prop: 'hands', label: 'Hands', minWidth: 110 },
+          { prop: 'total_loss', label: 'Total Loss', minWidth: 120 },
+        ] },
+        { title: 'Most bets/raises', rows: mostBets, columns: [
+          POS, PLAYER,
+          { prop: 'count', label: 'Count **', minWidth: 130 },
+        ] },
+        { title: 'Most all in', rows: mostBingo, columns: [
+          POS, PLAYER,
+          { prop: 'total_count', label: 'Total Count', minWidth: 130 },
+          { prop: 'in_preflop', label: 'In Preflop', minWidth: 110 },
+          { prop: 'first_5_hands', label: 'First 5 Hands', minWidth: 130 },
+          { prop: 'total_won', label: 'Total Won', minWidth: 110 },
+        ] },
+      ];
+    },
+
+    // Der letzte Eintrag je Spieler ist entweder die Hand, mit der er gewonnen
+    // hat, oder der Spieler, der ihn eliminiert hat.
+    eliminationText(i) {
+      const entry = this.game.stats['player_list'][7][i][0];
+      if (typeof entry === 'undefined') return '';
+      return entry.indexOf('[') === -1 ? 'eliminated by ' + entry : 'wins with ' + entry;
+    },
+
+    buildRanking() {
+      const s = this.game.stats;
+      this.ranking = [];
+      for (let i = 0; i < s['player_list'][0].length; i++) {
+        this.ranking.push({
+          pos: i + 1,
+          player: s['player_list'][1][i],
+          hand: s['player_list'][3][i],
+          _: this.eliminationText(i),
+        });
+      }
+    },
+
+    buildBbCode() {
+      const s = this.game.stats;
+      let bb = '[indent][img]/images/Logo-WECUP_small.jpg[/img][/indent]\n';
+      bb += '[hr][b][size=85][color=black]♣ [/color][color=darkred]♥[/color][color=black] ♠[/color][color=darkred] ♦ [/color][/size][size=150][color=goldenrod][font=Palatino Linotype]';
+      bb += 'WeCUP #' + this.game.number + ' - ' + this.game.started.replace(':00', '');
+      bb += '[/font][/color][/size][size=85][color=darkred] ♦ [/color][color=black]♠ [/color][color=darkred] ♥[/color]';
+      bb += '[color=black] ♣[/color][/size][/b][br][br]';
+
+      for (let i = 0; i < s['player_list'][0].length; i++) {
+        const eliminated = this.eliminationText(i);
+        const name = s['player_list'][1][i];
+        const hand = s['player_list'][3][i];
+        try {
+          if (i === 0) {
+            bb += '[indent][color=goldenrod]1. ' + name + '  ' + hand + ' wins with '
+                + s.player_list[7][0][0].replace(/(<([^>]+)>)/gi, '') + '[/color]\n';
+          } else if (i === 1) {
+            bb += '[color=silver]2. ' + name + '  ' + hand + ' ' + eliminated + ' [/color]\n';
+          } else if (i === 2) {
+            bb += '[color=#cd7f32]3. ' + name + '  ' + hand + ' ' + eliminated + ' [/color]\n';
+          } else if (i === 3) {
+            bb += '4. ' + name + '  ' + hand + ' ' + eliminated + '\n';
+          } else if (typeof s.player_list[7][i - 1] !== 'undefined') {
+            bb += (i + 1) + '. ' + name + '  ' + hand + ' ' + eliminated + '\n';
+          }
+        } catch (e) {
+          console.log(e);
+        }
+      }
+      bb += '[/indent]';
+      bb += '[br][indent][color=darkred][size=150] Congratulations to [b]' + s['player_list'][1][0] + '[/b][/size][/color][/indent]';
+      bb += '[hr][size=85][url=https://wec.pokerth.net/results/game/' + this.game.number + '][color=darkred]Log-Analysis[/color][/url]';
+      bb += ' of WeCup [font=Arial Narrow]#' + this.game.number + '#' + this.game.started.replace(' ', '#').replace(':00', '');
+      for (let i = 0; i <= 10; i++) {
+        if (typeof s.player_list[1][i] !== 'undefined') {
+          bb += '#' + (s.player_list[1][i] == this.game['pos' + (i + 1)] ? s.player_list[1][i] : this.game['pos' + (i + 1)]);
+        } else if (i > 5 && i < 7) {
+          bb += '#disco_dummy';
+        }
+      }
+      bb += '[/font][/size][br]';
+      bb += '[size=85][url=https://www.pokerth.net/viewtopic.php?f=19&t=25][color=darkred][br]Ranking[/url] of WeCup[/color][/size][hr]';
+      return bb;
+    },
+
+    rowClick(row) {
+      window.location.href = window.location.origin + '/player/' + encodeURIComponent(row.player);
+    },
+    update(game) {
+      this.eGame = game;
+    },
+    async bb2clipboard() {
+      try {
+        await navigator.clipboard.writeText(this.bbcode);
+        ElMessage({ message: 'BB Code copied to clipboard.', type: 'success' });
+      } catch (e) {
+        ElMessage({ message: 'Copying to the clipboard failed.', type: 'error' });
+      }
+    },
+    back() {
+      window.location.reload();
+    },
+    deleteGame() {
+      axios.get('/delete/game/' + this.game.number).then((res) => {
+        if (res.data.status) {
+          ElMessage({ message: res.data.msg, type: 'success' });
+          window.location.href = '/results';
+        } else {
+          ElMessage({ message: res.data.msg, type: 'error' });
+        }
+      }).catch(() => {
+        ElMessage({ message: 'Game deletion failed!', type: 'error' });
+      });
+    },
+  },
+};
 </script>
-<style lang="scss" scoped>
-    tbody tr{
-        cursor: pointer;
-    }
-    table{
-        overflow-x: scroll;
-    }
-</style>
-<style>
-    #app{
-        position: relative;
-    }
-    #delete footer{
-        display: none;
-    }
-    .modal-footer{
-        height: auto;
-    }
+<style scoped>
+.game-top {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+.game-basic { flex: 1 1 360px; min-width: 0; }
+.game-ranking { flex: 1 1 480px; min-width: 0; }
+
+.stat-line { display: flex; gap: 0.5rem; }
+.stat-line strong { min-width: 170px; }
+
+.game-actions {
+  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  width: 220px;
+}
+.game-actions .el-button { width: 100%; margin: 0; }
+
+.game-section { margin-top: 1.5rem; }
+.game-footnotes { margin-top: 1rem; }
 </style>

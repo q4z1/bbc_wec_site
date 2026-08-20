@@ -12,6 +12,9 @@ class EncryptCookies extends Middleware
      * @var array
      */
     protected $except = [
-        //
+        // Der Theme-Umschalter schreibt dieses Cookie aus JavaScript.
+        // Verschluesselt wuerde Laravel den Wert beim naechsten Request
+        // verwerfen und das Theme fiele jedes Mal zurueck.
+        'theme',
     ];
 }

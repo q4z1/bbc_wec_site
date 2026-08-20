@@ -1,183 +1,118 @@
 <template>
-    <div>
-        <h3>Ranking</h3>
-        <b-row class="mb-3">
-            <b-col>
-                <b-overlay
-                :show="loading"
-                rounded
-                opacity="0.6"
-                spinner-small
-                spinner-variant="primary"
-                class="d-inline-block"
-                >
-                    <b-form-select :disabled="loading||alltime" v-model="year" @change="filter" :options="yearRange"></b-form-select>
-                </b-overlay>
-            </b-col>
-            <b-col>
-                <b-overlay
-                :show="loading"
-                rounded
-                opacity="0.6"
-                spinner-small
-                spinner-variant="primary"
-                class="d-inline-block"
-                >
-                    <b-form-select :disabled="loading||alltime||allyear" v-model="month" @change="filter" :options="monthRange"></b-form-select>
-                </b-overlay>
-            </b-col>
-            <b-col>
-                <b-overlay
-                :show="loading"
-                rounded
-                opacity="0.6"
-                spinner-small
-                spinner-variant="primary"
-                class="d-inline-block"
-                >
-                    <b-form-checkbox :disabled="loading||alltime" class="mt-2" @change="filter" v-model="allyear" switch>
-                        All-Year
-                    </b-form-checkbox>
-                </b-overlay>
-            </b-col>
-            <b-col>
-                <b-overlay
-                :show="loading"
-                rounded
-                opacity="0.6"
-                spinner-small
-                spinner-variant="primary"
-                class="d-inline-block"
-                >
-                    <b-form-checkbox :disabled="loading||allyear" class="mt-2" @change="filter" v-model="alltime" switch>
-                        All-Time
-                    </b-form-checkbox>
-                </b-overlay>
-            </b-col>
-        </b-row>
-        <b-table responsive striped hover
-            id="results_table"
-            :items="result"
-            :fields="fields"
-            @row-clicked="showPlayer"
-        >
-            <template #cell(nickname)="data">
-                <span v-html="data.value"></span>
-            </template>
-        </b-table>
-        <b-row class="mb-3" v-if="avg_games">
-          <b-col class="text-center font-italic">a={{ avg_games }}</b-col>
-        </b-row>
+  <div>
+    <h3>Ranking</h3>
+    <div class="filter-row">
+      <div class="filter-cell" v-loading="loading">
+        <el-select v-model="year" :disabled="loading || alltime" style="width:100%" @change="filter">
+          <el-option v-for="y in yearRange" :key="y.value" :label="y.text" :value="y.value" />
+        </el-select>
+      </div>
+      <div class="filter-cell" v-loading="loading">
+        <el-select v-model="month" :disabled="loading || alltime || allyear" style="width:100%" @change="filter">
+          <el-option v-for="m in monthRange" :key="m.value" :label="m.text" :value="m.value" />
+        </el-select>
+      </div>
+      <div class="filter-cell filter-cell--switch">
+        <el-switch v-model="allyear" :disabled="loading || alltime" active-text="All-Year" @change="filter" />
+      </div>
+      <div class="filter-cell filter-cell--switch">
+        <el-switch v-model="alltime" :disabled="loading || allyear" active-text="All-Time" @change="filter" />
+      </div>
     </div>
+
+    <div v-loading="loading">
+      <el-table :data="result" stripe style="width:100%" @row-click="showPlayer">
+        <el-table-column prop="position" label="#" width="70" />
+        <el-table-column prop="nickname" label="Nickname" sortable />
+        <el-table-column prop="score" label="Score" sortable />
+        <el-table-column prop="games" label="Games" sortable />
+      </el-table>
+    </div>
+
+    <div v-if="avg_games" class="ranking-avg">a={{ avg_games }}</div>
+  </div>
 </template>
 <script>
-    export default {
-        props: ['stats', 'stats_year', 'stats_month'],
-        data() {
-            return {
-                renderTable: true,
-                result: null,
-                year: 0,
-                month: 0,
-                loading: false,
-                allyear: false,
-                alltime: false,
-                avg_games: 0,
-                fields: [{
-                    key: 'position'
-                  },
-                  {
-                    key: 'nickname',
-                    sortable: true
-                  },
-                  {
-                    key: 'score',
-                    sortable: true
-                  },
-                  {
-                    key: 'games',
-                    sortable: true
-                  }
-                ],
-            }
-        },
-        computed: {
-            yearRange: function(){
-                let years = []
-                let now = new Date().getFullYear()
-                let past = 2012
-                for(let i=now;i>=past;i--){
-                    years.push({value: i, text: i})
-                }
-                return years
-            },
-            monthRange: function(){
-                let months = []
-                let monthText = []
-                monthText[1] = "January"
-                monthText[2] = "February"
-                monthText[3] = "March"
-                monthText[4] = "April"
-                monthText[5] = "May"
-                monthText[6] = "June"
-                monthText[7] = "July"
-                monthText[8] = "August"
-                monthText[9] = "September"
-                monthText[10] = "October"
-                monthText[11] = "November"
-                monthText[12] = "December"
-                for(let i=1;i<=12;i++){
-                    months.push({value: i, text: monthText[i]})
-                }
-                return months
-            },
-        },
-        mounted() {
-            this.year = new Date().getFullYear()
-            this.month = new Date().getMonth() + 1
-            if(this.stats_year) {
-                this.year = this.stats_year
-                if(this.stats_month) this.month = this.stats_month
-                else this.allyear = true
-            } else this.alltime = true
-            this.result = this.formatResult(this.stats)
-        },
-        methods:{
-            formatResult(stats){
-                let stats_formatted = []
-                let l = stats.length
-                let i = 0
-                for(i; i<l; i++){
-                    let s = stats[i]
-                    stats_formatted.push({
-                        'position': i + 1,
-                        'nickname': s.nickname,
-                        'score': s.score,
-                        'games': s.games
-                    })
-                }
-                this.avg_games = (i > 0) ? stats[0].avg_games : 0
-                return stats_formatted
-            },
-            showPlayer(item, index, event) {
-                window.location.href = '/player/' + encodeURIComponent(item.nickname)
-            },
-            filter(){
-                this.loading = true
-                axios.post('/results/ranking', {
-                    year: (!this.alltime) ? this.year : 0,
-                    month: (!this.alltime && !this.allyear) ? this.month : 0
-                })
-                .then(response => {
-                    if(response.data.success === true){
-                        this.result = this.formatResult(response.data.stats)
-                        this.loading = false
-                    }
-                }, (error) => {
-                    console.log(error)
-                    this.loading = true
-                });
-            },
-        }
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'];
+
+export default {
+  props: ['stats', 'stats_year', 'stats_month'],
+  data() {
+    return {
+      result: [],
+      year: 0,
+      month: 0,
+      loading: false,
+      allyear: false,
+      alltime: false,
+      avg_games: 0,
+    };
+  },
+  computed: {
+    yearRange() {
+      const years = [];
+      for (let i = new Date().getFullYear(); i >= 2012; i--) years.push({ value: i, text: String(i) });
+      return years;
+    },
+    monthRange() {
+      return MONTHS.map((text, i) => ({ value: i + 1, text }));
+    },
+  },
+  mounted() {
+    this.year = new Date().getFullYear();
+    this.month = new Date().getMonth() + 1;
+    if (this.stats_year) {
+      this.year = this.stats_year;
+      if (this.stats_month) this.month = this.stats_month;
+      else this.allyear = true;
+    } else {
+      this.alltime = true;
     }
+    this.result = this.formatResult(this.stats || []);
+  },
+  methods: {
+    formatResult(stats) {
+      this.avg_games = stats.length > 0 ? stats[0].avg_games : 0;
+      return stats.map((s, i) => ({
+        position: i + 1,
+        nickname: s.nickname,
+        score: s.score,
+        games: s.games,
+      }));
+    },
+    showPlayer(row) {
+      window.location.href = '/player/' + encodeURIComponent(row.nickname);
+    },
+    filter() {
+      this.loading = true;
+      axios.post('/results/ranking', {
+        year: !this.alltime ? this.year : 0,
+        month: (!this.alltime && !this.allyear) ? this.month : 0,
+      }).then((res) => {
+        if (res.data.success === true) {
+          this.result = this.formatResult(res.data.stats);
+        }
+        this.loading = false;
+      }).catch(() => { this.loading = false; });
+    },
+  },
+};
 </script>
+<style scoped>
+.filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.filter-cell { flex: 1 1 180px; min-width: 150px; }
+.filter-cell--switch { flex: 0 0 auto; min-width: 0; }
+
+.ranking-avg {
+  margin-top: 0.5rem;
+  text-align: center;
+  font-style: italic;
+}
+</style>

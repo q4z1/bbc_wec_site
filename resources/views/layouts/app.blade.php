@@ -7,6 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
+    @php($theme = request()->cookie('theme', (auth()->user() ? auth()->user()->theme : 'light')))
     @php($pageTitle = trim($__env->yieldContent('title') ?: config('app.name', 'Week-End Cup')))
     @php($pageDescription = $__env->yieldContent('description')
         ?: 'Results, rankings and hall of fame of the Week-End Cup, the PokerTH tournament series.')
@@ -20,104 +21,122 @@
     <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $pageDescription }}">
     <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:image" content="{{ url('/logo.png') }}">
     <meta name="twitter:card" content="summary">
-    
+
     <!-- Favicon -->
     <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3e%3ctext y='.9em' font-size='90'%3e🏆%3c/text%3e%3c/svg%3e">
 
-    <!-- Scripts -->
-    <script src="{{ asset(mix('js/app.js')) }}" defer></script>
+    {{-- Die Webfonts liegen unter /public/fonts, es geht also kein Request an
+         fonts.gstatic.com hinaus. Das Preload sorgt dafuer, dass schon der
+         erste Paint die richtige Schrift benutzt statt spaeter umzuspringen. --}}
+    <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ asset('fonts/nunito-latin.woff2') }}">
+    @if($theme === 'dark')
+        <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ asset('fonts/sourcesans-normal-400-latin.woff2') }}">
+    @else
+        <link rel="preload" as="font" type="font/woff2" crossorigin href="{{ asset('fonts/opensans-normal-400-700-latin.woff2') }}">
+    @endif
 
-    <!-- Fonts -->
-    <!-- <link rel="dns-prefetch" href="//fonts.gstatic.com"> -->
-    <!-- <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet"> -->
-
-    <!-- Styles -->
-    <link href="{{ asset(mix('css/app.css')) }}" rel="stylesheet">
-    <link id="theme-css" href="{{ asset(mix('css/theme.'.((auth()->user()) ? auth()->user()->theme : 'light').'.css')) }}" rel="stylesheet">
+    @vite(['resources/js/app.js', 'resources/sass/app.scss'])
+    <link id="theme-css" rel="stylesheet" href="{{ asset('css/theme.' . $theme . '.css') }}">
 </head>
-<body>
+<body data-theme="{{ $theme }}">
     <div id="app">
-        <b-navbar toggleable="lg" variant="secondary">
-            <b-navbar-brand href="{{ url('/') }}"><img src="{{ url('/logo.png') }}" width="128" height="75" alt="{{ config('app.name', 'Laravel') }}" /></b-navbar-brand>
-            <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
-            <b-collapse id="nav-collapse" is-nav>
-                <b-navbar-nav>
-                    <b-nav-item href="/">Home</b-nav-item>
+        <nav class="main-navbar">
+            <!-- Brand + Hamburger -->
+            <div class="navbar-brand">
+                <a href="{{ url('/') }}">
+                    <img src="{{ url('/logo.png') }}" width="128" height="75" alt="{{ config('app.name', 'Week-End Cup') }}" />
+                </a>
+                <button type="button" class="main-navbar-toggler" @click="mobileMenuOpen = !mobileMenuOpen" aria-label="Menu">
+                    <span></span><span></span><span></span>
+                </button>
+            </div>
+
+            <!-- Rechte Seite: immer sichtbar -->
+            <div class="main-navbar-end" v-cloak>
+                <el-tooltip content="Theme switch" placement="bottom-end">
+                    <el-button class="theme-toggle-btn" :icon="Sunny" circle></el-button>
+                </el-tooltip>
+                <el-dropdown trigger="click" placement="bottom-end">
+                    <button type="button" class="navbar-user-trigger" title="Profile">
+                        <el-icon><avatar></avatar></el-icon>
+                        @auth&nbsp;<strong>{{ Auth::user()->name }}</strong>@endauth
+                    </button>
+                    <template v-slot:dropdown>
+                        <el-dropdown-menu>
+                            @guest
+                                @if (Route::has('login'))
+                                <el-dropdown-item onclick="window.location.href='{{ route('login') }}'">{{ __('Login') }}</el-dropdown-item>
+                                @endif
+                                @if (Route::has('register'))
+                                <el-dropdown-item onclick="window.location.href='{{ route('register') }}'">{{ __('Register') }}</el-dropdown-item>
+                                @endif
+                            @else
+                                <el-dropdown-item onclick="document.getElementById('logout-form').submit()">{{ __('Logout') }}</el-dropdown-item>
+                            @endguest
+                        </el-dropdown-menu>
+                    </template>
+                </el-dropdown>
+            </div>
+
+            <!-- Kollabierbare Nav-Items -->
+            <div :class="['main-navbar-collapse', { 'is-open': mobileMenuOpen }]" v-cloak>
+                <el-menu mode="horizontal" :ellipsis="!mobileMenuOpen" style="width:100%;" class="main-navbar-items">
                     @auth
                     @if(in_array(auth()->user()->role, ['a', 's']))
-                    <b-nav-item href="{{ route('upload.game.view') }}"><b-icon-upload></b-icon-upload>&nbsp;Upload Game</b-nav-item>
-                    @endif
-                    @if(in_array(auth()->user()->role, ['s']))
-                    <b-nav-item href="{{ route('award.view') }}"><b-icon-award></b-icon-award>&nbsp;Awards</b-nav-item>
+                    <el-sub-menu index="admin">
+                        <template v-slot:title><el-icon><tools></tools></el-icon>&nbsp;<strong>Admin</strong></template>
+                        <el-menu-item index="admin-upload"><a href="{{ route('upload.game.view') }}"><el-icon><upload></upload></el-icon>&nbsp;Upload Game</a></el-menu-item>
+                        @if(auth()->user()->role === 's')
+                        <el-menu-item index="admin-awards"><a href="{{ route('award.view') }}"><el-icon><medal></medal></el-icon>&nbsp;Awards</a></el-menu-item>
+                        @endif
+                    </el-sub-menu>
                     @endif
                     @endauth
-                    <b-nav-item href="{{ route('results') }}"><b-icon-book-fill></b-icon-book-fill>&nbsp;Results</b-nav-item>
-                    <b-nav-item href="{{ route('results.ranking') }}"><b-icon-trophy-fill></b-icon-trophy-fill>&nbsp;Ranking</b-nav-item>
-                    <b-nav-item href="{{ route('players') }}"><b-icon-person-fill></b-icon-person-fill>&nbsp;Players</b-nav-item>
-                    {{-- <b-nav-item href="{{ route('results.halloffame') }}">Hall of Fame</b-nav-item> --}}
-                </b-navbar-nav>
-                <!-- Right aligned nav items -->
-                <b-navbar-nav class="ml-auto">
-                    @auth
-                    <b-nav-item id="theme-toggle" v-b-tooltip.hover title="Toggle Theme"><b-icon-front></b-icon-front></b-nav-item>
-                    @endauth
-                    {{--  <b-nav-item href="{{ route('shoutbox') }}" v-b-tooltip.hover title="Shoutbox"><b-icon-chat-text></b-icon-chat-text></b-nav-item>  --}}
-                    <b-nav-item-dropdown right>
-                        <!-- Using 'button-content' slot -->
-                        <template #button-content>
-                            <b-icon-person-circle></b-icon-person-circle>
-                            @auth
-                            <strong>{{ Auth::user()->name }}</strong>
-                            @endauth
-                        </template>
-                        @guest
-                            @if (Route::has('login'))
-                                <b-dropdown-item href="{{ route('login') }}">{{ __('Login') }}</b-dropdown-item>
-                            @endif
-                            @if (Route::has('register'))
-                                <b-dropdown-item href="{{ route('register') }}">{{ __('Register') }}</b-dropdown-item>
-                            @endif
-                        @else
-                            <b-dropdown-item>
-                                <a onclick="window.event.preventDefault();document.getElementById('logout-form').submit();">{{ __('Logout') }}</a>
-                            </b-dropdown-item>
-                            <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
-                                @csrf
-                            </form>
-                        @endguest
-                    </b-nav-item-dropdown>
-                </b-navbar-nav>
-            </b-collapse>
-        </b-navbar>
-        <main class="py-4">
-            <b-container fluid>
+
+                    <el-menu-item index="home"><a href="{{ url('/') }}"><el-icon><house></house></el-icon>&nbsp;Home</a></el-menu-item>
+                    <el-menu-item index="results"><a href="{{ route('results') }}"><el-icon><notebook></notebook></el-icon>&nbsp;Results</a></el-menu-item>
+                    <el-menu-item index="ranking"><a href="{{ route('results.ranking') }}"><el-icon><trophy></trophy></el-icon>&nbsp;Ranking</a></el-menu-item>
+                    <el-menu-item index="players"><a href="{{ route('players') }}"><el-icon><user-filled></user-filled></el-icon>&nbsp;Players</a></el-menu-item>
+                    {{-- <el-menu-item index="halloffame"><a href="{{ route('results.halloffame') }}"><el-icon><star></star></el-icon>&nbsp;Hall of Fame</a></el-menu-item> --}}
+                </el-menu>
+            </div>
+        </nav>
+
+        @auth
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" class="d-none">
+            @csrf
+        </form>
+        @endauth
+
+        <main style="padding: 1.5rem 0;">
+            <div style="width:100%; padding: 0 1rem;">
                 @yield('content')
-            </b-container>
+            </div>
         </main>
-        <footer>
-          <b-row>
-            <b-col><a href="https://pokerth.net/app.php/imprint" title="Imprint">Imprint</a></b-col>
-          </b-row>
+
+        <footer class="page-footer">
+            <a href="https://pokerth.net/app.php/imprint" title="Imprint">Imprint</a>
         </footer>
     </div>
+
     <script>
         window.arole = "{!! (auth()->user()) ? auth()->user()->role : '' !!}";
-        document.addEventListener('DOMContentLoaded', function(event) {
-            $('#theme-toggle').click(function(e){
-                e.preventDefault();
-                let href = $('#theme-css').attr('href');
-                let theme = 'dark';
-                if(href.indexOf('dark') !== -1){
-                    href = "{{ asset(mix('css/theme.light.css')) }}";
-                    theme = 'light'
-                }else if(href.indexOf('light') !== -1){
-                    href = "{{ asset(mix('css/theme.dark.css')) }}";
-                }
-                // save theme into session
-                axios.get('{{ route('user.theme.set') }}' + '?v=' + theme);
-
-                $('#theme-css').attr('href', href);
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelectorAll('.theme-toggle-btn').forEach(function (btn) {
+                btn.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const link = document.getElementById('theme-css');
+                    const href = link.getAttribute('href');
+                    const theme = href.indexOf('dark') !== -1 ? 'light' : 'dark';
+                    link.setAttribute('href', '/css/theme.' + theme + '.css');
+                    document.body.setAttribute('data-theme', theme);
+                    // Cookie fuer ein Jahr - greift auch fuer Gaeste
+                    document.cookie = 'theme=' + theme + '; path=/; max-age=31536000; SameSite=Lax';
+                    // Eingeloggte User bekommen es zusaetzlich ins Profil
+                    window.axios && window.axios.get('{{ route('user.theme.set') }}?v=' + theme);
+                });
             });
         });
     </script>

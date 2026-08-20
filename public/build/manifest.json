@@ -1,0 +1,43 @@
+{
+  "_chartjs-CU62nsPA.js": {
+    "file": "assets/chartjs-CU62nsPA.js",
+    "name": "chartjs"
+  },
+  "_element-plus-BNGG5Plh.css": {
+    "file": "assets/element-plus-BNGG5Plh.css",
+    "src": "_element-plus-BNGG5Plh.css"
+  },
+  "_element-plus-XMiwmggu.js": {
+    "file": "assets/element-plus-XMiwmggu.js",
+    "name": "element-plus",
+    "imports": [
+      "_vue-BvkSAewo.js"
+    ],
+    "css": [
+      "assets/element-plus-BNGG5Plh.css"
+    ]
+  },
+  "_vue-BvkSAewo.js": {
+    "file": "assets/vue-BvkSAewo.js",
+    "name": "vue"
+  },
+  "resources/js/app.js": {
+    "file": "assets/app-tpaA7PFH.js",
+    "name": "app",
+    "src": "resources/js/app.js",
+    "isEntry": true,
+    "imports": [
+      "_element-plus-XMiwmggu.js",
+      "_vue-BvkSAewo.js",
+      "_chartjs-CU62nsPA.js"
+    ],
+    "css": [
+      "assets/app-DohfaEki.css"
+    ]
+  },
+  "resources/sass/app.scss": {
+    "file": "assets/app-CtgkBhRH.css",
+    "src": "resources/sass/app.scss",
+    "isEntry": true
+  }
+}

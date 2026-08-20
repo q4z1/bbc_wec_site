@@ -1,72 +1,63 @@
 <template>
-    <div>
-        <h3>Hall of Fame</h3>
-        <b-row class="mb-3">
-            <b-col >
-                <b-form-select v-model="year" @change="filter">
-                    <option value="0" selected="selected">All-time</option>                  
-                    <option value="2020">2020</option>
-                    <option value="2019">2019</option>
-                    <option value="2018">2018</option>
-                    <option value="2017">2017</option>
-                    <option value="2016">2016</option>
-                    <option value="2015">2015</option>
-                    <option value="2014">2014</option>
-                    <option value="2013">2013</option>
-                    <option value="2012">2012</option>
-                    <option value="2011">2011</option>
-                    <option value="2010">2010</option>
-                </b-form-select>
-            </b-col>
-            <b-col></b-col>
-            <b-col></b-col>
-        </b-row>
-        <b-table striped hover 
-            id="results_table"
-            :items="result"
-            @row-clicked="showPlayer"
-        >
-            <template #cell(nickname)="data">
-                <span v-html="data.value"></span>
-            </template>
-        </b-table>
+  <div>
+    <h3>Hall of Fame</h3>
+    <div class="filter-row">
+      <div class="filter-cell" v-loading="loading">
+        <el-select v-model="year" style="width:100%" @change="filter">
+          <el-option v-for="y in yearRange" :key="y.value" :label="y.text" :value="y.value" />
+        </el-select>
+      </div>
     </div>
+
+    <div v-loading="loading">
+      <el-table :data="result" stripe style="width:100%" @row-click="showPlayer">
+        <el-table-column prop="id" label="ID" width="90" />
+        <el-table-column prop="nickname" label="Nickname" />
+      </el-table>
+    </div>
+  </div>
 </template>
 <script>
-    export default {
-        props: ['results', 'totals'],
-        data() {
-            return {
-                renderTable: true,
-                result: null,
-                year: 0,
-                player: null,
-            }
-        },
-        mounted() {
-            console.log('Halloffame mounted.')
-
-            this.result = this.results
-        },
-        methods:{
-            showPlayer(item, index, event) {
-                window.location.href = '/player/' + item.nickname
-            },
-            filter(){
-                axios.post('/results/halloffame', {
-                    year: this.year,
-                    month: this.month,
-                    page: this.page,
-                    type: this.type
-                })
-                .then(response => {
-                    if(response.data.success === true){
-                        this.result = response.data.result
-                    }
-                }, (error) => {
-                    console.log(error)
-                });
-            },
+export default {
+  props: ['results', 'totals'],
+  data() {
+    return {
+      result: [],
+      year: 0,
+      loading: false,
+    };
+  },
+  computed: {
+    yearRange() {
+      const years = [{ value: 0, text: 'All-time' }];
+      for (let i = 2020; i >= 2010; i--) years.push({ value: i, text: String(i) });
+      return years;
+    },
+  },
+  mounted() {
+    this.result = this.results || [];
+  },
+  methods: {
+    showPlayer(row) {
+      window.location.href = '/player/' + encodeURIComponent(row.nickname);
+    },
+    filter() {
+      this.loading = true;
+      axios.post('/results/halloffame', { year: this.year }).then((res) => {
+        if (res.data.success === true) {
+          this.result = res.data.result;
         }
-    }
+        this.loading = false;
+      }).catch(() => { this.loading = false; });
+    },
+  },
+};
 </script>
+<style scoped>
+.filter-row {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.filter-cell { flex: 0 1 220px; }
+</style>
