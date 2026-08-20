@@ -37,6 +37,13 @@ class GenerateSitemap extends Command
         $target = $this->option('output') ?: public_path('sitemap.xml');
         $xml = view('sitemap', ['urls' => $urls])->render();
 
+        // The scheduler runs as root, interactive work as devuser. Once cron has
+        // written the file it is owned by root and file_put_contents would fail;
+        // unlinking first works because the directory belongs to devuser.
+        if (is_file($target) && ! is_writable($target)) {
+            @unlink($target);
+        }
+
         if (file_put_contents($target, $xml) === false) {
             $this->error("could not write $target");
 
