@@ -156,7 +156,11 @@ class CreateGameDates extends Command
     $season_end = $sr['end'];
 
     // Anzahl Tage seit Saisonbeginn und abgerundete Wochen (ganzzahlig)
-    $days_since_season_start = Carbon::parse($season_start)->diffInDays(Carbon::now());
+    // diffInDays liefert seit Carbon 3 einen vorzeichenbehafteten float. Das
+    // explizite true (= absolut) und der int-Cast halten das Verhalten so, wie
+    // es unter Carbon 2 war - ohne den Cast liefe intdiv() in eine PHP-
+    // Deprecation ("implicit conversion from float ... loses precision").
+    $days_since_season_start = (int) Carbon::parse($season_start)->diffInDays(Carbon::now(), true);
     $weeks_since_season_start = intdiv($days_since_season_start, 7);
 
     echo "season start: $season_start, season end: $season_end\n";
@@ -165,7 +169,10 @@ class CreateGameDates extends Command
 
     $last = GameDate::latest('date')->first();
 
-    $diff_days_from_now = Carbon::parse($last->date)->diffInDays(Carbon::now());
+    // Ebenfalls absolut und ganzzahlig wie unter Carbon 2: die letzte GameDate
+    // liegt in der Zukunft, unter Carbon 3 waere der Wert sonst negativ und die
+    // Schleife weiter unten liefe viel zu oft.
+    $diff_days_from_now = (int) Carbon::parse($last->date)->diffInDays(Carbon::now(), true);
     $weekdayLast = strtolower(Carbon::parse($last->date)->format('D'));
     $weekNumLast = Carbon::parse($last->date)->format("W");
     $weekEvenLast = $weekNumLast % 2 === 0;

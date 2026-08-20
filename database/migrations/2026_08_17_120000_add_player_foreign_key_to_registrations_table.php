@@ -22,11 +22,12 @@ class AddPlayerForeignKeyToRegistrationsTable extends Migration
             ->delete();
 
         // players.id is BIGINT UNSIGNED ($table->id()), so the referencing column has to
-        // match exactly. doctrine/dbal is not installed, hence the raw statement instead
-        // of ->change().
-        DB::statement('ALTER TABLE registrations MODIFY player_id BIGINT UNSIGNED NOT NULL');
-
+        // match exactly. Since Laravel 11 ->change() no longer needs doctrine/dbal, so the
+        // raw MySQL statement that used to stand here is gone - it could not run on SQLite
+        // and broke the test database.
         Schema::table('registrations', function (Blueprint $table) {
+            $table->unsignedBigInteger('player_id')->nullable(false)->change();
+
             $table->foreign('player_id')
                 ->references('id')
                 ->on('players')
@@ -45,6 +46,8 @@ class AddPlayerForeignKeyToRegistrationsTable extends Migration
             $table->dropForeign(['player_id']);
         });
 
-        DB::statement('ALTER TABLE registrations MODIFY player_id INT NOT NULL');
+        Schema::table('registrations', function (Blueprint $table) {
+            $table->integer('player_id')->nullable(false)->change();
+        });
     }
 }
