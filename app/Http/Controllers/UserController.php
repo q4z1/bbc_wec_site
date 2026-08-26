@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Action;
 use App\Models\User;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
@@ -31,6 +32,7 @@ class UserController extends Controller
     $action->save();
     $user->role = $request->input('role', $user->role);
     $user->save();
+    Artisan::call('admins:sync');
     return ['success' => true, 'users' => User::get()];
   }
 
@@ -43,6 +45,7 @@ class UserController extends Controller
     $action->user = Auth::id();
     $action->save();
     $user->delete();
+    Artisan::call('admins:sync');
     return ['success' => true];
   }
 

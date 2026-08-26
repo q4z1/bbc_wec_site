@@ -23,3 +23,6 @@ npm-debug.log
 yarn-error.log
 .vscode/
 public/sitemap.xml
+# phpMyAdmin-Upgrade-Backups (lokal, nicht ins Repo)
+storage/psqlma-backup-*.tar.gz
+storage/psqlma.old-*/
