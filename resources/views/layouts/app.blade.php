@@ -21,6 +21,15 @@
     <meta property="og:image" content="{{ url('/logo.png') }}">
     <meta name="twitter:card" content="summary">
 
+    <!-- Favicon -->
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32.png') }}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon-48.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon-180.png') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+    <meta name="theme-color" content="#1a1a1a">
+
     {{-- The webfonts are served from /public/fonts, so no request ever leaves
          for fonts.gstatic.com. Preloading them means the first paint already
          uses the right face instead of swapping afterwards. --}}
