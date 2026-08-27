@@ -8,15 +8,15 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     @php($theme = request()->cookie('theme', (auth()->user() ? auth()->user()->theme : 'light')))
-    @php($pageTitle = trim($__env->yieldContent('title') ?: config('app.name', 'Week-End Cup')))
+    @php($pageTitle = trim($__env->yieldContent('title') ?: config('app.name', 'WeCup')))
     @php($pageDescription = $__env->yieldContent('description')
-        ?: 'Results, rankings and hall of fame of the Week-End Cup, the PokerTH tournament series.')
+        ?: 'Results, rankings and hall of fame of the WeCup, the PokerTH tournament series.')
 
     <title>{{ $pageTitle }}</title>
     <meta name="description" content="{{ $pageDescription }}">
     <link rel="canonical" href="{{ url()->current() }}">
 
-    <meta property="og:site_name" content="{{ config('app.name', 'Week-End Cup') }}">
+    <meta property="og:site_name" content="{{ config('app.name', 'WeCup') }}">
     <meta property="og:type" content="website">
     <meta property="og:title" content="{{ $pageTitle }}">
     <meta property="og:description" content="{{ $pageDescription }}">
@@ -25,7 +25,13 @@
     <meta name="twitter:card" content="summary">
 
     <!-- Favicon -->
-    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3e%3ctext y='.9em' font-size='90'%3e🏆%3c/text%3e%3c/svg%3e">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('favicon-16.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32.png') }}">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon-48.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('favicon-180.png') }}">
+    <link rel="manifest" href="{{ asset('site.webmanifest') }}">
+    <meta name="theme-color" content="#1a1a1a">
 
     {{-- Die Webfonts liegen unter /public/fonts, es geht also kein Request an
          fonts.gstatic.com hinaus. Das Preload sorgt dafuer, dass schon der
@@ -46,7 +52,7 @@
             <!-- Brand + Hamburger -->
             <div class="navbar-brand">
                 <a href="{{ url('/') }}">
-                    <img src="{{ url('/logo.png') }}" width="128" height="75" alt="{{ config('app.name', 'Week-End Cup') }}" />
+                    <img src="{{ url('/logo.png') }}" width="128" height="75" alt="{{ config('app.name', 'WeCup') }}" />
                 </a>
                 <button type="button" class="main-navbar-toggler" @click="mobileMenuOpen = !mobileMenuOpen" aria-label="Menu">
                     <span></span><span></span><span></span>
