@@ -3,7 +3,7 @@
     <el-alert v-if="alert" :title="alertMsg" :type="alertTypeEl" show-icon closable @close="alert = false" style="margin-bottom:0.75rem;" />
     <h3>Registration</h3>
     <div style="display:flex;justify-content:center;">
-      <div style="flex:1;">
+      <div style="flex:1;" v-loading="loadingDate" element-loading-text="Loading game date...">
         <FullCalendar v-if="game_dates" ref="fullCalendar" :options="calendarOptions" />
       </div>
     </div>
@@ -26,6 +26,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import GameDateComponent from './GameDateComponent.vue';
 import GameDateNewComponent from './GameDateNewComponent.vue';
 import FingerprintJS from '@fingerprintjs/fingerprintjs';
+import { ElMessage } from 'element-plus';
 export default {
   props: ['gamedates', 'calstart'],
   components: { FullCalendar, GameDateComponent, GameDateNewComponent },
@@ -42,6 +43,7 @@ export default {
       arole: window.arole === 's' ? 'a' : window.arole,
       showDateDialog: false,
       showNewDateDialog: false,
+      loadingDate: false,
     };
   },
   computed: {
@@ -100,16 +102,24 @@ export default {
       this.alert = duration;
     },
     showDate(id) {
+      if (this.loadingDate) return;
+      this.loadingDate = true;
       axios.get('/registration/date/get/' + id).then(
         (response) => {
           if (response.data.success === true) {
             this.date = response.data.date;
             this.utcDate = response.data.utcDate;
             this.showDateDialog = true;
-          } else { console.log(response.data); }
+          } else {
+            console.log(response.data);
+            ElMessage({ message: response.data.msg || 'Could not load game date.', type: 'error' });
+          }
         },
-        (error) => { console.log(error); }
-      );
+        (error) => {
+          console.log(error);
+          ElMessage({ message: 'Could not load game date. Please try again.', type: 'error' });
+        }
+      ).finally(() => { this.loadingDate = false; });
     },
     updateDates(dates) {
       this.game_dates = false;
