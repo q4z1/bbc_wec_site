@@ -101,7 +101,7 @@ class PlayerController extends Controller
 
       $query = Player::where('new', $new)->orderBy(
         $sort['prop'], (($sort['order'] == 'descending') ? 'DESC' : 'ASC')
-      )->offset(($page - 1) * $pagesize)->limit($pagesize);
+      )->orderBy('id', 'ASC')->offset(($page - 1) * $pagesize)->limit($pagesize);
       if ($searchValue) {
         $query->where('nickname', 'LIKE', $searchValue . '%');
       }
