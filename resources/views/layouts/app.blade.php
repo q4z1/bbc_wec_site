@@ -11,6 +11,9 @@
 
     <title>{{ $pageTitle }}</title>
     <meta name="description" content="{{ $pageDescription }}">
+    @hasSection('robots')
+    <meta name="robots" content="@yield('robots')">
+    @endif
     <link rel="canonical" href="{{ url()->current() }}">
 
     <meta property="og:site_name" content="{{ config('app.name', 'BBC') }}">

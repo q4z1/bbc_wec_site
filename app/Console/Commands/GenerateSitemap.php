@@ -2,7 +2,6 @@
 
 namespace App\Console\Commands;
 
-use App\Models\Game;
 use App\Models\Page;
 use App\Models\Player;
 use Illuminate\Console\Command;
@@ -79,13 +78,14 @@ class GenerateSitemap extends Command
             $add(url('/page/'.$page->slug), 'monthly', '0.6', $page->updated_at);
         }
 
+        // Die player-Route bindet ueber den Nickname, nicht die id.
         foreach (Player::orderBy('id')->cursor() as $player) {
-            $add(route('player', $player->id), 'weekly', '0.5', $player->updated_at);
+            $add(route('player', $player->nickname), 'weekly', '0.5', $player->updated_at);
         }
 
-        foreach (Game::orderByDesc('started')->cursor() as $game) {
-            $add(route('results.game', $game->id), 'yearly', '0.3', $game->updated_at);
-        }
+        // Die einzelnen Spielseiten tragen meta robots noindex (siehe
+        // resources/views/game.blade.php) und gehoeren deshalb nicht in die
+        // Sitemap. Erreichbar bleiben sie ueber die Ergebnisliste.
 
         return $urls;
     }
