@@ -121,6 +121,8 @@ class AwardController extends Controller
             ->map(function ($a) {
                 return $a->player;
             })
+            ->filter()
+            ->values()
         ];
     }
 

@@ -224,6 +224,7 @@ class PlayerController extends Controller
     $action->reason = $request->input('reason', "n/a");
     $action->user = Auth::id();
     $action->save();
+    PlayerAward::where('player_id', $player->id)->delete();
     $player->delete();
     return ['success' => true];
   }

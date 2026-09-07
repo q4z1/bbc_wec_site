@@ -7,8 +7,8 @@
     <hr />
     <div v-if="assignments && assignments.length" class="mb-3">
       <div v-for="(player, key) in assignments" :key="key" class="d-flex justify-content-between align-items-center py-1 border-bottom">
-        <span>{{ player.nickname }}</span>
-        <el-icon class="text-success" style="cursor:pointer" @click="unAssign(player.id)"><CircleCheckFilled /></el-icon>
+        <span>{{ player && player.nickname }}</span>
+        <el-icon class="text-success" style="cursor:pointer" @click="unAssign(player && player.id)"><CircleCheckFilled /></el-icon>
       </div>
     </div>
     <hr />
@@ -37,7 +37,11 @@ export default {
   methods: {
     getAssignments() {
       axios.get('/awards/assignments/' + this.award.id).then((res) => {
-        if (res.data.success) { this.ass_o = this.assignments = res.data.assignments; }
+        if (res.data.success) {
+          const list = (res.data.assignments || []).filter((p) => p && p.id);
+          this.ass_o = list;
+          this.assignments = [...list];
+        }
       });
     },
     queryPlayers(query, cb) {
