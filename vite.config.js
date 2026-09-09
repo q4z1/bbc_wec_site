@@ -50,6 +50,13 @@ export default defineConfig({
                 // Nach Modulpfad zuordnen, nicht nach Paketname: ein Eintrag
                 // 'element-plus' wuerde das ganze Paket in den Chunk ziehen und
                 // das Tree Shaking der expliziten Imports in app.js aushebeln.
+                // Hinweis (2026-09-09, Vite 8): Rolldown loest diese Regeln anders
+                // auf als Rollup. Der vue-Chunk entfaellt seither, Vue landet im
+                // element-plus-Bundle (445 -> 614 kB); chartjs und element-plus
+                // greifen weiterhin. Die Reihenfolge der ifs aendert daran nichts,
+                // das wurde geprueft. Gesamtgroesse bleibt gleich (905 -> 899 kB),
+                // daher belassen. Fuer echte Kontrolle waere Rolldowns
+                // advancedChunks noetig.
                 manualChunks(id) {
                     if (id.includes('node_modules/element-plus')
                         || id.includes('node_modules/@element-plus')) {

@@ -7,16 +7,16 @@
         "preview": "vite preview"
     },
     "devDependencies": {
-        "@vitejs/plugin-vue": "^5.2",
-        "laravel-vite-plugin": "^1.2",
-        "sass": "^1.80",
-        "vite": "^6.0"
+        "@vitejs/plugin-vue": "^6.0.8",
+        "laravel-vite-plugin": "^3.2.0",
+        "sass": "^1.104.0",
+        "vite": "^8.2.2"
     },
     "dependencies": {
         "@element-plus/icons-vue": "^2.3",
-        "axios": "^1.7",
+        "axios": "^1.20.0",
         "chart.js": "^4.4",
-        "element-plus": "^2.9",
+        "element-plus": "^2.14.5",
         "vue": "^3.5",
         "vue-chartjs": "^5.3"
     }
