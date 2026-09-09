@@ -1,0 +1,76 @@
+# Dependabot-Konfiguration fuer q4z1/bbc_wec_site
+#
+# Angelegt am 2026-09-09. Vorher gab es keine: ohne diese Datei macht
+# Dependabot ausschliesslich Security-Updates, und die laufen immer gegen den
+# Default-Branch. Das ging hier ins Leere, weil dieses Repo zwei produktive
+# Branches traegt und der Default-Branch nicht der einzige davon ist:
+#
+#   master  ->  wec.pokerth.net   (/var/www/wec)
+#   bbc     ->  bbc.pokerth.net   (/var/www/bbc)
+#
+# Bis zur Modernisierung im Sommer 2026 lief beides auf Laravel Mix/webpack.
+# Seitdem bauen beide Branches mit Vite, und die Lockfiles unterscheiden sich
+# um rund 20.000 Zeilen. Dependabot sah davon nur den Default-Branch und legte
+# im Sommer 2026 zehn PRs (#93-#105) fuer Pakete an, die im produktiven Baum
+# gar nicht mehr vorkommen: webpack, vue-loader, qs, express, tar, npm,
+# brace-expansion, fast-uri, websocket-driver. Umgekehrt blieben vier echte
+# Luecken im Vite-Stack ungemeldet (esbuild, nanoid, picomatch, vite), weil
+# Dependabot den Branch nie gelesen hat.
+#
+# Die Eintraege unten scannen deshalb beide Branches getrennt. Wichtig dabei:
+# target-branch gilt nur fuer Version-Updates. Security-Updates von GitHub
+# laufen unabhaengig davon weiter gegen den Default-Branch, fuer den zweiten
+# Branch fangen die woechentlichen Version-Updates das mit ab.
+#
+# Beim Aufraeumen: die PRs oben sind gegenstandslos und koennen geschlossen
+# werden. Was am produktiven Stand wirklich offen ist, zeigt "npm audit" im
+# jeweiligen Arbeitsverzeichnis, nicht die PR-Liste.
+
+version: 2
+
+updates:
+  # ---- master = wec.pokerth.net ----
+  - package-ecosystem: "npm"
+    directory: "/"
+    target-branch: "master"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      # Sonst entsteht pro transitivem Paket ein eigener PR. Gebuendelt ist es
+      # ein Lockfile-Update, das sich in einem Rutsch pruefen laesst.
+      npm-dependencies:
+        patterns: ["*"]
+
+  - package-ecosystem: "composer"
+    directory: "/"
+    target-branch: "master"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      composer-dependencies:
+        patterns: ["*"]
+
+  # ---- bbc = bbc.pokerth.net ----
+  - package-ecosystem: "npm"
+    directory: "/"
+    target-branch: "bbc"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      npm-dependencies:
+        patterns: ["*"]
+
+  - package-ecosystem: "composer"
+    directory: "/"
+    target-branch: "bbc"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
+    groups:
+      composer-dependencies:
+        patterns: ["*"]
+
+  # GitHub Actions werden hier nicht genutzt, deshalb kein Eintrag dafuer.
