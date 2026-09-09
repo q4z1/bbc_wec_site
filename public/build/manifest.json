@@ -1,15 +1,19 @@
 {
   "resources/js/app.js": {
-    "file": "assets/app-BrD-425a.js",
+    "file": "assets/app-DDGkARF4.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "assets/app-CR9bkuJJ.css"
+      "assets/app-BykwXb6z.css"
     ]
   },
   "resources/sass/app.scss": {
-    "file": "assets/app-bXd3QLDp.css",
+    "file": "assets/app-DBg4XeUm.css",
+    "name": "app",
+    "names": [
+      "app.css"
+    ],
     "src": "resources/sass/app.scss",
     "isEntry": true
   }
