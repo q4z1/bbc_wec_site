@@ -8,6 +8,56 @@
 # was hinter dem Login liegt: dort bekommt ein Crawler nur ein 302 auf /login
 # und verbrennt Crawl-Budget, ohne je Inhalt zu sehen.
 
+# Nachtrag 2026-09-09: GPTBot holte am 09.09. zwischen 03:42 und 03:55 UTC
+# 1.176 Seiten von hier, gleichzeitig 1.499 von test.pokerth.net — zusammen
+# rund 230 Anfragen pro Minute aus zwei Adressen. Das reichte, um AttackCheck
+# ueber die Dauerlast-Schwelle zu heben und die ganze Zone eine Stunde hinter
+# die Cloudflare-Challenge zu stellen, wegen Last, die zu 97 Prozent nicht auf
+# pokerth.net lag. Von 1.265 GPTBot-Anfragen einer Woche entfielen 955 auf
+# /results/game/* und 275 auf /player/* — und /results/game/* traegt seit dem
+# 07.09. ohnehin noindex, wird also gar nicht erst indexiert.
+#
+# Konsequenz: dieselbe Gruppe wie in der robots.txt von pokerth.net bekommt
+# hier den Rahmen (Startseite, Ranglisten, Hall of Fame, Seiten, Shoutbox),
+# aber nicht die rund 10.400 Detailseiten darunter. Baiduspider (4.859) und
+# Applebot (1.951 Anfragen in derselben Woche) crawlen in gleicher Form und
+# stehen deshalb mit im Block.
+#
+# Achtung: Crawler werten nur die eine Gruppe aus, die am genauesten auf sie
+# passt — der *-Block unten gilt fuer sie dann nicht mehr. Dessen Regeln sind
+# deshalb hier wiederholt; Aenderungen unten muessen hier mitgezogen werden.
+User-agent: Baiduspider
+User-agent: Applebot
+User-agent: GPTBot
+
+# Die Massendetailseiten, um die es oben geht. Nur hier, nicht im *-Block:
+# fuer Google und Bing bleiben sie offen und in der sitemap.xml.
+# Der Slash hinter /player ist noetig: ohne ihn wuerde die Praefix-Regel
+# auch /players und /players/list sperren, und die sollen offen bleiben.
+Disallow: /results/game/
+Disallow: /player/
+
+# Ab hier wortgleich mit dem *-Block unten.
+Disallow: /actions
+Disallow: /api/
+Disallow: /awards
+Disallow: /botfiles
+Disallow: /fpnicksearch
+Disallow: /pages
+Disallow: /page/create
+Disallow: /users
+Disallow: /upload/
+Disallow: /user/theme
+Disallow: /password/confirm
+Disallow: /registration/date/delete
+Disallow: /registration/delete
+Disallow: /results/game/edit/
+Disallow: /*/edit$
+Disallow: /login$
+Disallow: /register$
+Disallow: /password/reset
+Disallow: /sbdel
+
 User-agent: *
 
 # Login-pflichtige Bereiche (Middleware "auth" laut route:list)
