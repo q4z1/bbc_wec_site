@@ -15,10 +15,10 @@
     "dependencies": {
         "@element-plus/icons-vue": "^2.3",
         "@fingerprintjs/fingerprintjs": "^5.2",
-        "@fullcalendar/core": "^7.1",
+        "@fullcalendar/core": "^6.1",
         "@fullcalendar/daygrid": "^6.1",
         "@fullcalendar/interaction": "^6.1",
-        "@fullcalendar/vue3": "^7.1",
+        "@fullcalendar/vue3": "^6.1",
         "axios": "^1.20.0",
         "chart.js": "^4.4",
         "element-plus": "^2.14.5",
