@@ -94,9 +94,10 @@ class GameController extends Controller
                         if($player->s3_tickets > 10) $player->s3_tickets = 10;
                         break;
                     case(3):
-                        // if($i != 3){
+                        // wie bei Step 2 behaelt der Dritte sein Ticket
+                        if($i != 3){
                             $player->s3_tickets -= 1;
-                        // }
+                        }
                         if($i < 3){
                             $player->s4_tickets += 1;
                         }
@@ -214,7 +215,7 @@ class GameController extends Controller
               ++$player->s2_tickets;
               break;
             case(3):
-              // if($i === 3) break;
+              if($i === 3) break;
               if($i < 3){
                 $player->s4_tickets = max($player->s4_tickets-1, 0);
               }
