@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\Game;
 use App\Models\GameDate;
@@ -33,11 +34,10 @@ class CreateGameDates extends Command
 
   protected $holders_per_date = 10;
 
-  // S2 laeuft um 19:30/21:30 am besten, S3 um 01:00 kam nie zustande
-  protected $slot_preference = [
-    2 => ['19:30', '21:30', '23:15', '01:00'],
-    3 => ['21:30', '23:15', '19:30'],
-  ];
+  // Uhrzeiten rotieren (global verteilte Spieler): Anteil je Slot nach historischer Spielquote
+  protected $history_days = 365;
+
+  protected $spread_days = 28;
 
   protected $s4_min_holders = 10;
 
@@ -144,7 +144,7 @@ class CreateGameDates extends Command
     $this->info("step $step: holders $holders, active ($this->active_days d) $active -> $perWeek/week, "
       . "in 7-day window up to " . $target->format('Y-m-d') . ": $inWindow, to create: $todo");
 
-    foreach ($this->slot_preference[$step] as $time) {
+    foreach ($this->slotOrder($step, $target) as $time) {
       if ($todo < 1) break;
       if ($this->place($this->slotDateTime($target, $time), $step, false)) $todo--;
     }
@@ -194,6 +194,48 @@ class CreateGameDates extends Command
     while ($dt->lte($now)) $dt = $this->nextS4Rotation($dt);
     $this->info("step 4: {$last->date} had only {$last->regs_count} registrations -> rescheduling");
     $this->place($dt, 4, true);
+  }
+
+  /**
+   * Reihenfolge der Uhrzeiten fuer ein neues S2/S3-Date. Jede Uhrzeit bekommt einen Anteil
+   * entsprechend ihrer Spielquote (angelegte Dates, die laut games-Tabelle wirklich gespielt wurden);
+   * zuerst kommt die Uhrzeit, die in den letzten {spread_days} Tagen am weitesten darunter liegt.
+   */
+  private function slotOrder(int $step, Carbon $target)
+  {
+    $hist = DB::table('game_dates as gd')
+      ->leftJoin('games as g', function ($j) {
+        $j->on('g.started', '=', 'gd.date')->on('g.type', '=', 'gd.step');
+      })
+      ->where('gd.step', $step)
+      ->whereBetween('gd.date', [Carbon::now()->subDays($this->history_days), Carbon::now()])
+      ->selectRaw("TIME_FORMAT(gd.date, '%H:%i') AS t, COUNT(*) AS n, COUNT(g.id) AS played")
+      ->groupBy('t')->get()->keyBy('t');
+    // geglaettet, damit wenig genutzte Uhrzeiten nicht dauerhaft auf 0 fallen
+    $rates = [];
+    foreach ($this->slots as $time) {
+      $h = $hist->get($time);
+      $rates[$time] = (($h->played ?? 0) + 1) / (($h->n ?? 0) + 2);
+    }
+
+    $used = GameDate::where('step', $step)
+      ->whereBetween('date', [$target->copy()->subDays($this->spread_days), $target->copy()->endOfDay()])
+      ->get()->countBy(fn($gd) => Carbon::parse($gd->date)->format('H:i'))->all();
+
+    $order = $this->orderByDeficit($rates, $used);
+    $this->line("  step $step slot order: " . implode(', ', array_map(
+      fn($t) => sprintf('%s (rate %d%%, used %d)', $t, round($rates[$t] * 100), $used[$t] ?? 0), $order)));
+    return $order;
+  }
+
+  private function orderByDeficit(array $rates, array $used)
+  {
+    $sum = array_sum($rates);
+    $total = array_sum($used) + 1;
+    $deficit = [];
+    foreach ($rates as $time => $rate) $deficit[$time] = $rate / $sum * $total - ($used[$time] ?? 0);
+    arsort($deficit);
+    return array_keys($deficit);
   }
 
   // +8 Tage, naechste regulaere Uhrzeit: Fr 19:30 -> Sa 21:30 -> So 23:15 -> Mo 01:00 -> Di 19:30 ...
