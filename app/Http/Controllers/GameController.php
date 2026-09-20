@@ -10,6 +10,7 @@ use App\Models\Action;
 use App\Http\Controllers\LogFileController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Auth;
 
 class GameController extends Controller
@@ -252,6 +253,8 @@ class GameController extends Controller
         $game->type = $payload['gametype'];
         $game->number = $payload['gameno'];
         $game->save();
+        // Startzeit, Step und Punkte stehen auch in points - dort nachziehen
+        Artisan::call('ranking:recalculate', ['--game' => $game->number]);
         $action = new Action();
         $action->action = "Step" . $game->type . " game #" . $game->number . " updated.";
         $action->reason = $request->input('reason', "n/a");
