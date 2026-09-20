@@ -133,8 +133,16 @@ class CreateGameDates extends Command
 
     $target = Carbon::today()->addDays($this->lead_days);
     $windowStart = $target->copy()->subDays(6)->max(Carbon::parse($season->start));
-    $inWindow = GameDate::where('step', $step)
-      ->whereBetween('date', [$windowStart, $target->copy()->endOfDay()])->count();
+    // geplatzte Termine zaehlen nicht als Angebot, sie geben ihren Platz wieder frei
+    $inWindow = DB::table('game_dates as gd')
+      ->leftJoin('games as g', function ($j) {
+        $j->on('g.started', '=', 'gd.date')->on('g.type', '=', 'gd.step');
+      })
+      ->where('gd.step', $step)
+      ->whereBetween('gd.date', [$windowStart, $target->copy()->endOfDay()])
+      ->where(function ($q) {
+        $q->where('gd.date', '>', Carbon::now())->orWhereNotNull('g.id');
+      })->count();
     $onTarget = GameDate::where('step', $step)
       ->whereBetween('date', [$target, $target->copy()->endOfDay()])->count();
     // gleichmaessig ueber die Woche verteilen statt alles auf einen Tag
@@ -142,7 +150,7 @@ class CreateGameDates extends Command
     $todo = max(0, min($perWeek - $inWindow, $perDay - $onTarget));
 
     $this->info("step $step: holders $holders, active ($this->active_days d) $active -> $perWeek/week, "
-      . "in 7-day window up to " . $target->format('Y-m-d') . ": $inWindow, to create: $todo");
+      . "played or upcoming in 7-day window up to " . $target->format('Y-m-d') . ": $inWindow, to create: $todo");
 
     foreach ($this->slotOrder($step, $target) as $time) {
       if ($todo < 1) break;
