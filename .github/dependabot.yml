@@ -62,6 +62,27 @@ updates:
     groups:
       npm-dependencies:
         patterns: ["*"]
+    # Zwei Faelle, bei denen ein Major-Sprung nichts ist, was sich in einem
+    # gebuendelten Lockfile-PR nebenbei pruefen laesst:
+    #
+    # @fullcalendar/* - In 7.x ist @fullcalendar/core kein Kalender mehr, sondern
+    # ein reines Types-Paket; die Runtime sitzt in @full-ui/headless-calendar.
+    # Von daygrid und interaction, die RegistrationComponent.vue braucht, gibt es
+    # Stand 2026-09-12 kein stabiles 7.x, nur 7.0.0-rc.0. Dependabot hob in #113
+    # trotzdem core und vue3 auf 7.1.0 und liess die Plugins auf 6.1.21 stehen ->
+    # npm i endete in ERESOLVE. Erst wieder aufmachen, wenn alle vier Pakete
+    # stabile 7.x haben, und dann als eigenen PR, nicht in der Gruppe.
+    #
+    # @fingerprintjs/fingerprintjs - visitorIds sind laut Version Policy nur
+    # innerhalb einer Minor stabil. ShoutBoxMessageController, RegistrationController
+    # (Geraete-Dedupe) und FingerprintNickname matchen sie gegen gespeicherte
+    # Werte, ein Major wirft also still Historie weg. Das ist eine Entscheidung
+    # mit Datenfolge, kein Routine-Update.
+    ignore:
+      - dependency-name: "@fullcalendar/*"
+        update-types: ["version-update:semver-major"]
+      - dependency-name: "@fingerprintjs/fingerprintjs"
+        update-types: ["version-update:semver-major"]
 
   - package-ecosystem: "composer"
     directory: "/"
