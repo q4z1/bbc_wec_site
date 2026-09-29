@@ -1,61 +1,140 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
+# PokerTH Best Brainies Cup (BBC)
 
-<p align="center">
-<a href="https://travis-ci.org/laravel/framework"><img src="https://travis-ci.org/laravel/framework.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Webanwendung des **Best Brainies Cup** auf <https://bbc.pokerth.net>: Anmeldung zu
+Spielterminen, Ergebnis-Upload, Season-Ranking, Hall of Fame, Awards und Shoutbox.
 
-## About Laravel
+Dieser Branch (`bbc`) enthält die BBC-Variante. Die anderen Branches im Repository
+(`master`, `wec`, `kauberdi`, `laravel-base`) gehören zu Schwesterseiten bzw. zur
+gemeinsamen Basis.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Technik
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- PHP 8.2, Laravel 12, MySQL/MariaDB (Datenbank `bbc`)
+- Frontend: Vue 3 + Element Plus, gebaut mit Vite
+- Das Build-Ergebnis in `public/build/` ist eingecheckt. Nach Änderungen an
+  `resources/js` oder `resources/sass` muss neu gebaut und `public/build/` mit
+  committet werden.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## Einrichtung
 
-## Learning Laravel
+```bash
+composer install
+cp .env.example .env        # DB-Zugang und APP_URL eintragen
+php artisan key:generate
+php artisan migrate
+npm ci
+npm run build               # oder: npm run dev (Vite-Dev-Server)
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Es gibt keine CI und keinen Deploy-Schritt: Auf dem Server gespeicherte PHP-Änderungen
+sind sofort live. Eine Testinstanz liegt unter `/var/www/bbc_test`.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 1500 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Begriffe
 
-## Laravel Sponsors
+| Begriff | Bedeutung |
+|---|---|
+| **Step 1–4** | Stufe eines Spiels. Step 1 ist offen für alle, Step 2–4 brauchen die jeweiligen Tickets (`s2_tickets` … `s4_tickets` am Spieler). Punkte pro Platz: 10 … 1, multipliziert mit dem Step. |
+| **GameDate** | Ein Spieltermin mit Step. Spieler registrieren sich dafür (`registrations`). |
+| **Tisch** | Je 10 Anmeldungen bilden einen Tisch. Auf jedem Tisch wird der erste registrierte Admin als „Admin" markiert. |
+| **Season** | Wertungszeitraum. Das Ranking rechnet ab dem Start der laufenden Season. |
+| **Rollen** | `users.role`: `a` = Admin, `s` = Superadmin. |
+| **Monthlycup** | Am letzten Samstag im Monat gibt es um 19:30 und 21:30 keine BBC-Termine. |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+## Artisan-Befehle
 
-### Premium Partners
+Alle Befehle werden im Projektverzeichnis ausgeführt: `php artisan <befehl>`.
+Befehle, die Daten verändern, haben ein `--dry-run`. Im Zweifel damit zuerst
+schauen, was passieren würde.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[OP.GG](https://op.gg)**
+### `gamedates:create`
 
-## Contributing
+Legt die Spieltermine an.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+```bash
+php artisan gamedates:create
+php artisan gamedates:create --dry-run
+```
 
-## Code of Conduct
+- **Step 1:** vier feste Slots pro Tag (19:30, 21:30, 23:15, 01:00), immer 21 Tage im
+  Voraus. Es wird nur hinter dem letzten vorhandenen Termin angehängt, damit manuell
+  gelöschte Slots nicht wiederkommen.
+- **Step 2/3:** dynamisch. Pro 10 aktive Ticket-Inhaber (in den letzten 21 Tagen
+  gespielt) gibt es einen Termin pro Woche. Er wird für den Tag in 3 Tagen angelegt
+  und ersetzt dort einen Step-1-Termin ohne Anmeldungen. Die Uhrzeit richtet sich
+  nach der historischen Spielquote des jeweiligen Slots.
+- **Step 4:** ab 10 Ticket-Inhabern der erste Freitag 19:30, der mindestens 10 Tage
+  entfernt ist. Kommen weniger als 10 Anmeldungen zustande, folgt 8 Tage später ein
+  neuer Termin im nächsten Slot (19:30 → 21:30 → 23:15 → 01:00).
+- Nach einem Season-Wechsel werden offene Step-2+-Termine der alten Season ohne
+  Anmeldungen wieder zu Step 1 (oder entfernt, wenn der Slot schon ein Step 1 hat).
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Aufgerufen wird der Befehl über `~/.local/bin/create_gamedates.sh`.
 
-## Security Vulnerabilities
+### `ranking:recalculate`
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Baut die `points`-Tabelle aus der `games`-Tabelle neu auf und leert danach den Cache.
+Nötig, wenn Spiele direkt in `games` korrigiert wurden (z. B. die Startzeit), denn
+das Ranking rechnet ausschließlich über `points`.
 
-## License
+```bash
+php artisan ranking:recalculate                 # laufende Season (Default)
+php artisan ranking:recalculate --game=1234     # nur Spiel #1234 (games.number)
+php artisan ranking:recalculate --season=12     # ab Season 12
+php artisan ranking:recalculate --dry-run       # nur anzeigen
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Beim Bearbeiten eines Spiels im Web läuft der Befehl automatisch für dieses eine Spiel.
+
+> **Achtung:** `--all` rechnet auch alle historischen Seasons neu. Die alten Seasons
+> sind in `points` nicht mit `games` konsistent. Ein voller Lauf würde abgeschlossene
+> Rankings nachträglich verändern. `--all` deshalb nur bewusst und nur nach einem
+> `--dry-run` verwenden.
+
+### `tickets:sync`
+
+Schreibt die Tickets aller Spieler mit mindestens einem gewerteten Spiel nach
+`public/exp3/bbcbot/minidb.txt` (für den bbcbot). Läuft automatisch, sobald im Web
+Tickets geändert werden.
+
+```bash
+php artisan tickets:sync
+```
+
+### `admins:sync`
+
+Schreibt die Namen aller Admins und Superadmins nach
+`public/exp3/bbcbot/bbcadmins.txt` (für den bbcbot). Läuft automatisch, sobald im Web
+ein User geändert oder gelöscht wird.
+
+```bash
+php artisan admins:sync
+```
+
+### `sitemap:generate`
+
+Erzeugt `public/sitemap.xml` mit allen öffentlich erreichbaren Seiten (Startseite,
+Ergebnisse, Ranking, Hall of Fame, Spielerliste, aktive CMS-Seiten, Spielerprofile).
+Einzelne Spielseiten sind `noindex` und fehlen deshalb bewusst.
+
+```bash
+php artisan sitemap:generate
+php artisan sitemap:generate --dry-run              # nur URLs zählen
+php artisan sitemap:generate --output=/tmp/s.xml    # anderes Ziel
+```
+
+Der Scheduler der pthranking-App (`/var/www/pokerth/pthranking`) ruft den Befehl
+täglich um 04:30 und 16:30 auf. Die BBC-App selbst hat keinen eigenen Scheduler.
+
+### Nützliche Laravel-Standardbefehle
+
+```bash
+php artisan migrate            # Datenbank-Migrationen ausführen
+php artisan cache:clear        # Cache leeren (z. B. nach DB-Änderungen von Hand)
+php artisan route:list         # alle Routen anzeigen
+php artisan tinker             # interaktive Konsole
+php artisan list               # alle verfügbaren Befehle
+```
+
+## Lizenz
+
+MIT
