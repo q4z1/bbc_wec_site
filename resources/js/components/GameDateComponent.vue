@@ -142,6 +142,15 @@ export default {
                 .catch((res) => { console.log(res); this.showAlert('Request Error.', 'danger'); });
         },
         deleteDate() {
+            this.$confirm('Are you sure to delete this game?', 'Delete game', {
+                confirmButtonText: 'Delete',
+                cancelButtonText: 'Cancel',
+                type: 'warning',
+            })
+                .then(() => this.doDeleteDate())
+                .catch(() => {});
+        },
+        doDeleteDate() {
             axios.get('/registration/date/delete/' + this.date.id)
                 .then((res) => {
                     if (res.data.success === true) {
