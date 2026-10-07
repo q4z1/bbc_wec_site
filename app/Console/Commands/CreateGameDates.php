@@ -62,7 +62,8 @@ class CreateGameDates extends Command
 
     $this->resetStaleDates($season);
     $this->createStepOne();
-    foreach ([2, 3] as $step) $this->createDynamic($step, $season);
+    // S3 zuerst: das seltenere Spiel bekommt den Spieltag, S2 weicht aus
+    foreach ([3, 2] as $step) $this->createDynamic($step, $season);
     $this->createStepFour($season);
 
     return Command::SUCCESS;
@@ -140,29 +141,37 @@ class CreateGameDates extends Command
     $perWeek = intdiv($active, $this->holders_per_date[$step]);
 
     $target = Carbon::today()->addDays($this->lead_days);
-    $windowStart = $target->copy()->subDays(6)->max(Carbon::parse($season->start));
+    $windowStart = $this->gameDayStart($target->copy()->subDays(6))->max(Carbon::parse($season->start));
     // geplatzte Termine zaehlen nicht als Angebot, sie geben ihren Platz wieder frei
     $inWindow = DB::table('game_dates as gd')
       ->leftJoin('games as g', function ($j) {
         $j->on('g.started', '=', 'gd.date')->on('g.type', '=', 'gd.step');
       })
       ->where('gd.step', $step)
-      ->whereBetween('gd.date', [$windowStart, $target->copy()->endOfDay()])
+      ->whereBetween('gd.date', [$windowStart, $this->gameDayEnd($target)])
       ->where(function ($q) {
         $q->where('gd.date', '>', Carbon::now())->orWhereNotNull('g.id');
       })->count();
     $onTarget = GameDate::where('step', $step)
-      ->whereBetween('date', [$target, $target->copy()->endOfDay()])->count();
-    // gleichmaessig ueber die Woche verteilen statt alles auf einen Tag
-    $perDay = (int) ceil($perWeek / 7);
-    $todo = max(0, min($perWeek - $inWindow, $perDay - $onTarget));
+      ->whereBetween('date', [$this->gameDayStart($target), $this->gameDayEnd($target)])->count();
+    // hoechstens ein Date pro Spieltag und Step
+    $todo = max(0, min($perWeek - $inWindow, 1 - $onTarget));
 
     $this->info("step $step: holders $holders, active ($this->active_days d) $active -> $perWeek/week, "
-      . "played or upcoming in 7-day window up to " . $target->format('Y-m-d') . ": $inWindow, to create: $todo");
+      . "played or upcoming in 7-day window up to game day " . $target->format('Y-m-d') . ": $inWindow, to create: $todo");
+    if ($todo < 1) return;
+
+    // S2 und S3 nicht am selben Spieltag
+    $other = GameDate::whereIn('step', array_diff([2, 3], [$step]))
+      ->whereBetween('date', [$this->gameDayStart($target), $this->gameDayEnd($target)])->first();
+    if ($other) {
+      $this->line("  game day " . $target->format('Y-m-d') . " already has step {$other->step} ({$other->date}) - skipped");
+      return;
+    }
 
     foreach ($this->slotOrder($step, $target) as $time) {
       if ($todo < 1) break;
-      if ($this->place($this->slotDateTime($target, $time), $step, false)) $todo--;
+      if ($this->place($this->gameDaySlot($target, $time), $step, false)) $todo--;
     }
     if ($todo > 0) $this->warn("step $step: no free slot for $todo more date(s) on " . $target->format('Y-m-d'));
   }
@@ -235,7 +244,7 @@ class CreateGameDates extends Command
     }
 
     $used = GameDate::where('step', $step)
-      ->whereBetween('date', [$target->copy()->subDays($this->spread_days), $target->copy()->endOfDay()])
+      ->whereBetween('date', [$this->gameDayStart($target->copy()->subDays($this->spread_days)), $this->gameDayEnd($target)])
       ->get()->countBy(fn($gd) => Carbon::parse($gd->date)->format('H:i'))->all();
 
     $order = $this->orderByDeficit($rates, $used);
@@ -299,6 +308,22 @@ class CreateGameDates extends Command
     $this->line("  $date: step $step created" . ($s1 ? " (alongside step 1 with {$s1->regs_count} registrations)" : ''));
     if (!$this->dry) GameDate::create(['date' => $date, 'step' => $step]);
     return true;
+  }
+
+  // Ein Spieltag laeuft von 01:00 bis 01:00: das 01:00-Spiel gehoert noch zum Vortag
+  private function gameDayStart(Carbon $day)
+  {
+    return $day->copy()->setTime(2, 0);
+  }
+
+  private function gameDayEnd(Carbon $day)
+  {
+    return $day->copy()->addDay()->setTime(1, 59, 59);
+  }
+
+  private function gameDaySlot(Carbon $day, string $time)
+  {
+    return $this->slotDateTime($time === '01:00' ? $day->copy()->addDay() : $day, $time);
   }
 
   private function slotDateTime(Carbon $day, string $time)
