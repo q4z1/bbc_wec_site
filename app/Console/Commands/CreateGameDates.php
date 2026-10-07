@@ -13,7 +13,8 @@ use App\Models\Season;
 /*
   Step 1: feste Slots (4 pro Tag), immer {days_ahead} Tage im Voraus.
   Step 2/3: dynamisch - pro {holders_per_date} aktive Ticket-Inhaber ein Date pro Woche,
-            angelegt am {lead_days}. folgenden Tag, ersetzt dort ein S1 ohne Anmeldungen.
+            sobald mindestens {min_holders} aktive Inhaber da sind (ein Spiel braucht 10 verschiedene Spieler).
+            Angelegt am {lead_days}. folgenden Tag, ersetzt dort ein S1 ohne Anmeldungen.
   Step 4: Regel aus dem Admin Manual (erster Freitag 19:30 >= 10 Tage, danach 8-Tage-Rotation).
   Letzter Samstag im Monat: Monthlycup, keine Dates um 19:30 und 21:30.
 */
@@ -32,7 +33,9 @@ class CreateGameDates extends Command
 
   protected $active_days = 21;
 
-  protected $holders_per_date = 10;
+  protected $holders_per_date = [2 => 5, 3 => 15];
+
+  protected $min_holders = [2 => 10, 3 => 15];
 
   // Uhrzeiten rotieren (global verteilte Spieler): Anteil je Slot nach historischer Spielquote
   protected $history_days = 365;
@@ -129,7 +132,12 @@ class CreateGameDates extends Command
           ->whereColumn('points.player_id', 'players.id')
           ->where('points.game_started', '>=', Carbon::now()->subDays($this->active_days));
       })->count();
-    $perWeek = intdiv($active, $this->holders_per_date);
+    $minHolders = $this->min_holders[$step];
+    if ($active < $minHolders) {
+      $this->info("step $step: holders $holders, active ($this->active_days d) $active, need $minHolders - nothing to create");
+      return;
+    }
+    $perWeek = intdiv($active, $this->holders_per_date[$step]);
 
     $target = Carbon::today()->addDays($this->lead_days);
     $windowStart = $target->copy()->subDays(6)->max(Carbon::parse($season->start));
