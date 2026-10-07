@@ -43,6 +43,7 @@ class RegistrationController extends Controller
     // FormData stringifies null/undefined, so those arrive as literal strings -> no fingerprint
     if (in_array(strtolower($fp), ['null', 'undefined'], true)) $fp = '';
     if($fp == "8498c820060b7eccee8f52b9d652bf27"
+        || $fp == "c37e01dbcff0a6788416675c72a0c1c1"
     /* || 
       $fp == "eb5c7e758aa46050dca275cf4a52e9f6" ||
       $fp == "1c11210e85a5300389ecf33a4fee0342" ||
