@@ -46,6 +46,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Search Engine Indexing
+    |--------------------------------------------------------------------------
+    |
+    | When true, every response carries "X-Robots-Tag: noindex, nofollow".
+    | Set APP_NOINDEX=true on test instances only.
+    |
+    */
+
+    'noindex' => (bool) env('APP_NOINDEX', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Application URL
     |--------------------------------------------------------------------------
     |
