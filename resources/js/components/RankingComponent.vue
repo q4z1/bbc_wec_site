@@ -17,7 +17,7 @@
         <el-table-column prop="nickname" label="Nickname">
           <template #default="scope"><span v-html="scope.row.nickname"></span></template>
         </el-table-column>
-        <el-table-column prop="score" label="Score" sortable />
+        <el-table-column prop="score" label="Score" sortable :sort-method="sortByScore" />
         <el-table-column prop="games" label="Games" sortable>
           <template #default="scope">
             <span :class="(season_select == 9 && !alltime && scope.row.games < 40) ? 'text-danger' : 'text-success'">{{ scope.row.games }}</span>
@@ -58,6 +58,11 @@ export default {
   methods: {
     showPlayer(row) {
       window.location.href = '/player/' + encodeURIComponent(row.nickname);
+    },
+    // score arrives as a formatted string ("9.75", "1,234.50"), compare numerically
+    sortByScore(a, b) {
+      const num = (s) => parseFloat(String(s).replace(/,/g, ''));
+      return num(a.score) - num(b.score);
     },
     shouldHighlightStep1(row) {
       return (this.season_select == 9 && row.step1 < 20) || (this.season_select == 10 && row.step1 < 45);
