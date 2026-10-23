@@ -47,11 +47,16 @@ class GameController extends Controller
             return ["status" => false, 'msg' => "Parameter!"];
         }
 
-        if($payload['preview']){
-            return $this->preview($payload["loglink"]);
-        }
         $log = new LogFileController();
         $game = $log->process_log($payload["loglink"]);
+        // ab Step 2 braucht jeder Spieler ein Ticket fuer diesen Step - sonst zaehlt das Spiel nicht
+        $missing = $this->playersWithoutTicket($game['player_list'][1], (int) $payload['gametype']);
+        if($missing){
+            return ["status" => false, 'msg' => "No S" . $payload['gametype'] . " ticket: " . implode(", ", $missing) . " - game must not be uploaded!"];
+        }
+        if($payload['preview']){
+            return ["status" => true, "msg" => $game['player_list']];
+        }
         $g = new Game();
         $g->pdb = $game['pdb'];
         for($i=1;$i<=10;$i++){
@@ -87,7 +92,7 @@ class GameController extends Controller
                         break;
                     case(2):
                         if($i != 3){
-                            $player->s2_tickets -= 1;
+                            $player->s2_tickets = max($player->s2_tickets-1, 0);
                         }
                         if($i < 3){
                             $player->s3_tickets += 1;
@@ -97,7 +102,7 @@ class GameController extends Controller
                     case(3):
                         // wie bei Step 2 behaelt der Dritte sein Ticket
                         if($i != 3){
-                            $player->s3_tickets -= 1;
+                            $player->s3_tickets = max($player->s3_tickets-1, 0);
                         }
                         if($i < 3){
                             $player->s4_tickets += 1;
@@ -105,7 +110,7 @@ class GameController extends Controller
                         if($player->s4_tickets > 10) $player->s4_tickets = 10;
                         break;
                     case(4):
-                        $player->s4_tickets -= 1;
+                        $player->s4_tickets = max($player->s4_tickets-1, 0);
                         break;
                 }
                 $player->new = 0;
@@ -152,10 +157,16 @@ class GameController extends Controller
         return ["status" => true, 'msg' => $g];
     }
 
-    private function preview($url){
-        $log = new LogFileController();
-        $game = $log->process_log($url);
-        return ["status" => true, "msg" => $game['player_list']];
+    private function playersWithoutTicket(array $nicknames, int $step): array
+    {
+        if($step < 2) return [];
+        $col = "s{$step}_tickets";
+        $missing = [];
+        foreach($nicknames as $nickname){
+            $player = Player::where('nickname', $nickname)->first();
+            if(!$player || $player->{$col} < 1) $missing[] = $nickname;
+        }
+        return $missing;
     }
 
     private function syncTickets(): void
