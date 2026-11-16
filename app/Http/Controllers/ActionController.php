@@ -38,7 +38,7 @@ class ActionController extends Controller
       )->orderBy('id', 'DESC')
       ->limit(10)
       ->get()->map(function ($a) {
-        $a->user = User::where('id', '=', $a->user)->first()->name;
+        $a->user = User::where('id', '=', $a->user)->first()?->name ?? 'system';
         return $a;
       });
 
@@ -59,7 +59,7 @@ class ActionController extends Controller
       $actions = $actions->offset(($page-1)*10)
       ->take(10)
       ->get()->map(function ($a) {
-        $a->user = User::where('id', '=', $a->user)->first()->name;
+        $a->user = User::where('id', '=', $a->user)->first()?->name ?? 'system';
         return $a;
       });
       return ['success' => true, 'result' => $actions, 'total' => $total];
